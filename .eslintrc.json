@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": [
+    "@rocketseat/eslint-config/next",
+    "next/core-web-vitals"
+  ],
+  "ignorePatterns": [
+    "next-env.d.ts"
+  ],
+  "rules": {
+    "@typescript-eslint/no-duplicate-enum-values": "off"
+  }
+}
