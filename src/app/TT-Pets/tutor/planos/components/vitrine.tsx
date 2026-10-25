@@ -2,16 +2,16 @@
 
 import { useState } from 'react'
 
-import { Aviso, Botao, Campo, Ok, Selecao } from '@/components/ui'
+import { Aviso, Botao, Campo, Modal, Ok, Selecao } from '@/components/ui'
 import { cx, moeda, visitas } from '@/domain/formatacao'
 import { useUsuario } from '@/hooks/banco'
 import { contratarPlano } from '@/mocks/acoes'
-import { nomeClinica, planosDaCidade } from '@/mocks/regras'
+import { nomeVeterinario, planosDaCidade } from '@/mocks/regras'
 
 function desenho(nome: string) {
   if (nome.includes('Básico')) return { emoji: '🐱', fundo: 'bg-amber-100' }
   if (nome.includes('Saúde')) return { emoji: '🐶', fundo: 'bg-sky-100' }
-  if (nome.includes('Total')) return { emoji: '🐾', fundo: 'bg-rose-100' }
+  if (nome.includes('Total')) return { emoji: '🐾', fundo: 'bg-marca-anel' }
   if (nome.includes('Premium')) return { emoji: '🐕', fundo: 'bg-lime-100' }
   return { emoji: '🐾', fundo: 'bg-slate-100' }
 }
@@ -30,7 +30,7 @@ export function VitrinePlanos() {
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col items-center">
-      <h1 className="text-center text-3xl font-extrabold tracking-tight text-slate-900">
+      <h1 className="text-center text-3xl font-semibold tracking-tight text-slate-900">
         Planos de atendimento domiciliar
       </h1>
       <p className="mt-2 text-center text-slate-500">
@@ -57,11 +57,11 @@ export function VitrinePlanos() {
               className={cx(
                 'relative flex h-full flex-col rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-sm',
                 item.destaque &&
-                  'z-10 border-2 border-rose-500 bg-gradient-to-b from-rose-50 to-white shadow-xl',
+                  'z-10 border-2 border-marca bg-gradient-to-b from-marca-clara to-white shadow-md',
               )}
             >
               {item.destaque && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-marca px-3 py-1 text-xs font-medium text-white">
                   Mais vendido
                 </span>
               )}
@@ -73,10 +73,10 @@ export function VitrinePlanos() {
               >
                 {arte.emoji}
               </div>
-              <h2 className="mt-4 text-2xl font-extrabold text-slate-900">{item.nome}</h2>
-              <p className="text-sm font-semibold text-rose-600">{item.subtitulo}</p>
-              <p className="mt-1 text-xs text-slate-400">{nomeClinica(banco, item.clinicaId)}</p>
-              <p className="mt-4 text-4xl font-extrabold text-rose-600">
+              <h2 className="mt-4 text-2xl font-semibold text-slate-900">{item.nome}</h2>
+              <p className="text-sm font-semibold text-marca">{item.subtitulo}</p>
+              <p className="mt-1 text-xs text-slate-400">{nomeVeterinario(banco, item.veterinarioId)}</p>
+              <p className="mt-4 text-4xl font-semibold text-marca">
                 {moeda(item.precoMensal)}
                 <span className="text-base font-semibold text-slate-400">/mês</span>
               </p>
@@ -89,7 +89,7 @@ export function VitrinePlanos() {
                 Contratar
               </Botao>
               <div className="mt-5 border-t border-slate-100 pt-4 text-left">
-                <p className="text-sm font-bold text-rose-600">Serviços inclusos</p>
+                <p className="text-sm font-bold text-marca">Serviços inclusos</p>
                 <ul className="mt-3 space-y-2">
                   {item.servicos.map((servico) => (
                     <li
@@ -115,13 +115,17 @@ export function VitrinePlanos() {
         <p className="mt-10 text-sm text-slate-500">Nenhum plano ativo nesta cidade.</p>
       )}
       <p className="mt-10 text-center text-xs text-slate-400">
-        Protótipo com dados de exemplo. Nomes, preços e serviços serão cadastrados pelo admin da clínica.
+        Protótipo com dados de exemplo. Nomes, preços e serviços são cadastrados pelo veterinário.
       </p>
 
-      {plano && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center">
+      <Modal
+        aberto={Boolean(plano)}
+        titulo={plano ? `Contratar ${plano.nome}` : 'Contratar'}
+        onFechar={() => setPlanoId(null)}
+      >
+        {plano && (
           <form
-            className="w-full max-w-md space-y-4 rounded-3xl bg-white p-6 shadow-2xl"
+            className="space-y-4 pt-1"
             onSubmit={(evento) => {
               evento.preventDefault()
               const falha = contratarPlano({ petId, planoId: plano.id, tutorId })
@@ -132,9 +136,8 @@ export function VitrinePlanos() {
               }
             }}
           >
-            <h2 className="text-lg font-extrabold">Contratar {plano.nome}</h2>
             <p className="text-sm text-slate-500">
-              {moeda(plano.precoMensal)} por mês · {nomeClinica(banco, plano.clinicaId)}
+              {moeda(plano.precoMensal)} por mês · {nomeVeterinario(banco, plano.veterinarioId)}
             </p>
             <Aviso texto={erro} />
             {pets.length === 0 ? (
@@ -159,8 +162,8 @@ export function VitrinePlanos() {
               </Botao>
             </div>
           </form>
-        </div>
-      )}
+        )}
+      </Modal>
       {ok && <p className="mt-4 text-sm font-semibold text-emerald-600">{ok}</p>}
     </div>
   )

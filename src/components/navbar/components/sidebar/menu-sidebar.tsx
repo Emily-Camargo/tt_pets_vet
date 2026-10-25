@@ -1,76 +1,48 @@
-import {
-  ListItemIcon,
-  ListItemText,
-  ListItemButton,
-} from '@mui/material'
+'use client'
 
-import { memo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { memo, type ReactNode } from 'react'
 
 export interface MenuSidebarProps {
-  open: boolean
-  onClick: () => void
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  seqAplicacao: number
+  href: string
   label: string
-  route?: string
-  icon: React.ReactNode
+  icon: ReactNode
+  avisos?: number
+  onIr: () => void
 }
 
-const MenuSidebar = ({
-  onClick,
-  seqAplicacao,
-  label,
-  route,
-  icon,               
-  setOpen,     
-}: MenuSidebarProps) => {
-  const navigate = useNavigate();
-
-  const handleNavigation = () => {
-    if (route) {
-      navigate(route);
-    } else {
-      if (seqAplicacao === 1) {
-        navigate('/home');
-      } else if (seqAplicacao === 2) {
-        navigate('/consultas');
-      } else if (seqAplicacao === 3) {
-        navigate('/agenda');
-      } else if (seqAplicacao === 4) {
-        navigate('/pacientes');
-      } else if (seqAplicacao === 5) {
-        navigate('/prontuarios');
-      } else if (seqAplicacao === 6) {
-        navigate('/prescricoes');
-      } else if (seqAplicacao === 7) {
-        navigate('/relatorios');
-      } else if (seqAplicacao === 8) {
-        navigate('/minhas-consultas');
-      } else if (seqAplicacao === 9) {
-        navigate('/relatorios');
-      } else if (seqAplicacao === 12) {
-        navigate('/admin');
-      } else if (seqAplicacao === 13) {
-        navigate('/atendimentos');
-      }
-    }
-    
-    onClick();
-    setOpen(false);
-  };
+const MenuSidebar = ({ href, label, icon, avisos = 0, onIr }: MenuSidebarProps) => {
+  const pathname = usePathname()
+  const ativo = pathname === href || pathname.startsWith(`${href}/`)
 
   return (
-      <ListItemButton onClick={handleNavigation}>
-        <ListItemIcon className="!text-white mb-1">
-          {icon}           
-        </ListItemIcon>
-        <ListItemText className="!-ml-4">
-          <p className="text-[15px] text-white">{label}</p>
-        </ListItemText>
-      </ListItemButton>
-  );
-  
+    <ListItemButton
+      component={Link}
+      href={href}
+      selected={ativo}
+      onClick={onIr}
+      sx={{
+        mx: 1,
+        mb: 0.5,
+        borderRadius: '12px',
+        minHeight: 40,
+        color: ativo ? '#7434d6' : '#475569',
+        '&.Mui-selected': { backgroundColor: '#f6f1fc' },
+        '&.Mui-selected:hover': { backgroundColor: '#efe4ff' },
+      }}
+    >
+      <ListItemIcon sx={{ minWidth: 34, color: 'inherit' }}>{icon}</ListItemIcon>
+      <ListItemText
+        primary={label}
+        slotProps={{ primary: { sx: { fontSize: 14, fontWeight: ativo ? 600 : 500 } } }}
+      />
+      {avisos > 0 && (
+        <span className="rounded-full bg-[#7434d6] px-1.5 text-[11px] text-white">{avisos}</span>
+      )}
+    </ListItemButton>
+  )
 }
 
 export default memo(MenuSidebar)

@@ -16,11 +16,10 @@ import {
 } from '@/components/ui'
 import { useUsuario } from '@/hooks/banco'
 import { salvarVeterinario } from '@/mocks/acoes'
+import { nomeCidade } from '@/mocks/regras'
 
 export function Veterinarios() {
-  const { banco, usuario } = useUsuario()
-  const clinicaId = usuario?.clinicaId ?? ''
-  const lista = banco.veterinarios.filter((item) => item.clinicaId === clinicaId)
+  const { banco } = useUsuario()
   const [aberto, setAberto] = useState(false)
   const [id, setId] = useState<string>()
   const [nome, setNome] = useState('')
@@ -28,12 +27,13 @@ export function Veterinarios() {
   const [senha, setSenha] = useState('')
   const [crmv, setCrmv] = useState('')
   const [especialidade, setEspecialidade] = useState('Clínica geral')
+  const [cidadeIds, setCidadeIds] = useState<string[]>([])
   const [ativo, setAtivo] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [ok, setOk] = useState<string | null>(null)
 
   function abrir(vetId?: string) {
-    const vet = lista.find((item) => item.id === vetId)
+    const vet = banco.veterinarios.find((item) => item.id === vetId)
     const acesso = banco.usuarios.find((item) => item.id === vet?.usuarioId)
     setId(vet?.id)
     setNome(vet?.nome ?? '')
@@ -41,30 +41,39 @@ export function Veterinarios() {
     setSenha('')
     setCrmv(vet?.crmv ?? '')
     setEspecialidade(vet?.especialidade ?? 'Clínica geral')
+    setCidadeIds(vet?.cidadeIds ?? [])
     setAtivo(vet?.ativo ?? true)
     setErro(null)
     setAberto(true)
   }
 
+  function alternarCidade(cidadeId: string) {
+    setCidadeIds((atual) =>
+      atual.includes(cidadeId)
+        ? atual.filter((item) => item !== cidadeId)
+        : [...atual, cidadeId],
+    )
+  }
+
   return (
     <Pagina
       titulo="Veterinários"
-      descricao="Cada veterinário entra com o próprio email e só vê a própria agenda."
+      descricao="Cada veterinário entra com o próprio email e cuida da própria agenda, dos planos e dos clientes."
       acao={<Botao onClick={() => abrir()}>Novo veterinário</Botao>}
     >
       <Ok texto={ok} />
-      {lista.length === 0 ? (
-        <Vazio texto="Nenhum veterinário nesta clínica." />
+      {banco.veterinarios.length === 0 ? (
+        <Vazio texto="Nenhum veterinário cadastrado." />
       ) : (
         <div className="grid gap-3">
-          {lista.map((vet) => {
+          {banco.veterinarios.map((vet) => {
             const acesso = banco.usuarios.find((item) => item.id === vet.usuarioId)
             return (
               <Cartao key={vet.id}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="font-extrabold">{vet.nome}</h2>
+                      <h2 className="font-semibold">{vet.nome}</h2>
                       <Selo tom={vet.ativo ? 'ok' : 'alerta'}>
                         {vet.ativo ? 'Ativo' : 'Inativo'}
                       </Selo>
@@ -73,6 +82,9 @@ export function Veterinarios() {
                       {vet.crmv} · {vet.especialidade}
                     </p>
                     <p className="text-sm text-slate-500">{acesso?.email}</p>
+                    <p className="text-sm text-slate-500">
+                      {vet.cidadeIds.map((cidadeId) => nomeCidade(banco, cidadeId)).join(', ')}
+                    </p>
                   </div>
                   <Botao variante="outline" onClick={() => abrir(vet.id)}>
                     Editar
@@ -83,14 +95,18 @@ export function Veterinarios() {
           })}
         </div>
       )}
-      <Modal aberto={aberto} titulo={id ? 'Editar veterinário' : 'Novo veterinário'} onFechar={() => setAberto(false)}>
+      <Modal
+        aberto={aberto}
+        titulo={id ? 'Editar veterinário' : 'Novo veterinário'}
+        onFechar={() => setAberto(false)}
+      >
         <form
           className="space-y-4"
           onSubmit={(evento) => {
             evento.preventDefault()
             const falha = salvarVeterinario({
               id,
-              clinicaId,
+              cidadeIds,
               nome,
               email,
               senha,
@@ -133,6 +149,19 @@ export function Veterinarios() {
               onChange={(evento) => setEspecialidade(evento.target.value)}
             />
           </Campo>
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-slate-700">Cidades</legend>
+            {banco.cidades.map((cidade) => (
+              <label key={cidade.id} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={cidadeIds.includes(cidade.id)}
+                  onChange={() => alternarCidade(cidade.id)}
+                />
+                {nomeCidade(banco, cidade.id)}
+              </label>
+            ))}
+          </fieldset>
           <label className="flex items-center gap-2 text-sm font-semibold">
             <input
               type="checkbox"

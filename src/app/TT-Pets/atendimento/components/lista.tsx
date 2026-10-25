@@ -7,19 +7,11 @@ import { dataHora, rotuloStatus } from '@/domain/formatacao'
 import { useUsuario } from '@/hooks/banco'
 import { consultaAtiva } from '@/mocks/regras'
 
-export function ListaAtendimentos({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
+export function ListaAtendimentos() {
   const { banco, usuario } = useUsuario()
-  const clinicaId = usuario?.clinicaId ?? ''
-  const base =
-    escopo === 'clinica'
-      ? '/TT-Pets/clinica/atendimentos'
-      : '/TT-Pets/veterinario/atendimentos'
+  const base = '/TT-Pets/veterinario/atendimentos'
   const consultas = banco.consultas
-    .filter((item) => item.clinicaId === clinicaId)
-    .filter(
-      (item) =>
-        escopo === 'clinica' || item.veterinarioId === usuario?.veterinarioId,
-    )
+    .filter((item) => item.veterinarioId === usuario?.veterinarioId)
     .filter((item) => consultaAtiva(item.status))
     .sort((a, b) => a.dataHora.localeCompare(b.dataHora))
 
@@ -40,7 +32,7 @@ export function ListaAtendimentos({ escopo }: { escopo: 'clinica' | 'veterinario
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="font-extrabold">{pet?.nome}</h2>
+                      <h2 className="font-semibold">{pet?.nome}</h2>
                       <Selo>{rotuloStatus(consulta.status)}</Selo>
                     </div>
                     <p className="text-sm text-slate-500">

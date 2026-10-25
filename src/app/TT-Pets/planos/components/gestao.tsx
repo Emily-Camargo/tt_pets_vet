@@ -19,13 +19,13 @@ import { moeda, visitas } from '@/domain/formatacao'
 import { useUsuario } from '@/hooks/banco'
 import { alternarPlano, salvarPlano } from '@/mocks/acoes'
 import { CATALOGO_SERVICOS } from '@/mocks/catalogo'
-import { nomeCidade, nomeClinica } from '@/mocks/regras'
+import { nomeCidade, nomeVeterinario } from '@/mocks/regras'
 
-export function GestaoPlanos({ clinicaFixa }: { clinicaFixa?: string }) {
+export function GestaoPlanos({ veterinarioFixo }: { veterinarioFixo?: string }) {
   const { banco } = useUsuario()
   const [aberto, setAberto] = useState(false)
   const [id, setId] = useState<string>()
-  const [clinicaId, setClinicaId] = useState(clinicaFixa ?? '')
+  const [veterinarioId, setVeterinarioId] = useState(veterinarioFixo ?? '')
   const [cidadeId, setCidadeId] = useState('')
   const [nome, setNome] = useState('')
   const [subtitulo, setSubtitulo] = useState('')
@@ -38,21 +38,23 @@ export function GestaoPlanos({ clinicaFixa }: { clinicaFixa?: string }) {
   const [erro, setErro] = useState<string | null>(null)
   const [ok, setOk] = useState<string | null>(null)
 
-  const clinicas = clinicaFixa
-    ? banco.clinicas.filter((item) => item.id === clinicaFixa)
-    : banco.clinicas
-  const clinica = banco.clinicas.find((item) => item.id === clinicaId)
-  const cidades = banco.cidades.filter((item) => clinica?.cidadeIds.includes(item.id))
+  const veterinarios = veterinarioFixo
+    ? banco.veterinarios.filter((item) => item.id === veterinarioFixo)
+    : banco.veterinarios
+  const veterinario = banco.veterinarios.find((item) => item.id === veterinarioId)
+  const cidades = banco.cidades.filter((item) => veterinario?.cidadeIds.includes(item.id))
   const planos = useMemo(
     () =>
-      banco.planos.filter((item) => !clinicaFixa || item.clinicaId === clinicaFixa),
-    [banco.planos, clinicaFixa],
+      banco.planos.filter(
+        (item) => !veterinarioFixo || item.veterinarioId === veterinarioFixo,
+      ),
+    [banco.planos, veterinarioFixo],
   )
 
   function abrir(planoId?: string) {
     const plano = banco.planos.find((item) => item.id === planoId)
     setId(plano?.id)
-    setClinicaId(plano?.clinicaId ?? clinicaFixa ?? banco.clinicas[0]?.id ?? '')
+    setVeterinarioId(plano?.veterinarioId ?? veterinarioFixo ?? banco.veterinarios[0]?.id ?? '')
     setCidadeId(plano?.cidadeId ?? '')
     setNome(plano?.nome ?? '')
     setSubtitulo(plano?.subtitulo ?? '')
@@ -85,16 +87,16 @@ export function GestaoPlanos({ clinicaFixa }: { clinicaFixa?: string }) {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-extrabold text-slate-900">{plano.nome}</h2>
+                    <h2 className="font-semibold text-slate-900">{plano.nome}</h2>
                     {plano.destaque && <Selo tom="rosa">Mais vendido</Selo>}
                     <Selo tom={plano.ativo ? 'ok' : 'alerta'}>
                       {plano.ativo ? 'Ativo' : 'Inativo'}
                     </Selo>
                   </div>
                   <p className="text-sm text-slate-500">
-                    {nomeClinica(banco, plano.clinicaId)} · {nomeCidade(banco, plano.cidadeId)}
+                    {nomeVeterinario(banco, plano.veterinarioId)} · {nomeCidade(banco, plano.cidadeId)}
                   </p>
-                  <p className="text-sm font-bold text-rose-600">
+                  <p className="text-sm font-bold text-marca">
                     {moeda(plano.precoMensal)} · {visitas(plano.visitasMes)}
                   </p>
                 </div>
@@ -124,7 +126,7 @@ export function GestaoPlanos({ clinicaFixa }: { clinicaFixa?: string }) {
             evento.preventDefault()
             const falha = salvarPlano({
               id,
-              clinicaId,
+              veterinarioId,
               cidadeId,
               nome,
               subtitulo,
@@ -142,17 +144,17 @@ export function GestaoPlanos({ clinicaFixa }: { clinicaFixa?: string }) {
           }}
         >
           <Aviso texto={erro} />
-          {!clinicaFixa && (
-            <Campo label="Clínica">
+          {!veterinarioFixo && (
+            <Campo label="Veterinário">
               <Selecao
-                value={clinicaId}
+                value={veterinarioId}
                 onChange={(evento) => {
-                  setClinicaId(evento.target.value)
+                  setVeterinarioId(evento.target.value)
                   setCidadeId('')
                 }}
               >
                 <option value="">Selecione</option>
-                {clinicas.map((item) => (
+                {veterinarios.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.nome}
                   </option>

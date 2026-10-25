@@ -1,4 +1,4 @@
-export type Perfil = 'admin' | 'gestor' | 'veterinario' | 'tutor'
+export type Perfil = 'admin' | 'veterinario' | 'tutor'
 
 export type StatusConsulta =
   | 'agendada'
@@ -13,14 +13,6 @@ export interface Cidade {
   uf: string
 }
 
-export interface Clinica {
-  id: string
-  nome: string
-  cnpj: string
-  cidadeIds: string[]
-  ativa: boolean
-}
-
 export interface ServicoPlano {
   nome: string
   incluso: boolean
@@ -28,7 +20,7 @@ export interface ServicoPlano {
 
 export interface Plano {
   id: string
-  clinicaId: string
+  veterinarioId: string
   cidadeId: string
   nome: string
   subtitulo: string
@@ -45,7 +37,6 @@ export interface Usuario {
   email: string
   senha: string
   perfil: Perfil
-  clinicaId?: string
   veterinarioId?: string
   tutorId?: string
 }
@@ -73,7 +64,7 @@ export interface Pet {
 export interface Veterinario {
   id: string
   usuarioId: string
-  clinicaId: string
+  cidadeIds: string[]
   nome: string
   crmv: string
   especialidade: string
@@ -85,7 +76,6 @@ export interface Assinatura {
   petId: string
   planoId: string
   cidadeId: string
-  clinicaId: string
   tutorId: string
   status: 'ativa' | 'cancelada'
   inicio: string
@@ -94,7 +84,6 @@ export interface Assinatura {
 export interface Bloqueio {
   id: string
   veterinarioId: string
-  clinicaId: string
   inicio: string
   fim: string
   motivo: string
@@ -105,7 +94,6 @@ export interface Consulta {
   petId: string
   tutorId: string
   veterinarioId: string
-  clinicaId: string
   cidadeId: string
   dataHora: string
   status: StatusConsulta
@@ -159,7 +147,6 @@ export interface Notificacao {
 export interface Banco {
   versao: number
   cidades: Cidade[]
-  clinicas: Clinica[]
   planos: Plano[]
   usuarios: Usuario[]
   tutores: Tutor[]

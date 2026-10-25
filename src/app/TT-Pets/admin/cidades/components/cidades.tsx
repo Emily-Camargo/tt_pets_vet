@@ -38,12 +38,12 @@ export function Cidades() {
             <Cartao key={cidade.id}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="font-extrabold text-slate-900">
+                  <h2 className="font-semibold text-slate-900">
                     {cidade.nome} - {cidade.uf}
                   </h2>
                   <p className="text-sm text-slate-500">
-                    {banco.clinicas.filter((item) => item.cidadeIds.includes(cidade.id)).length}{' '}
-                    clínicas vinculadas
+                    {banco.veterinarios.filter((item) => item.cidadeIds.includes(cidade.id)).length}{' '}
+                    veterinários vinculados
                   </p>
                 </div>
                 <div className="flex gap-2">

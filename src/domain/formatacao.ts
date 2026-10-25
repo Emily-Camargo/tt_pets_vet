@@ -64,7 +64,6 @@ export function telefone(valor: string) {
 
 export function rotuloPerfil(perfil: Perfil) {
   if (perfil === 'admin') return 'Admin'
-  if (perfil === 'gestor') return 'Clínica'
   if (perfil === 'veterinario') return 'Veterinário'
   return 'Tutor'
 }
@@ -77,11 +76,8 @@ export function rotuloStatus(status: StatusConsulta) {
   return 'Realizada'
 }
 
-export function destino(perfil: Perfil) {
-  if (perfil === 'admin') return '/TT-Pets/admin/clinicas'
-  if (perfil === 'gestor') return '/TT-Pets/clinica/dashboard'
-  if (perfil === 'veterinario') return '/TT-Pets/veterinario/agenda'
-  return '/TT-Pets/tutor/planos'
+export function destino(_perfil: Perfil) {
+  return '/TT-Pets/home'
 }
 
 export function novoId() {

@@ -5,12 +5,10 @@ import { dataHora, moeda, rotuloStatus } from '@/domain/formatacao'
 import { useUsuario } from '@/hooks/banco'
 import { resumo } from '@/mocks/regras'
 
-export function Dashboard({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
+export function Dashboard() {
   const { banco, usuario } = useUsuario()
-  const clinicaId = usuario?.clinicaId ?? ''
   const dados = resumo(banco, {
-    clinicaId,
-    veterinarioId: escopo === 'veterinario' ? usuario?.veterinarioId : undefined,
+    veterinarioId: usuario?.veterinarioId ?? '',
   })
   const recentes = [...dados.consultas]
     .sort((a, b) => b.dataHora.localeCompare(a.dataHora))
@@ -24,8 +22,8 @@ export function Dashboard({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
 
   return (
     <Pagina
-      titulo={escopo === 'clinica' ? 'Painel da clínica' : 'Meu painel'}
-      descricao="Receita dos planos ativos e atendimentos do seu escopo."
+      titulo="Meu painel"
+      descricao="Receita dos seus planos ativos e dos atendimentos que você realiza."
     >
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
@@ -36,12 +34,12 @@ export function Dashboard({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
         ].map(([rotulo, valor]) => (
           <Cartao key={rotulo}>
             <p className="text-sm font-semibold text-slate-500">{rotulo}</p>
-            <p className="mt-2 text-2xl font-extrabold text-rose-600">{valor}</p>
+            <p className="mt-2 text-2xl font-semibold text-marca">{valor}</p>
           </Cartao>
         ))}
       </div>
       <Cartao>
-        <h2 className="font-extrabold">Atendimentos</h2>
+        <h2 className="font-semibold">Atendimentos</h2>
         <div className="mt-4 space-y-3">
           {barras.map((barra) => (
             <div key={barra.label}>
@@ -51,7 +49,7 @@ export function Dashboard({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
               </div>
               <div className="h-3 rounded-full bg-slate-100">
                 <div
-                  className="h-3 rounded-full bg-rose-500"
+                  className="h-3 rounded-full bg-marca"
                   style={{ width: `${(barra.valor / maior) * 100}%` }}
                 />
               </div>

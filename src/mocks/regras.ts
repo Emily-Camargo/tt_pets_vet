@@ -11,8 +11,8 @@ export function nomeCidade(banco: Banco, id: string) {
   return cidade ? `${cidade.nome} - ${cidade.uf}` : 'Cidade'
 }
 
-export function nomeClinica(banco: Banco, id: string) {
-  return banco.clinicas.find((item) => item.id === id)?.nome ?? 'Clínica'
+export function nomeVeterinario(banco: Banco, id: string) {
+  return banco.veterinarios.find((item) => item.id === id)?.nome ?? 'Veterinário'
 }
 
 export function assinaturaAtivaDoPet(banco: Banco, petId: string) {
@@ -28,21 +28,19 @@ export function motivoBloqueioAgendamento(banco: Banco, petId: string) {
   }
 
   const plano = banco.planos.find((item) => item.id === assinatura.planoId)
-  const clinica = banco.clinicas.find((item) => item.id === assinatura.clinicaId)
-  if (!plano?.ativo || !clinica?.ativa) {
-    return 'O plano ou a clínica deste pet está inativo.'
-  }
+  if (!plano?.ativo) return 'O plano deste pet está inativo.'
 
-  if (!clinica.cidadeIds.includes(assinatura.cidadeId)) {
-    return 'A clínica não atende mais a cidade do plano.'
+  const veterinario = banco.veterinarios.find((item) => item.id === plano.veterinarioId)
+  if (!veterinario?.ativo || !veterinario.cidadeIds.includes(assinatura.cidadeId)) {
+    return 'O veterinário do plano não atende mais essa cidade.'
   }
 
   return null
 }
 
-export function veterinariosDisponiveis(banco: Banco, clinicaId: string) {
+export function veterinariosDisponiveis(banco: Banco, cidadeId: string) {
   return banco.veterinarios.filter(
-    (item) => item.clinicaId === clinicaId && item.ativo,
+    (item) => item.ativo && item.cidadeIds.includes(cidadeId),
   )
 }
 
@@ -139,25 +137,19 @@ export function planosDaCidade(banco: Banco, cidadeId: string) {
   return banco.planos
     .filter((plano) => {
       if (!plano.ativo || plano.cidadeId !== cidadeId) return false
-      const clinica = banco.clinicas.find((item) => item.id === plano.clinicaId)
-      return Boolean(
-        clinica?.ativa && clinica.cidadeIds.includes(cidadeId),
-      )
+      const veterinario = banco.veterinarios.find((item) => item.id === plano.veterinarioId)
+      return Boolean(veterinario?.ativo && veterinario.cidadeIds.includes(cidadeId))
     })
     .sort((a, b) => a.precoMensal - b.precoMensal)
 }
 
 export function resumo(
   banco: Banco,
-  filtro: { clinicaId: string; veterinarioId?: string },
+  filtro: { veterinarioId: string },
 ) {
-  const consultas = banco.consultas.filter((item) => {
-    if (item.clinicaId !== filtro.clinicaId) return false
-    if (filtro.veterinarioId && item.veterinarioId !== filtro.veterinarioId) {
-      return false
-    }
-    return true
-  })
+  const consultas = banco.consultas.filter(
+    (item) => item.veterinarioId === filtro.veterinarioId,
+  )
 
   const agora = new Date()
   const doMes = consultas.filter((item) => {
@@ -169,13 +161,10 @@ export function resumo(
     )
   })
 
-  const petsAtendidos = new Set(consultas.map((item) => item.petId))
   const assinaturas = banco.assinaturas.filter((item) => {
-    if (item.status !== 'ativa' || item.clinicaId !== filtro.clinicaId) {
-      return false
-    }
-    if (!filtro.veterinarioId) return true
-    return petsAtendidos.has(item.petId)
+    if (item.status !== 'ativa') return false
+    const plano = banco.planos.find((planoItem) => planoItem.id === item.planoId)
+    return plano?.veterinarioId === filtro.veterinarioId
   })
 
   const mrr = assinaturas.reduce((total, item) => {

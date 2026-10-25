@@ -21,7 +21,6 @@ import { useUsuario } from '@/hooks/banco'
 import { agendarConsulta, mudarConsulta } from '@/mocks/acoes'
 import {
   motivoBloqueioAgendamento,
-  nomeClinica,
   veterinariosDisponiveis,
 } from '@/mocks/regras'
 
@@ -46,7 +45,7 @@ export function AgendamentosTutor() {
   )
   const bloqueio = petId ? motivoBloqueioAgendamento(banco, petId) : 'Cadastre um pet.'
   const veterinarios = assinatura
-    ? veterinariosDisponiveis(banco, assinatura.clinicaId)
+    ? veterinariosDisponiveis(banco, assinatura.cidadeId)
     : []
   const consultaRemarcar = consultas.find((item) => item.id === remarcarId)
   const ator = { perfil: 'tutor' as const, tutorId }
@@ -81,13 +80,13 @@ export function AgendamentosTutor() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="font-extrabold">{pet?.nome}</h2>
+                      <h2 className="font-semibold">{pet?.nome}</h2>
                       <Selo tom={consulta.status === 'cancelada' ? 'alerta' : 'rosa'}>
                         {rotuloStatus(consulta.status)}
                       </Selo>
                     </div>
                     <p className="text-sm text-slate-500">
-                      {dataHora(consulta.dataHora)} · {vet?.nome} · {nomeClinica(banco, consulta.clinicaId)}
+                      {dataHora(consulta.dataHora)} · {vet?.nome}
                     </p>
                     <p className="text-sm text-slate-500">{consulta.motivo}</p>
                   </div>

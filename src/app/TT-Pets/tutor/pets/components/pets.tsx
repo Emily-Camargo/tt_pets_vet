@@ -68,7 +68,7 @@ export function Pets() {
             return (
               <Cartao key={pet.id}>
                 <div className="flex gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-rose-50 text-xl font-extrabold text-rose-600">
+                  <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-marca-clara text-xl font-semibold text-marca">
                     {pet.foto ? (
                       <img src={pet.foto} alt="" className="h-full w-full object-cover" />
                     ) : (
@@ -76,14 +76,14 @@ export function Pets() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <h2 className="font-extrabold text-slate-900">{pet.nome}</h2>
+                    <h2 className="font-semibold text-slate-900">{pet.nome}</h2>
                     <p className="text-sm text-slate-500">
                       {pet.especie} · {pet.raca} · {pet.peso} kg
                     </p>
                     <p className="text-sm text-slate-500">
                       Nascimento {dataCurta(pet.nascimento)}
                     </p>
-                    <p className="mt-1 text-sm font-semibold text-rose-600">
+                    <p className="mt-1 text-sm font-semibold text-marca">
                       {nomePlano ? `Plano ${nomePlano}` : 'Sem plano ativo'}
                     </p>
                     <div className="mt-3 flex gap-2">

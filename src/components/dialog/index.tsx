@@ -1,17 +1,19 @@
-import React from 'react'
-import { Breakpoint } from '@mui/material'
+'use client'
+
 import DialogMui from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import type { Breakpoint } from '@mui/material'
+import type { ReactNode } from 'react'
 
 interface DialogProps {
   open: boolean
   onClose: () => void
   title?: string
-  children: React.ReactNode
-  actions?: React.ReactNode
-  maxWidth: false | Breakpoint | undefined
+  children: ReactNode
+  actions?: ReactNode
+  maxWidth?: false | Breakpoint
 }
 
 const Dialog = ({
@@ -20,15 +22,21 @@ const Dialog = ({
   title = 'Diálogo',
   children,
   actions,
-  maxWidth,
-}: DialogProps): JSX.Element => {
+  maxWidth = 'sm',
+}: DialogProps) => {
   return (
-    <DialogMui onClose={onClose} open={open} maxWidth={maxWidth} fullWidth>
-      <DialogTitle>
-        <p className="text-lg font-semibold">{title}</p>
-      </DialogTitle>
-      <DialogContent className="text-black">{children}</DialogContent>
-      {actions && <DialogActions>{actions}</DialogActions>}
+    <DialogMui
+      onClose={onClose}
+      open={open}
+      maxWidth={maxWidth}
+      fullWidth
+      slotProps={{
+        paper: { sx: { borderRadius: '16px' } },
+      }}
+    >
+      <DialogTitle sx={{ fontSize: 18, fontWeight: 600, pb: 1 }}>{title}</DialogTitle>
+      <DialogContent>{children}</DialogContent>
+      {actions && <DialogActions sx={{ px: 3, pb: 2 }}>{actions}</DialogActions>}
     </DialogMui>
   )
 }

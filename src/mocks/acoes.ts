@@ -1,11 +1,5 @@
 import { dataHora, novoId } from '@/domain/formatacao'
-import type {
-  Banco,
-  Clinica,
-  Perfil,
-  Plano,
-  StatusConsulta,
-} from '@/domain/tipos'
+import type { Banco, Perfil, Plano, StatusConsulta } from '@/domain/tipos'
 
 import { CATALOGO_SERVICOS, SENHA_DEMO } from './catalogo'
 import { responderIa } from './chat'
@@ -47,13 +41,6 @@ export function entrar(email: string, senha: string) {
   )
   if (!usuario || usuario.senha !== senha) {
     return { erro: 'Email ou senha inválidos.' }
-  }
-
-  if (usuario.perfil === 'gestor' || usuario.perfil === 'veterinario') {
-    const clinica = banco.clinicas.find((item) => item.id === usuario.clinicaId)
-    if (!clinica?.ativa) {
-      return { erro: 'A clínica deste acesso está inativa.' }
-    }
   }
 
   if (usuario.perfil === 'veterinario') {
@@ -103,6 +90,47 @@ export function cadastrarTutor(dados: {
   return null
 }
 
+export function salvarPerfil(
+  usuarioId: string,
+  dados: {
+    nome: string
+    email: string
+    telefone?: string
+    senhaAtual: string
+    senhaNova: string
+  },
+) {
+  const banco = bancoAtual()
+  const usuario = banco.usuarios.find((item) => item.id === usuarioId)
+  if (!usuario) return 'Usuário não encontrado.'
+
+  const email = dados.email.trim().toLowerCase()
+  const nome = dados.nome.trim()
+  if (nome.length < 2) return 'Informe o nome.'
+  if (!emailLivre(banco, email, usuario.id)) return 'Já existe uma conta com este email.'
+
+  const trocaSenha = dados.senhaNova.trim().length > 0
+  if (trocaSenha) {
+    if (dados.senhaAtual !== usuario.senha) return 'A senha atual não confere.'
+    if (dados.senhaNova.trim().length < 6) return 'A nova senha precisa ter ao menos 6 caracteres.'
+  }
+
+  alterar((atual) => {
+    const item = atual.usuarios.find((atualUsuario) => atualUsuario.id === usuarioId)
+    if (!item) return
+    item.nome = nome
+    item.email = email
+    if (trocaSenha) item.senha = dados.senhaNova.trim()
+    if (!item.tutorId) return
+    const tutor = atual.tutores.find((atualTutor) => atualTutor.id === item.tutorId)
+    if (!tutor) return
+    tutor.nome = nome
+    tutor.email = email
+    if (dados.telefone) tutor.telefone = dados.telefone.replace(/\D/g, '')
+  })
+  return null
+}
+
 export function salvarCidade(dados: { id?: string; nome: string; uf: string }) {
   const nome = dados.nome.trim()
   const uf = dados.uf.trim().toUpperCase()
@@ -131,58 +159,19 @@ export function salvarCidade(dados: { id?: string; nome: string; uf: string }) {
 
 export function excluirCidade(id: string) {
   const banco = bancoAtual()
-  const emUso = banco.clinicas.some((item) => item.cidadeIds.includes(id))
-  if (emUso) return 'Esta cidade está ligada a uma clínica.'
+  const emUso =
+    banco.planos.some((item) => item.cidadeId === id) ||
+    banco.veterinarios.some((item) => item.cidadeIds.includes(id))
+  if (emUso) return 'Esta cidade está ligada a um plano ou veterinário.'
   alterar((atual) => {
     atual.cidades = atual.cidades.filter((item) => item.id !== id)
   })
   return null
 }
 
-export function salvarClinica(dados: {
-  id?: string
-  nome: string
-  cnpj: string
-  cidadeIds: string[]
-  ativa: boolean
-}) {
-  const nome = dados.nome.trim()
-  const cnpj = dados.cnpj.replace(/\D/g, '')
-  if (nome.length < 2) return 'Informe o nome da clínica.'
-  if (cnpj.length !== 14) return 'O CNPJ precisa ter 14 dígitos.'
-  if (dados.cidadeIds.length === 0) return 'Escolha ao menos uma cidade.'
-
-  alterar((banco) => {
-    if (dados.id) {
-      const clinica = banco.clinicas.find((item) => item.id === dados.id)
-      if (!clinica) return
-      clinica.nome = nome
-      clinica.cnpj = cnpj
-      clinica.cidadeIds = dados.cidadeIds
-      clinica.ativa = dados.ativa
-      return
-    }
-    banco.clinicas.push({
-      id: novoId(),
-      nome,
-      cnpj,
-      cidadeIds: dados.cidadeIds,
-      ativa: dados.ativa,
-    })
-  })
-  return null
-}
-
-export function alternarClinica(id: string) {
-  alterar((banco) => {
-    const clinica = banco.clinicas.find((item) => item.id === id)
-    if (clinica) clinica.ativa = !clinica.ativa
-  })
-}
-
 export function salvarPlano(dados: {
   id?: string
-  clinicaId: string
+  veterinarioId: string
   cidadeId: string
   nome: string
   subtitulo: string
@@ -192,16 +181,18 @@ export function salvarPlano(dados: {
   inclusos: string[]
   ativo: boolean
 }) {
-  if (!dados.clinicaId || !dados.cidadeId) return 'Escolha clínica e cidade.'
+  if (!dados.veterinarioId || !dados.cidadeId) return 'Escolha o veterinário e a cidade.'
   if (dados.nome.trim().length < 2) return 'Informe o nome do plano.'
   if (dados.precoMensal <= 0) return 'Informe o preço mensal.'
   if (dados.visitasMes !== null && dados.visitasMes < 1) {
     return 'A quantidade de visitas precisa ser maior que zero.'
   }
 
-  const clinica = bancoAtual().clinicas.find((item) => item.id === dados.clinicaId)
-  if (!clinica?.cidadeIds.includes(dados.cidadeId)) {
-    return 'A clínica não atende essa cidade.'
+  const veterinario = bancoAtual().veterinarios.find(
+    (item) => item.id === dados.veterinarioId,
+  )
+  if (!veterinario?.cidadeIds.includes(dados.cidadeId)) {
+    return 'Esse veterinário não atende essa cidade.'
   }
 
   const servicos = CATALOGO_SERVICOS.map((nome) => ({
@@ -212,7 +203,7 @@ export function salvarPlano(dados: {
   alterar((banco) => {
     const plano: Plano = {
       id: dados.id ?? novoId(),
-      clinicaId: dados.clinicaId,
+      veterinarioId: dados.veterinarioId,
       cidadeId: dados.cidadeId,
       nome: dados.nome.trim(),
       subtitulo: dados.subtitulo.trim() || 'Atendimento domiciliar',
@@ -302,9 +293,9 @@ export function contratarPlano(dados: { petId: string; planoId: string; tutorId:
   const plano = banco.planos.find((item) => item.id === dados.planoId)
   if (!pet || pet.tutorId !== dados.tutorId) return 'Escolha um pet seu.'
   if (!plano?.ativo) return 'Este plano não está disponível.'
-  const clinica = banco.clinicas.find((item) => item.id === plano.clinicaId)
-  if (!clinica?.ativa || !clinica.cidadeIds.includes(plano.cidadeId)) {
-    return 'A clínica não atende essa cidade.'
+  const veterinario = banco.veterinarios.find((item) => item.id === plano.veterinarioId)
+  if (!veterinario?.ativo || !veterinario.cidadeIds.includes(plano.cidadeId)) {
+    return 'O veterinário deste plano não atende essa cidade.'
   }
 
   alterar((atual) => {
@@ -318,7 +309,6 @@ export function contratarPlano(dados: { petId: string; planoId: string; tutorId:
       petId: pet.id,
       planoId: plano.id,
       cidadeId: plano.cidadeId,
-      clinicaId: plano.clinicaId,
       tutorId: dados.tutorId,
       status: 'ativa',
       inicio: new Date().toISOString(),
@@ -352,10 +342,10 @@ export function agendarConsulta(dados: {
   )
   if (!assinatura) return 'Este pet precisa de um plano ativo.'
 
-  const veterinario = veterinariosDisponiveis(banco, assinatura.clinicaId).find(
+  const veterinario = veterinariosDisponiveis(banco, assinatura.cidadeId).find(
     (item) => item.id === dados.veterinarioId,
   )
-  if (!veterinario) return 'Escolha um veterinário desta clínica.'
+  if (!veterinario) return 'Escolha um veterinário que atenda a cidade do plano.'
   if (horarioOcupado(banco, veterinario.id, dados.dataHora)) {
     return 'Esse horário não está livre.'
   }
@@ -369,7 +359,6 @@ export function agendarConsulta(dados: {
       petId: pet.id,
       tutorId: pet.tutorId,
       veterinarioId: veterinario.id,
-      clinicaId: assinatura.clinicaId,
       cidadeId: assinatura.cidadeId,
       dataHora: dados.dataHora,
       status: 'agendada',
@@ -388,16 +377,12 @@ export function agendarConsulta(dados: {
 function podeMexer(banco: Banco, consultaId: string, ator: {
   perfil: Perfil
   tutorId?: string
-  clinicaId?: string
   veterinarioId?: string
 }) {
   const consulta = banco.consultas.find((item) => item.id === consultaId)
   if (!consulta) return 'Consulta não encontrada.'
   if (ator.perfil === 'tutor' && consulta.tutorId !== ator.tutorId) {
     return 'Essa consulta não é sua.'
-  }
-  if (ator.perfil === 'gestor' && consulta.clinicaId !== ator.clinicaId) {
-    return 'Essa consulta é de outra clínica.'
   }
   if (
     ator.perfil === 'veterinario' &&
@@ -415,7 +400,6 @@ export function mudarConsulta(dados: {
   ator: {
     perfil: Perfil
     tutorId?: string
-    clinicaId?: string
     veterinarioId?: string
   }
 }) {
@@ -460,7 +444,6 @@ export function mudarConsulta(dados: {
 
 export function salvarBloqueio(dados: {
   veterinarioId: string
-  clinicaId: string
   inicio: string
   fim: string
   motivo: string
@@ -475,7 +458,6 @@ export function salvarBloqueio(dados: {
     banco.bloqueios.push({
       id: novoId(),
       veterinarioId: dados.veterinarioId,
-      clinicaId: dados.clinicaId,
       inicio: new Date(dados.inicio).toISOString(),
       fim: new Date(dados.fim).toISOString(),
       motivo: dados.motivo.trim(),
@@ -484,17 +466,17 @@ export function salvarBloqueio(dados: {
   return null
 }
 
-export function excluirBloqueio(id: string, clinicaId: string) {
+export function excluirBloqueio(id: string, veterinarioId: string) {
   alterar((banco) => {
     banco.bloqueios = banco.bloqueios.filter(
-      (item) => !(item.id === id && item.clinicaId === clinicaId),
+      (item) => !(item.id === id && item.veterinarioId === veterinarioId),
     )
   })
 }
 
 export function salvarVeterinario(dados: {
   id?: string
-  clinicaId: string
+  cidadeIds: string[]
   nome: string
   email: string
   senha?: string
@@ -507,6 +489,7 @@ export function salvarVeterinario(dados: {
   if (nome.length < 3) return 'Informe o nome.'
   if (!email.includes('@')) return 'Informe um email válido.'
   if (!dados.crmv.trim()) return 'Informe o CRMV.'
+  if (dados.cidadeIds.length === 0) return 'Escolha ao menos uma cidade.'
   if (!dados.id && (dados.senha ?? '').length < 6) {
     return 'A senha inicial precisa ter ao menos 6 caracteres.'
   }
@@ -528,6 +511,7 @@ export function salvarVeterinario(dados: {
       veterinario.nome = nome
       veterinario.crmv = dados.crmv.trim()
       veterinario.especialidade = dados.especialidade.trim() || 'Clínica geral'
+      veterinario.cidadeIds = dados.cidadeIds
       veterinario.ativo = dados.ativo
       usuario.nome = nome
       usuario.email = email
@@ -540,7 +524,7 @@ export function salvarVeterinario(dados: {
     atual.veterinarios.push({
       id: veterinarioId,
       usuarioId,
-      clinicaId: dados.clinicaId,
+      cidadeIds: dados.cidadeIds,
       nome,
       crmv: dados.crmv.trim(),
       especialidade: dados.especialidade.trim() || 'Clínica geral',
@@ -552,7 +536,6 @@ export function salvarVeterinario(dados: {
       email,
       senha: dados.senha || SENHA_DEMO,
       perfil: 'veterinario',
-      clinicaId: dados.clinicaId,
       veterinarioId,
     })
   })
@@ -695,6 +678,11 @@ export function marcarNotificacoes(tutorId: string, id?: string) {
   })
 }
 
-export function clinicaDo(banco: Banco, clinicaId?: string): Clinica | undefined {
-  return banco.clinicas.find((item) => item.id === clinicaId)
+export function excluirNotificacao(tutorId: string, id: string) {
+  alterar((banco) => {
+    banco.notificacoes = banco.notificacoes.filter(
+      (item) => !(item.id === id && item.tutorId === tutorId),
+    )
+  })
 }
+

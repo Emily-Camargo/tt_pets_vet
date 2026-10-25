@@ -3,24 +3,17 @@
 import { Cartao, Pagina, Vazio } from '@/components/ui'
 import { useUsuario } from '@/hooks/banco'
 
-export function Carteira({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
+export function Carteira() {
   const { banco, usuario } = useUsuario()
-  const clinicaId = usuario?.clinicaId ?? ''
-  const consultas = banco.consultas.filter((item) => {
-    if (item.clinicaId !== clinicaId || item.status === 'cancelada') return false
-    if (escopo === 'veterinario') return item.veterinarioId === usuario?.veterinarioId
-    return true
-  })
+  const consultas = banco.consultas.filter(
+    (item) => item.veterinarioId === usuario?.veterinarioId && item.status !== 'cancelada',
+  )
   const tutorIds = [...new Set(consultas.map((item) => item.tutorId))]
 
   return (
     <Pagina
       titulo="Carteira de clientes"
-      descricao={
-        escopo === 'veterinario'
-          ? 'Tutores e pets que você atendeu.'
-          : 'Tutores e pets atendidos pela clínica.'
-      }
+      descricao="Tutores e pets que você atendeu."
     >
       {tutorIds.length === 0 ? (
         <Vazio texto="Nenhum cliente atendido ainda." />
@@ -35,7 +28,7 @@ export function Carteira({ escopo }: { escopo: 'clinica' | 'veterinario' }) {
             ]
             return (
               <Cartao key={tutorId}>
-                <h2 className="font-extrabold">{tutor?.nome}</h2>
+                <h2 className="font-semibold">{tutor?.nome}</h2>
                 <p className="text-sm text-slate-500">{tutor?.email}</p>
                 <ul className="mt-3 space-y-2">
                   {petsIds.map((petId) => {

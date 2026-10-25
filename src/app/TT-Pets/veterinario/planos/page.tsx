@@ -5,6 +5,7 @@ import { useUsuario } from '@/hooks/banco'
 
 export default function Page() {
   const { usuario } = useUsuario()
+  if (!usuario?.veterinarioId) return null
 
-  return <GestaoPlanos clinicaFixa={usuario?.clinicaId} />
+  return <GestaoPlanos veterinarioFixo={usuario.veterinarioId} />
 }

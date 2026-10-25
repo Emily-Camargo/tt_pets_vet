@@ -36,7 +36,7 @@ export function VacinasTutor() {
   return (
     <Pagina
       titulo="Carteira de vacinação"
-      descricao="As doses aplicadas pela clínica e as que você registrar aparecem juntas."
+      descricao="As doses aplicadas pelo veterinário e as que você registrar aparecem juntas."
       acao={<Botao onClick={() => setAberto(true)}>Registrar dose</Botao>}
     >
       <Campo label="Pet">
@@ -55,7 +55,7 @@ export function VacinasTutor() {
         <div className="grid gap-3">
           {vacinas.map((vacina) => (
             <Cartao key={vacina.id}>
-              <h2 className="font-extrabold">{vacina.nome}</h2>
+              <h2 className="font-semibold">{vacina.nome}</h2>
               <p className="text-sm text-slate-500">
                 Aplicada em {dataCurta(vacina.aplicadaEm)} · próxima dose{' '}
                 {dataCurta(vacina.proximaDose)}

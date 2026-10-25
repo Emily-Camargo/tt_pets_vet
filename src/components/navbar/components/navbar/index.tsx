@@ -1,100 +1,92 @@
-import React from 'react'
+'use client'
+
+import { AppBar, IconButton, Toolbar } from '@mui/material'
+import Link from 'next/link'
+import { useState } from 'react'
 import { HiOutlineMenu } from 'react-icons/hi'
-import { AccountCircle, } from '@mui/icons-material'
-import { Box, AppBar, Toolbar, IconButton } from '@mui/material'
-import ContaComponent from '../navbar/usuario'
-import { useNavigate } from 'react-router-dom'
-import logoConsulta from '/assets/logoConsulta.png'
+
+import { destino, rotuloPerfil } from '@/domain/formatacao'
+import { useUsuario } from '@/hooks/banco'
+
+import { SinoNotificacoes } from './notificacoes'
+import ContaComponent from './usuario'
 
 export interface NavbarComponentProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const NavbarComponent = ({ open, setOpen }: NavbarComponentProps) => {
-  const [anchorConta, setAnchorConta] = React.useState<null | HTMLElement>(null)
-  const navigate = useNavigate();
+function iniciais(nome?: string) {
+  if (!nome) return 'TT'
+  return nome
+    .split(' ')
+    .slice(0, 2)
+    .map((parte) => parte[0])
+    .join('')
+    .toUpperCase()
+}
 
-  const handleClickConta = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorConta(event.currentTarget)
-  }
+const NavbarComponent = ({ open, setOpen }: NavbarComponentProps) => {
+  const { usuario } = useUsuario()
+  const [anchorConta, setAnchorConta] = useState<HTMLElement | null>(null)
+  const href = usuario ? destino(usuario.perfil) : '/TT-Pets/login'
 
   return (
-    <Box>
-      <AppBar position="fixed" className="!pr-0 !z-999 !shadow-lg" id="navbar">
-        <Toolbar className="bg-gradient-to-r from-white via-medical-gray-50 to-medical-primary-50 !min-h-16 !h-16 border-b border-medical-gray-200">
+    <>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          bgcolor: '#fff',
+          color: '#0f172a',
+          borderBottom: '1px solid #e8edf3',
+          backgroundImage: 'linear-gradient(90deg, #ffffff 0%, #f8f4fd 100%)',
+          boxShadow: '0 4px 16px rgba(116, 52, 214, 0.08)',
+        }}
+      >
+        <Toolbar sx={{ minHeight: '64px !important', height: 64, px: 2, gap: 0.5 }}>
           <IconButton
-            size="large"
             edge="start"
-            sx={{ 
-              mr: 2,
-              color: '#475569',
-              '&:hover': {
-                backgroundColor: 'rgba(71, 85, 105, 0.1)',
-              }
-            }}
-            id="navbar-hamburguer"
-            aria-label="open drawer"
+            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
             onClick={() => setOpen(!open)}
+            sx={{ color: '#5b4b78' }}
           >
-            <HiOutlineMenu size={25} />
+            <HiOutlineMenu size={24} />
           </IconButton>
-          
+          <Link
+            href={href}
+            className="ml-1 flex items-center gap-2 text-lg font-semibold text-[#7434d6]"
+          >
+            <span className="text-xl" aria-hidden>
+              🐾
+            </span>
+            TT Pets Vet
+          </Link>
+          <div className="flex-1" />
+          <SinoNotificacoes />
           <button
-            id="navbar-logo"
-            className="w-44 h-16 flex items-center justify-start hover:opacity-90 transition-opacity duration-200"
-            onClick={() => navigate('/home')}
-          >
-            <img 
-              src={logoConsulta} 
-              width={250} 
-              height={100}
-              alt="ConsultaCerta Logo"
-              className="object-contain"
-            />
-          </button>
-          
-          <Box sx={{ flexGrow: 1 }} />
-          
-          <div className="hidden lg:flex flex-col items-end mr-6 text-right">
-            <p className="text-medical-gray-800 font-medium text-sm">Bem-vindo de volta!</p>
-            <p className="text-medical-gray-500 text-xs">
-              {new Date().toLocaleDateString('pt-BR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
-          </div>
-          
-          
-          <IconButton
-            size="large"
-            edge="end"
-            id="navbar-menu-user"
-            aria-label="account of current user"
+            type="button"
+            className="flex items-center gap-2 rounded-full py-1 pr-1 pl-2 hover:bg-white/80"
             aria-haspopup="true"
-            sx={{ 
-              color: '#475569',
-              '&:hover': {
-                backgroundColor: 'rgba(71, 85, 105, 0.1)',
-              }
-            }}
-            onClick={handleClickConta}
+            aria-label="Conta"
+            onClick={(evento) => setAnchorConta(evento.currentTarget)}
           >
-            <AccountCircle fontSize="large" />
-          </IconButton>
-          
-          <ContaComponent
-            anchorEl={anchorConta}
-            setAnchorEl={setAnchorConta}
-          />
+            <span className="hidden text-right sm:block">
+              <span className="block text-sm font-medium text-slate-700">{usuario?.nome}</span>
+              <span className="block text-xs text-slate-400">
+                {usuario ? rotuloPerfil(usuario.perfil) : ''}
+              </span>
+            </span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7434d6] text-xs font-medium text-white">
+              {iniciais(usuario?.nome)}
+            </span>
+          </button>
+          <ContaComponent anchorEl={anchorConta} setAnchorEl={setAnchorConta} />
         </Toolbar>
       </AppBar>
-        <div className="!min-h-16 !h-16" />
-    </Box>
+      <div className="h-16" />
+    </>
   )
 }
 
-export default React.memo(NavbarComponent)
+export default NavbarComponent

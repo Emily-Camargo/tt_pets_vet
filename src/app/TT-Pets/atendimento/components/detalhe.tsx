@@ -40,10 +40,9 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
   const [ok, setOk] = useState<string | null>(null)
 
   if (!consulta || !usuario) return <p>Consulta não encontrada.</p>
-  const daClinica = consulta.clinicaId === usuario.clinicaId
-  const doVet = consulta.veterinarioId === usuario.veterinarioId
-  if (usuario.perfil === 'veterinario' && !doVet) return <p>Consulta de outro veterinário.</p>
-  if (usuario.perfil === 'gestor' && !daClinica) return <p>Consulta de outra clínica.</p>
+  if (consulta.veterinarioId !== usuario.veterinarioId) {
+    return <p>Consulta de outro veterinário.</p>
+  }
 
   const vetId = consulta.veterinarioId
   const pet = banco.pets.find((item) => item.id === consulta.petId)
@@ -67,7 +66,7 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
       <div className="space-y-4">
         <Cartao>
-          <h1 className="text-2xl font-extrabold">{pet?.nome}</h1>
+          <h1 className="text-2xl font-semibold">{pet?.nome}</h1>
           <p className="text-sm text-slate-500">
             {pet?.especie} · {pet?.raca} · tutor {tutor?.nome}
           </p>
@@ -78,7 +77,7 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
         <Ok texto={ok} />
         <Aviso texto={erro} />
         <Cartao>
-          <h2 className="font-extrabold">Chat de apoio</h2>
+          <h2 className="font-semibold">Chat de apoio</h2>
           <p className="mb-3 text-sm text-slate-500">
             Demonstração local. Não chama um modelo externo.
           </p>
@@ -88,7 +87,7 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
                 key={mensagem.id}
                 className={
                   mensagem.autor === 'ia'
-                    ? 'rounded-2xl bg-rose-50 p-3 text-sm'
+                    ? 'rounded-2xl bg-marca-clara p-3 text-sm'
                     : 'rounded-2xl bg-slate-100 p-3 text-sm'
                 }
               >
@@ -100,8 +99,8 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
             ))}
           </div>
           {sugestoes.map((sugestao) => (
-            <div key={sugestao.titulo} className="mb-2 rounded-2xl border border-rose-100 p-3">
-              <p className="text-sm font-bold text-rose-700">{sugestao.titulo}</p>
+            <div key={sugestao.titulo} className="mb-2 rounded-2xl border border-marca-borda p-3">
+              <p className="text-sm font-bold text-marca-forte">{sugestao.titulo}</p>
               <p className="text-sm text-slate-600">{sugestao.conteudo}</p>
               <Botao className="mt-2" variante="outline" onClick={() => aplicarSugestao(sugestao)}>
                 Usar no formulário
@@ -207,7 +206,7 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
         </Cartao>
         <Botao
           className="w-full"
-          disabled={encerrada || usuario.perfil !== 'veterinario'}
+          disabled={encerrada}
           onClick={() => {
             const falha = concluirConsulta(consultaId, vetId)
             setErro(falha)
@@ -216,11 +215,6 @@ export function DetalheAtendimento({ consultaId }: { consultaId: string }) {
         >
           Concluir atendimento
         </Botao>
-        {usuario.perfil === 'gestor' && (
-          <p className="text-xs text-slate-400">
-            A conclusão fica com o veterinário responsável. Você pode revisar e salvar os registros.
-          </p>
-        )}
       </div>
     </div>
   )

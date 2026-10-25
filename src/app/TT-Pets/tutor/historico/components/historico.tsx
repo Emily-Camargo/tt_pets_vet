@@ -39,7 +39,7 @@ export function HistoricoTutor() {
             const receitas = banco.receitas.filter((item) => item.consultaId === consulta.id)
             return (
               <Cartao key={consulta.id}>
-                <h2 className="font-extrabold">{consulta.motivo}</h2>
+                <h2 className="font-semibold">{consulta.motivo}</h2>
                 <p className="text-sm text-slate-500">
                   {dataHora(consulta.dataHora)} · {vet?.nome}
                 </p>
@@ -55,7 +55,7 @@ export function HistoricoTutor() {
                     <p className="text-sm text-slate-500">Nenhuma receita nesta consulta.</p>
                   )}
                   {receitas.map((receita) => (
-                    <p key={receita.id} className="rounded-2xl bg-rose-50 p-3 text-sm text-slate-700">
+                    <p key={receita.id} className="rounded-2xl bg-marca-clara p-3 text-sm text-slate-700">
                       {receita.texto}
                     </p>
                   ))}

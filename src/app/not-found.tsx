@@ -4,7 +4,7 @@ export default function NaoEncontrada() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3">
       <p className="text-lg font-bold">Página não encontrada</p>
-      <Link href="/TT-Pets/login" className="font-bold text-rose-600">
+      <Link href="/TT-Pets/login" className="font-medium text-marca">
         Ir para o login
       </Link>
     </div>
