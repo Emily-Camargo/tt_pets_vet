@@ -1,0 +1,37 @@
+{
+    "terminal.integrated.autoReplies": {},
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.shellIntegration.enabled": true,
+    "debug.disassemblyView.showSourceCode": false,
+    "eslint.format.enable": true,
+    "eslint.notebooks.rules.customizations": [],
+    "editor.insertSpaces": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    "eslint.codeActionsOnSave.rules": null,
+    "editor.stickyScroll.enabled": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "explorer.confirmDelete": false,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "css.lint.unknownAtRules": "ignore",
+    "files.eol": "\r\n",
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#7B2CBF",
+      "titleBar.activeBackground": "#7B2CBF",
+      "titleBar.inactiveBackground": "#7B2CBF",
+      "titleBar.activeForeground": "#ffffff",
+      "titleBar.inactiveForeground": "#ffffff"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+      "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    }
+  }
