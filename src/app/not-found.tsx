@@ -1,12 +1,13 @@
+import { Button } from '@mantine/core'
 import Link from 'next/link'
 
-export default function NaoEncontrada() {
+export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3">
-      <p className="text-lg font-bold">Página não encontrada</p>
-      <Link href="/TT-Pets/login" className="font-medium text-marca">
+      <p className="text-lg font-semibold">Página não encontrada</p>
+      <Button component={Link} href="/login" color="#7434d6">
         Ir para o login
-      </Link>
+      </Button>
     </div>
   )
 }

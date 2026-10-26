@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 7007",
+    "dev": "next dev -p 7017",
     "build": "next build",
-    "start": "next start -p 7007",
+    "start": "next start -p 7017",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit"
   },
@@ -14,6 +14,7 @@
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@grazziotin/react-components-next": "^3.1.16",
     "@heroicons/react": "^2.2.0",
     "@mantine/carousel": "^9.2.0",
     "@mantine/core": "^9.2.0",
