@@ -26,7 +26,8 @@ export function CardPlan({
     <article
       className={cn(
         'relative flex h-full flex-col rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-sm',
-        plan.destaque && 'z-10 border-2 border-[#7434d6] bg-gradient-to-b from-[#f6f1fc] to-white',
+        plan.destaque &&
+          'z-10 border-2 border-[#7434d6] bg-gradient-to-b from-[#f6f1fc] to-white',
       )}
     >
       {plan.destaque && (
@@ -34,7 +35,12 @@ export function CardPlan({
           Mais vendido
         </span>
       )}
-      <div className={cn('mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl', art.background)}>
+      <div
+        className={cn(
+          'mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl',
+          art.background,
+        )}
+      >
         {art.emoji}
       </div>
       <Text fw={600} size="xl" mt="md">
@@ -66,7 +72,10 @@ export function CardPlan({
           {plan.servicos.map((service) => (
             <li
               key={service.nome}
-              className={cn('flex gap-2 text-sm', service.incluso ? 'text-slate-700' : 'text-slate-300')}
+              className={cn(
+                'flex gap-2 text-sm',
+                service.incluso ? 'text-slate-700' : 'text-slate-300',
+              )}
             >
               <span>{service.incluso ? '✓' : '×'}</span>
               {service.nome}

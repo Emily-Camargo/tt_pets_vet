@@ -43,7 +43,13 @@ export function RegisterForm() {
       feedback('A confirmação da senha não confere.', '')
       return
     }
-    const error = cadastrarTutor({ nome: name, cpf: document, telefone: phone, email, senha: password })
+    const error = cadastrarTutor({
+      nome: name,
+      cpf: document,
+      telefone: phone,
+      email,
+      senha: password,
+    })
     if (error) {
       feedback(error, '')
       return
@@ -65,7 +71,12 @@ export function RegisterForm() {
       <Progress value={step === 1 ? 46 : 100} color="#7434d6" mt="md" />
       {step === 1 ? (
         <form className="mt-8 flex flex-col gap-3" onSubmit={next}>
-          <Input label="Nome completo" value={name} required onChange={(event) => setName(event.target.value)} />
+          <Input
+            label="Nome completo"
+            value={name}
+            required
+            onChange={(event) => setName(event.target.value)}
+          />
           <Input
             label="CPF"
             type="cpf-cnpj"

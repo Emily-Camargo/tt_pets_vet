@@ -77,12 +77,16 @@ export function PlanShowcase() {
             onSubmit={(event) => {
               event.preventDefault()
               const error = contratarPlano({ petId, planoId: plan.id, tutorId })
-              feedback(error, `${plan.nome} contratado. O pagamento foi simulado.`)
+              feedback(
+                error,
+                `${plan.nome} contratado. O pagamento foi simulado.`,
+              )
               if (!error) setPlanId(null)
             }}
           >
             <Text size="sm" c="dimmed">
-              {moeda(plan.precoMensal)} por mês · {nomeVeterinario(banco, plan.veterinarioId)}
+              {moeda(plan.precoMensal)} por mês ·{' '}
+              {nomeVeterinario(banco, plan.veterinarioId)}
             </Text>
             {pets.length === 0 ? (
               <Text size="sm" c="dimmed">
@@ -98,10 +102,18 @@ export function PlanShowcase() {
               />
             )}
             <div className="flex gap-2">
-              <Button variant="outline" color="gray" onClick={() => setPlanId(null)}>
+              <Button
+                variant="outline"
+                color="gray"
+                onClick={() => setPlanId(null)}
+              >
                 Cancelar
               </Button>
-              <Button type="submit" color="#7434d6" disabled={pets.length === 0}>
+              <Button
+                type="submit"
+                color="#7434d6"
+                disabled={pets.length === 0}
+              >
                 Pagar agora
               </Button>
             </div>

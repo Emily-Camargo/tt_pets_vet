@@ -62,12 +62,19 @@ export function LoginForm() {
           Entrar
         </Button>
       </form>
-      <Button variant="subtle" color="#7434d6" fullWidth mt="sm" onClick={() => setHint((current) => !current)}>
+      <Button
+        variant="subtle"
+        color="#7434d6"
+        fullWidth
+        mt="sm"
+        onClick={() => setHint((current) => !current)}
+      >
         Esqueceu sua senha?
       </Button>
       {hint && (
         <Text size="xs" c="dimmed" ta="center">
-          Nas contas de exemplo a senha é {SENHA_DEMO}. Se você criou a sua, use a senha do cadastro.
+          Nas contas de exemplo a senha é {SENHA_DEMO}. Se você criou a sua, use
+          a senha do cadastro.
         </Text>
       )}
       <Text size="sm" ta="center" mt="md">

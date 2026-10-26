@@ -23,11 +23,19 @@ export function AccessPanel({ mode }: { mode: 'login' | 'register' }) {
         </ul>
       ) : (
         <Text c="white" mt="md" maw={360}>
-          Planos mensais, consulta em domicílio, vacinas e o histórico do pet em um só lugar.
+          Planos mensais, consulta em domicílio, vacinas e o histórico do pet em
+          um só lugar.
         </Text>
       )}
       {register && (
-        <Button component={Link} href="/login" variant="white" color="#7434d6" mt="xl" radius="xl">
+        <Button
+          component={Link}
+          href="/login"
+          variant="white"
+          color="#7434d6"
+          mt="xl"
+          radius="xl"
+        >
           Voltar para Login
         </Button>
       )}

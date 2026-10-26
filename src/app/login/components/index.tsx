@@ -17,7 +17,8 @@ export function Access({ mode }: { mode: 'login' | 'register' }) {
   const register = mode === 'register'
 
   useEffect(() => {
-    if (mode === 'login' && pronto && usuario) router.replace(destino(usuario.perfil))
+    if (mode === 'login' && pronto && usuario)
+      router.replace(destino(usuario.perfil))
   }, [mode, pronto, usuario, router])
 
   if (mode === 'login' && !pronto) {
@@ -29,7 +30,9 @@ export function Access({ mode }: { mode: 'login' | 'register' }) {
   }
 
   return (
-    <div className={`flex min-h-screen flex-col bg-white lg:flex-row ${register ? 'lg:flex-row-reverse' : ''}`}>
+    <div
+      className={`flex min-h-screen flex-col bg-white lg:flex-row ${register ? 'lg:flex-row-reverse' : ''}`}
+    >
       <section className="flex min-h-screen flex-1 flex-col items-center justify-center px-6 py-10">
         {register ? <RegisterForm /> : <LoginForm />}
       </section>

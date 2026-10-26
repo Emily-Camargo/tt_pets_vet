@@ -35,16 +35,32 @@ export function AdminHome({ bank, user }: { bank: Banco; user: Usuario }) {
       </Group>
       <Grid container spacing={1.5}>
         <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric label="Veterinários ativos" value={String(active.length)} detail={`${bank.veterinarios.length - active.length} inativos`} />
+          <CardMetric
+            label="Veterinários ativos"
+            value={String(active.length)}
+            detail={`${bank.veterinarios.length - active.length} inativos`}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric label="Receita dos planos" value={moeda(revenue)} detail="Soma das assinaturas ativas" />
+          <CardMetric
+            label="Receita dos planos"
+            value={moeda(revenue)}
+            detail="Soma das assinaturas ativas"
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric label="Planos ativos" value={String(activePlans)} detail={`${bank.planos.length} cadastrados`} />
+          <CardMetric
+            label="Planos ativos"
+            value={String(activePlans)}
+            detail={`${bank.planos.length} cadastrados`}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric label="Tutores e pets" value={`${bank.tutores.length} · ${bank.pets.length}`} detail="contas de exemplo" />
+          <CardMetric
+            label="Tutores e pets"
+            value={`${bank.tutores.length} · ${bank.pets.length}`}
+            detail="contas de exemplo"
+          />
         </Grid>
       </Grid>
       <Card title="Veterinários" titleColor="#7434d6" borderRadius="16px">
@@ -52,7 +68,9 @@ export function AdminHome({ bank, user }: { bank: Banco; user: Usuario }) {
           {bank.veterinarios.map((vet) => (
             <Group key={vet.id} justify="space-between">
               <Text size="sm">{vet.nome}</Text>
-              <Badge color={vet.ativo ? 'teal' : 'yellow'}>{vet.ativo ? 'Ativo' : 'Inativo'}</Badge>
+              <Badge color={vet.ativo ? 'teal' : 'yellow'}>
+                {vet.ativo ? 'Ativo' : 'Inativo'}
+              </Badge>
             </Group>
           ))}
         </div>
