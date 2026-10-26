@@ -2,6 +2,14 @@
 
 @layer theme, base, mui, components, utilities;
 
+@theme {
+  --color-marca: #7434d6;
+  --color-marca-forte: #5f28b8;
+  --color-marca-clara: #f6f1fc;
+  --color-marca-anel: #efe4ff;
+  --color-marca-borda: #e4d4f7;
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;

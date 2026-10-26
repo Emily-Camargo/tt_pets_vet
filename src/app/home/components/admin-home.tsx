@@ -1,15 +1,24 @@
 'use client'
 
-import { Card } from '@grazziotin/react-components-next/ui'
-import { Badge, Button, Group, Text, Title } from '@mantine/core'
-import Grid from '@mui/material/Grid'
-import Link from 'next/link'
+import {
+  LocationOn,
+  MedicalServices,
+  Pets,
+  WorkspacePremium,
+} from '@mui/icons-material'
 
-import { moeda } from '@/core/functions/format'
+import { cx, moeda } from '@/core/functions/format'
 import type { Banco, Usuario } from '@/core/interfaces/types'
 
-import { CardMetric } from './card-metric'
-import { CardShortcut } from './card-shortcut'
+import {
+  Bars,
+  Hero,
+  HomeFrame,
+  Metric,
+  Panel,
+  PanelHead,
+  Shortcut,
+} from './frame'
 import { firstName } from '../utils/functions'
 
 export function AdminHome({ bank, user }: { bank: Banco; user: Usuario }) {
@@ -21,71 +30,135 @@ export function AdminHome({ bank, user }: { bank: Banco; user: Usuario }) {
       return total + (plan?.precoMensal ?? 0)
     }, 0)
   const activePlans = bank.planos.filter((item) => item.ativo).length
+  const bars = bank.veterinarios.map((vet) => ({
+    label: firstName(vet.nome),
+    value: bank.planos.filter(
+      (item) => item.veterinarioId === vet.id && item.ativo,
+    ).length,
+  }))
 
   return (
-    <div className="space-y-4">
-      <Title order={2}>Olá, {firstName(user.nome)}</Title>
-      <Text c="dimmed" size="sm">
-        Admin da plataforma · Veterinários, cidades e planos.
-      </Text>
-      <Group>
-        <Button component={Link} href="/admin/veterinarians" color="#7434d6">
-          Cadastrar veterinário
-        </Button>
-      </Group>
-      <Grid container spacing={1.5}>
-        <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric
-            label="Veterinários ativos"
-            value={String(active.length)}
-            detail={`${bank.veterinarios.length - active.length} inativos`}
+    <HomeFrame>
+      <Hero
+        profile="Admin da plataforma"
+        name={firstName(user.nome)}
+        text="Veterinários, cidades e planos da plataforma num só painel."
+        mascot="paws"
+        chips={[
+          `${active.length} ${active.length === 1 ? 'veterinário ativo' : 'veterinários ativos'}`,
+          `${bank.cidades.length} ${bank.cidades.length === 1 ? 'cidade' : 'cidades'}`,
+          '3 perfis de acesso',
+        ]}
+        primary={{
+          href: '/admin/veterinarians',
+          label: '+ Cadastrar veterinário',
+        }}
+        secondary={{ href: '/admin/veterinarians', label: 'Ver veterinários' }}
+      />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Metric
+          icon={<MedicalServices sx={{ fontSize: 18 }} />}
+          tone="bg-marca-anel text-marca"
+          label="Veterinários ativos"
+          value={String(active.length)}
+          detail={`${bank.veterinarios.length - active.length} inativos`}
+        />
+        <Metric
+          icon={<span className="text-base">💰</span>}
+          tone="bg-emerald-50 text-emerald-600"
+          label="Receita dos planos"
+          value={moeda(revenue)}
+          detail="Soma das assinaturas ativas"
+        />
+        <Metric
+          icon={<WorkspacePremium sx={{ fontSize: 18 }} />}
+          tone="bg-sky-50 text-sky-600"
+          label="Planos ativos"
+          value={String(activePlans)}
+          detail={`${bank.planos.length} cadastrados`}
+        />
+        <Metric
+          icon={<Pets sx={{ fontSize: 18 }} />}
+          tone="bg-amber-50 text-amber-600"
+          label="Tutores e pets"
+          value={`${bank.tutores.length} · ${bank.pets.length}`}
+          detail="contas de exemplo"
+        />
+      </div>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <Panel>
+          <PanelHead
+            title="Veterinários"
+            href="/admin/veterinarians"
+            action="Gerenciar"
           />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric
-            label="Receita dos planos"
-            value={moeda(revenue)}
-            detail="Soma das assinaturas ativas"
+          <ul className="mt-2 divide-y divide-slate-100">
+            {bank.veterinarios.map((vet) => {
+              const cities = vet.cidadeIds
+                .map((id) => bank.cidades.find((item) => item.id === id)?.nome)
+                .filter(Boolean)
+                .join(' e ')
+              const plans = bank.planos.filter(
+                (item) => item.veterinarioId === vet.id,
+              ).length
+              return (
+                <li
+                  key={vet.id}
+                  className="flex items-center justify-between gap-3 py-3"
+                >
+                  <span>
+                    <span className="block text-sm font-semibold text-slate-800">
+                      {vet.nome}
+                    </span>
+                    <span className="block text-xs text-slate-400">
+                      {cities || 'Sem cidade'} · {plans}{' '}
+                      {plans === 1 ? 'plano' : 'planos'}
+                    </span>
+                  </span>
+                  <span
+                    className={cx(
+                      'rounded-full px-2 py-0.5 text-[11px] font-medium',
+                      vet.ativo
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : 'bg-amber-50 text-amber-700',
+                    )}
+                  >
+                    {vet.ativo ? 'Ativo' : 'Inativo'}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </Panel>
+        <Panel>
+          <PanelHead
+            title="Planos por veterinário"
+            href="/admin/plans"
+            action="Gerenciar"
           />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric
-            label="Planos ativos"
-            value={String(activePlans)}
-            detail={`${bank.planos.length} cadastrados`}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, xl: 3 }}>
-          <CardMetric
-            label="Tutores e pets"
-            value={`${bank.tutores.length} · ${bank.pets.length}`}
-            detail="contas de exemplo"
-          />
-        </Grid>
-      </Grid>
-      <Card title="Veterinários" titleColor="#7434d6" borderRadius="16px">
-        <div className="space-y-2 p-4">
-          {bank.veterinarios.map((vet) => (
-            <Group key={vet.id} justify="space-between">
-              <Text size="sm">{vet.nome}</Text>
-              <Badge color={vet.ativo ? 'teal' : 'yellow'}>
-                {vet.ativo ? 'Ativo' : 'Inativo'}
-              </Badge>
-            </Group>
-          ))}
-        </div>
-      </Card>
-      <Grid container spacing={1.5}>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <CardShortcut href="/admin/veterinarians" label="Veterinários" />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <CardShortcut href="/admin/cities" label="Cidades" />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 4 }}>
-          <CardShortcut href="/admin/plans" label="Planos" />
-        </Grid>
-      </Grid>
-    </div>
+          <Bars items={bars} />
+        </Panel>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Shortcut
+          href="/admin/veterinarians"
+          icon={<MedicalServices sx={{ fontSize: 18 }} />}
+          tone="bg-marca-anel text-marca"
+          label="Veterinários"
+        />
+        <Shortcut
+          href="/admin/cities"
+          icon={<LocationOn sx={{ fontSize: 18 }} />}
+          tone="bg-sky-50 text-sky-600"
+          label="Cidades"
+        />
+        <Shortcut
+          href="/admin/plans"
+          icon={<WorkspacePremium sx={{ fontSize: 18 }} />}
+          tone="bg-amber-50 text-amber-600"
+          label="Planos"
+        />
+      </div>
+    </HomeFrame>
   )
 }
