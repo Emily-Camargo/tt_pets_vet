@@ -26,11 +26,9 @@ export function PlanShowcase() {
   const pet = pets.find((item) => item.id === petId) ?? null
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col items-center">
-      <Title order={2} ta="center">
-        Planos de atendimento domiciliar
-      </Title>
-      <Text c="dimmed" ta="center" mt={8}>
+    <div className="flex w-full flex-col">
+      <Title order={2}>Planos de atendimento domiciliar</Title>
+      <Text c="dimmed" mt={8}>
         Escolha a cidade para ver os planos disponíveis
       </Text>
       <div className="mt-6 w-full max-w-xs">

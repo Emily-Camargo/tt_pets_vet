@@ -1,51 +1,121 @@
 'use client'
 
-import { Card } from '@grazziotin/react-components-next/ui'
-import { Button, Group, Text } from '@mantine/core'
+import Link from 'next/link'
+
+import { cx } from '@/core/functions/format'
+import type { Consulta, Pet, Vacina } from '@/core/interfaces/types'
+
+import {
+  ageLabel,
+  lastVisitLabel,
+  neuteredLabel,
+  nextAppointmentBadge,
+  petEmoji,
+  vaccineBadge,
+} from '../utils/functions'
 
 export function CardPet({
-  name,
-  photo,
-  detail,
-  birth,
-  plan,
+  pet,
+  vaccines,
+  appointments,
   onEdit,
-  onDelete,
 }: {
-  name: string
-  photo?: string
-  detail: string
-  birth: string
-  plan: string
+  pet: Pet
+  vaccines: Vacina[]
+  appointments: Consulta[]
   onEdit: () => void
-  onDelete: () => void
 }) {
+  const vaccine = vaccineBadge(vaccines)
+  const visit = nextAppointmentBadge(appointments)
+
   return (
-    <Card title={name} titleColor="#7434d6" borderRadius="16px">
-      <Group align="flex-start" p="md" wrap="nowrap">
-        <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[#f6f1fc] text-xl font-semibold text-[#7434d6]">
-          {photo ? <img src={photo} alt="" className="h-full w-full object-cover" /> : name.slice(0, 1)}
+    <article className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex gap-4">
+          <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-[#f6f1fc] text-3xl">
+            {pet.foto ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={pet.foto}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              petEmoji(pet.especie)
+            )}
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-slate-900">{pet.nome}</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              {pet.especie} · {pet.raca} · {pet.sexo} · {neuteredLabel(pet)}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span
+                className={cx(
+                  'rounded-full px-2.5 py-1 text-[11px] font-medium',
+                  vaccine.tone,
+                )}
+              >
+                {vaccine.label}
+              </span>
+              <span
+                className={cx(
+                  'rounded-full px-2.5 py-1 text-[11px] font-medium',
+                  visit.tone,
+                )}
+              >
+                {visit.label}
+              </span>
+            </div>
+          </div>
         </div>
-        <div>
-          <Text size="sm" c="dimmed">
-            {detail}
-          </Text>
-          <Text size="sm" c="dimmed">
-            {birth}
-          </Text>
-          <Text size="sm" fw={600} c="#7434d6" mt={4}>
-            {plan}
-          </Text>
-          <Group mt="sm" gap="xs">
-            <Button variant="outline" color="#7434d6" onClick={onEdit}>
-              Editar
-            </Button>
-            <Button variant="light" color="red" onClick={onDelete}>
-              Excluir
-            </Button>
-          </Group>
-        </div>
-      </Group>
-    </Card>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-4">
+        <Stat label="Idade" value={ageLabel(pet.nascimento)} />
+        <Stat label="Peso" value={`${pet.peso} kg`} />
+        <Stat label="Microchip" value={pet.microchip ?? 'Não informado'} />
+        <Stat label="Última consulta" value={lastVisitLabel(appointments)} />
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link
+          href="/tutor/appointments"
+          className="rounded-full bg-marca px-4 py-2 text-sm font-medium text-white hover:bg-marca-forte"
+        >
+          Agendar consulta
+        </Link>
+        <Link
+          href="/tutor/vaccines"
+          className="rounded-full border border-marca bg-white px-4 py-2 text-sm font-medium text-marca hover:bg-marca-clara"
+        >
+          Carteira de vacinação
+        </Link>
+        <Link
+          href="/tutor/history"
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          Histórico e receitas
+        </Link>
+        <button
+          type="button"
+          onClick={onEdit}
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          Editar
+        </button>
+      </div>
+    </article>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+    </div>
   )
 }

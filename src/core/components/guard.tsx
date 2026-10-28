@@ -23,7 +23,8 @@ export function Guard({
   useEffect(() => {
     if (!pronto) return
     if (!usuario) router.replace('/login')
-    else if (!profiles.includes(usuario.perfil)) router.replace(destino(usuario.perfil))
+    else if (!profiles.includes(usuario.perfil))
+      router.replace(destino(usuario.perfil))
   }, [pronto, usuario, profiles, router])
 
   if (!pronto || !usuario || !profiles.includes(usuario.perfil)) {
@@ -37,7 +38,7 @@ export function Guard({
   return (
     <div className="min-h-screen bg-slate-50">
       <AppNavbar />
-      <main className="mx-auto w-full max-w-6xl px-4 py-6">{children}</main>
+      <main className="w-full px-4 py-6 sm:px-6 lg:px-8">{children}</main>
     </div>
   )
 }

@@ -1,11 +1,7 @@
 export type Perfil = 'admin' | 'veterinario' | 'tutor'
 
 export type StatusConsulta =
-  | 'agendada'
-  | 'confirmada'
-  | 'remarcada'
-  | 'cancelada'
-  | 'realizada'
+  'agendada' | 'confirmada' | 'remarcada' | 'cancelada' | 'realizada'
 
 export interface Cidade {
   id: string
@@ -48,6 +44,7 @@ export interface Tutor {
   cpf: string
   telefone: string
   email: string
+  endereco?: string
 }
 
 export interface Pet {
@@ -56,8 +53,12 @@ export interface Pet {
   nome: string
   especie: string
   raca: string
+  sexo: 'Macho' | 'Fêmea'
+  castrado: boolean
   nascimento: string
   peso: number
+  microchip?: string
+  observacoes?: string
   foto?: string
 }
 
@@ -98,6 +99,8 @@ export interface Consulta {
   dataHora: string
   status: StatusConsulta
   motivo: string
+  tipo?: string
+  endereco?: string
 }
 
 export interface MensagemChat {
@@ -116,11 +119,30 @@ export interface Prontuario {
   criadoEm: string
 }
 
+export interface ItemReceita {
+  nome: string
+  uso: string
+}
+
 export interface Receita {
   id: string
   consultaId: string
   petId: string
   texto: string
+  itens?: ItemReceita[]
+  ativo?: boolean
+  inicio?: string
+  fim?: string
+  diasTotais?: number
+  criadoEm: string
+}
+
+export interface Exame {
+  id: string
+  petId: string
+  consultaId?: string
+  nome: string
+  resultado: string
   criadoEm: string
 }
 
@@ -128,8 +150,10 @@ export interface Vacina {
   id: string
   petId: string
   nome: string
-  aplicadaEm: string
-  proximaDose: string
+  dose?: string
+  lote?: string
+  aplicadaEm?: string
+  proximaDose?: string
   veterinarioId?: string
   consultaId?: string
 }
@@ -158,6 +182,7 @@ export interface Banco {
   mensagens: MensagemChat[]
   prontuarios: Prontuario[]
   receitas: Receita[]
+  exames: Exame[]
   vacinas: Vacina[]
   notificacoes: Notificacao[]
 }

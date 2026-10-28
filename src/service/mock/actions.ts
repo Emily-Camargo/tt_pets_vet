@@ -249,12 +249,17 @@ export function salvarPet(dados: {
   nome: string
   especie: string
   raca: string
+  sexo: 'Macho' | 'Fêmea'
+  castrado: boolean
   nascimento: string
   peso: number
+  microchip?: string
+  observacoes?: string
   foto?: string
 }) {
   if (dados.nome.trim().length < 2) return 'Informe o nome do pet.'
   if (!dados.especie || !dados.raca.trim()) return 'Informe espécie e raça.'
+  if (!dados.sexo) return 'Informe o sexo.'
   if (!dados.nascimento) return 'Informe o nascimento.'
   if (dados.peso <= 0) return 'Informe o peso.'
 
@@ -265,8 +270,12 @@ export function salvarPet(dados: {
       pet.nome = dados.nome.trim()
       pet.especie = dados.especie
       pet.raca = dados.raca.trim()
+      pet.sexo = dados.sexo
+      pet.castrado = dados.castrado
       pet.nascimento = dados.nascimento
       pet.peso = dados.peso
+      pet.microchip = dados.microchip?.trim() || undefined
+      pet.observacoes = dados.observacoes?.trim() || undefined
       pet.foto = dados.foto
       return
     }
@@ -276,8 +285,12 @@ export function salvarPet(dados: {
       nome: dados.nome.trim(),
       especie: dados.especie,
       raca: dados.raca.trim(),
+      sexo: dados.sexo,
+      castrado: dados.castrado,
       nascimento: dados.nascimento,
       peso: dados.peso,
+      microchip: dados.microchip?.trim() || undefined,
+      observacoes: dados.observacoes?.trim() || undefined,
       foto: dados.foto,
     })
   })
@@ -347,9 +360,11 @@ export function contratarPlano(dados: {
 
 export function agendarConsulta(dados: {
   petId: string
-  veterinarioId: string
+  veterinarioId?: string
   dataHora: string
   motivo: string
+  tipo?: string
+  endereco?: string
 }) {
   const banco = bancoAtual()
   const bloqueio = motivoBloqueioAgendamento(banco, dados.petId)
@@ -361,9 +376,10 @@ export function agendarConsulta(dados: {
   )
   if (!assinatura) return 'Este pet precisa de um plano ativo.'
 
-  const veterinario = veterinariosDisponiveis(banco, assinatura.cidadeId).find(
-    (item) => item.id === dados.veterinarioId,
-  )
+  const disponiveis = veterinariosDisponiveis(banco, assinatura.cidadeId)
+  const veterinario = dados.veterinarioId
+    ? disponiveis.find((item) => item.id === dados.veterinarioId)
+    : disponiveis[0]
   if (!veterinario)
     return 'Escolha um veterinário que atenda a cidade do plano.'
   if (horarioOcupado(banco, veterinario.id, dados.dataHora)) {
@@ -372,6 +388,7 @@ export function agendarConsulta(dados: {
 
   const pet = banco.pets.find((item) => item.id === dados.petId)
   if (!pet) return 'Pet não encontrado.'
+  const tutor = banco.tutores.find((item) => item.id === pet.tutorId)
 
   alterar((atual) => {
     atual.consultas.push({
@@ -383,6 +400,8 @@ export function agendarConsulta(dados: {
       dataHora: dados.dataHora,
       status: 'agendada',
       motivo: dados.motivo.trim(),
+      tipo: dados.tipo?.trim() || 'Consulta em domicílio',
+      endereco: dados.endereco?.trim() || tutor?.endereco,
     })
     notificar(
       atual,
@@ -656,14 +675,17 @@ export function salvarReceita(
 export function salvarVacina(dados: {
   petId: string
   nome: string
-  aplicadaEm: string
-  proximaDose: string
+  dose?: string
+  lote?: string
+  aplicadaEm?: string
+  proximaDose?: string
   veterinarioId?: string
   consultaId?: string
   tutorId?: string
 }) {
-  if (!dados.nome.trim() || !dados.aplicadaEm || !dados.proximaDose) {
-    return 'Preencha nome, aplicação e próxima dose.'
+  if (!dados.nome.trim()) return 'Informe o nome da vacina.'
+  if (!dados.aplicadaEm && !dados.proximaDose) {
+    return 'Informe a aplicação ou a próxima dose.'
   }
   const pet = bancoAtual().pets.find((item) => item.id === dados.petId)
   if (!pet) return 'Pet não encontrado.'
@@ -675,8 +697,10 @@ export function salvarVacina(dados: {
       id: novoId(),
       petId: dados.petId,
       nome: dados.nome.trim(),
-      aplicadaEm: dados.aplicadaEm,
-      proximaDose: dados.proximaDose,
+      dose: dados.dose?.trim() || undefined,
+      lote: dados.lote?.trim() || undefined,
+      aplicadaEm: dados.aplicadaEm || undefined,
+      proximaDose: dados.proximaDose || undefined,
       veterinarioId: dados.veterinarioId,
       consultaId: dados.consultaId,
     })

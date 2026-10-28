@@ -31,8 +31,10 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
   const next = appointments[0]
   const nextPet = bank.pets.find((item) => item.id === next?.petId)
   const vaccines = bank.vacinas
-    .filter((item) => pets.some((pet) => pet.id === item.petId))
-    .map((item) => ({ ...item, days: daysUntil(item.proximaDose) }))
+    .filter(
+      (item) => pets.some((pet) => pet.id === item.petId) && item.proximaDose,
+    )
+    .map((item) => ({ ...item, days: daysUntil(item.proximaDose!) }))
     .filter((item) => item.days <= 30)
     .sort((a, b) => a.days - b.days)
   const subscriptions = bank.assinaturas.filter(
@@ -87,7 +89,7 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
       when: `${item.proximaDose}T12:00:00`,
       title: `Vacina ${item.nome} · ${bank.pets.find((pet) => pet.id === item.petId)?.nome ?? 'Pet'}`,
       detail:
-        item.days <= 0 ? 'Vence hoje' : `Vence ${inDays(item.proximaDose)}`,
+        item.days <= 0 ? 'Vence hoje' : `Vence ${inDays(item.proximaDose!)}`,
     })),
   ]
     .sort((a, b) => a.when.localeCompare(b.when))
@@ -113,7 +115,7 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
           label: 'Ver carteira de vacinação',
         }}
       />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           icon={<CalendarMonth sx={{ fontSize: 18 }} />}
           tone="bg-marca-anel text-marca"
@@ -131,7 +133,7 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
           label="Vacinas a vencer"
           value={
             vaccines[0]
-              ? `${vaccines.length} ${inDays(vaccines[0].proximaDose)}`
+              ? `${vaccines.length} ${inDays(vaccines[0].proximaDose!)}`
               : 'Em dia'
           }
           detail={
@@ -167,9 +169,11 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {pets.slice(0, 2).map((pet) => {
               const vaccine = bank.vacinas
-                .filter((item) => item.petId === pet.id)
-                .sort((a, b) => b.proximaDose.localeCompare(a.proximaDose))[0]
-              const days = vaccine ? daysUntil(vaccine.proximaDose) : null
+                .filter((item) => item.petId === pet.id && item.proximaDose)
+                .sort((a, b) => b.proximaDose!.localeCompare(a.proximaDose!))[0]
+              const days = vaccine?.proximaDose
+                ? daysUntil(vaccine.proximaDose)
+                : null
               return (
                 <Link
                   key={pet.id}
@@ -242,7 +246,7 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
           )}
         </Panel>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Shortcut
           href="/tutor/appointments"
           icon={<CalendarMonth sx={{ fontSize: 18 }} />}
@@ -288,7 +292,7 @@ function PetBadge({
   vaccine?: Vacina
   days: number | null
 }) {
-  if (vaccine && days !== null && days <= 20) {
+  if (vaccine?.proximaDose && days !== null && days <= 20) {
     return (
       <span className="mt-3 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
         {vaccine.nome} vence {inDays(vaccine.proximaDose)}

@@ -92,7 +92,7 @@ export function VeterinarianHome({
         }}
         secondary={{ href: careHref, label: 'Iniciar atendimento' }}
       />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           icon={<CalendarMonth sx={{ fontSize: 18 }} />}
           tone="bg-marca-anel text-marca"
@@ -152,7 +152,7 @@ export function VeterinarianHome({
           <Bars items={week} />
         </Panel>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Shortcut
           href="/veterinarian/schedule"
           icon={<CalendarMonth sx={{ fontSize: 18 }} />}

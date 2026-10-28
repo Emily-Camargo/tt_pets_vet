@@ -1,6 +1,13 @@
 import type { Banco, Consulta } from '@/core/interfaces/types'
 
-const HORAS = [8, 9, 10, 11, 14, 15, 16, 17]
+const HORARIOS = [
+  [8, 0],
+  [9, 30],
+  [11, 0],
+  [14, 0],
+  [15, 30],
+  [17, 0],
+] as const
 
 export function consultaAtiva(status: Consulta['status']) {
   return status !== 'cancelada' && status !== 'realizada'
@@ -58,7 +65,8 @@ function mesmoHorario(a: string, b: string) {
     dataA.getFullYear() === dataB.getFullYear() &&
     dataA.getMonth() === dataB.getMonth() &&
     dataA.getDate() === dataB.getDate() &&
-    dataA.getHours() === dataB.getHours()
+    dataA.getHours() === dataB.getHours() &&
+    dataA.getMinutes() === dataB.getMinutes()
   )
 }
 
@@ -86,6 +94,31 @@ export function horarioOcupado(
   )
 }
 
+export function horariosDoDia(
+  banco: Banco,
+  veterinarioId: string,
+  diaIso: string,
+  ignorarConsultaId?: string,
+) {
+  const base = new Date(`${diaIso}T12:00:00`)
+  const semana = base.getDay()
+  if (semana === 0) return []
+
+  const lista = semana === 6 ? HORARIOS.slice(0, 3) : HORARIOS
+  return lista.map(([hora, minuto]) => {
+    const slot = new Date(base)
+    slot.setHours(hora, minuto, 0, 0)
+    const iso = slot.toISOString()
+    return {
+      iso,
+      label: `${String(hora).padStart(2, '0')}:${String(minuto).padStart(2, '0')}`,
+      livre:
+        slot > new Date() &&
+        !horarioOcupado(banco, veterinarioId, iso, ignorarConsultaId),
+    }
+  })
+}
+
 export function horariosDisponiveis(
   banco: Banco,
   veterinarioId: string,
@@ -100,10 +133,10 @@ export function horariosDisponiveis(
     const semana = data.getDay()
     if (semana === 0) continue
 
-    const horas = semana === 6 ? [8, 9, 10, 11] : HORAS
-    for (const hora of horas) {
+    const lista = semana === 6 ? HORARIOS.slice(0, 3) : HORARIOS
+    for (const [hora, minuto] of lista) {
       const slot = new Date(data)
-      slot.setHours(hora, 0, 0, 0)
+      slot.setHours(hora, minuto, 0, 0)
       if (slot <= agora) continue
       const iso = slot.toISOString()
       if (!horarioOcupado(banco, veterinarioId, iso, ignorarConsultaId)) {
@@ -115,9 +148,21 @@ export function horariosDisponiveis(
   return slots
 }
 
+export function diasAgendaveis(quantidade = 7) {
+  const dias: Date[] = []
+  const cursor = new Date()
+  cursor.setHours(12, 0, 0, 0)
+  while (dias.length < quantidade) {
+    if (cursor.getDay() !== 0) dias.push(new Date(cursor))
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return dias
+}
+
 export function sincronizarLembretes(banco: Banco) {
   const agora = new Date().toISOString()
   for (const vacina of banco.vacinas) {
+    if (!vacina.proximaDose) continue
     const limite = new Date(vacina.proximaDose)
     const hoje = new Date()
     const diferenca = (limite.getTime() - hoje.getTime()) / 86400000

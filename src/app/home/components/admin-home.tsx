@@ -55,7 +55,7 @@ export function AdminHome({ bank, user }: { bank: Banco; user: Usuario }) {
         }}
         secondary={{ href: '/admin/veterinarians', label: 'Ver veterinários' }}
       />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           icon={<MedicalServices sx={{ fontSize: 18 }} />}
           tone="bg-marca-anel text-marca"
