@@ -614,11 +614,11 @@ export function enviarChat(
       id: novoId(),
       consultaId,
       autor: 'ia',
-      texto: ia.resposta,
+      texto: ia.alerta ? `${ia.resposta}\n\n⚠️ ${ia.alerta}` : ia.resposta,
       criadaEm: agora,
     })
   })
-  return ia.sugestoes
+  return { sugestoes: ia.sugestoes, alerta: ia.alerta }
 }
 
 export function salvarProntuario(
@@ -654,18 +654,26 @@ export function salvarReceita(
   consultaId: string,
   texto: string,
   veterinarioId: string,
+  itens?: Array<{ nome: string; uso: string }>,
 ) {
-  if (!texto.trim()) return 'Escreva a receita.'
+  if (!texto.trim() && (!itens || itens.length === 0)) {
+    return 'Escreva a receita.'
+  }
   const consulta = bancoAtual().consultas.find((item) => item.id === consultaId)
   if (!consulta || consulta.veterinarioId !== veterinarioId) {
     return 'Consulta fora do seu acesso.'
   }
+  const lista = (itens ?? []).filter((item) => item.nome.trim())
+  const corpo =
+    texto.trim() || lista.map((item) => `${item.nome} — ${item.uso}`).join('\n')
   alterar((banco) => {
     banco.receitas.push({
       id: novoId(),
       consultaId,
       petId: consulta.petId,
-      texto: texto.trim(),
+      texto: corpo,
+      itens: lista.length > 0 ? lista : undefined,
+      ativo: true,
       criadoEm: new Date().toISOString(),
     })
   })

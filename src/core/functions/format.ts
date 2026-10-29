@@ -78,11 +78,21 @@ export function novoId() {
   return crypto.randomUUID()
 }
 
-export function isoEm(dias: number, horaDoDia: number) {
+export function isoEm(dias: number, horaDoDia: number, minuto = 0) {
   const data = new Date()
   data.setDate(data.getDate() + dias)
-  data.setHours(horaDoDia, 0, 0, 0)
+  data.setHours(horaDoDia, minuto, 0, 0)
   return data.toISOString()
+}
+
+/** Dia da semana corrente: 1=seg … 6=sáb, 0=dom. */
+export function isoNaSemana(diaSemana: number, horaDoDia: number, minuto = 0) {
+  const hoje = new Date()
+  const weekday = hoje.getDay()
+  const mondayOffset = weekday === 0 ? -6 : 1 - weekday
+  const alvo =
+    diaSemana === 0 ? mondayOffset + 6 : mondayOffset + (diaSemana - 1)
+  return isoEm(alvo, horaDoDia, minuto)
 }
 
 export function diaIso(dias: number) {

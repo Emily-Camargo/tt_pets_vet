@@ -10,8 +10,23 @@ export function responderIa(texto: string) {
   const sugestoes: Sugestao[] = []
   let resposta =
     'Anote espécie, queixa, há quanto tempo começou e se o pet está comendo. Posso sugerir prontuário, receita ou vacina.'
+  let alerta: string | undefined
 
-  if (mensagem.includes('coceira') || mensagem.includes('coçando')) {
+  if (
+    mensagem.includes('apoquel') ||
+    mensagem.includes('dose') ||
+    mensagem.includes('mg/kg')
+  ) {
+    resposta =
+      'Para 28 kg, a faixa usual de oclacitinib é 0,4 a 0,6 mg/kg a cada 12 h nos primeiros 14 dias (cerca de 11–17 mg), depois 1× ao dia. Com 16 mg, 1 comprimido ao dia costuma cobrir a manutenção. No Thor já há 45 dias de uso — mantenha enquanto houver prurido e reavalie em 30 dias.'
+    alerta =
+      'Lembrete: o Thor tem alergia a frango registrada. Evite petiscos e medicamentos com sabor de frango; a pomada atual é segura.'
+    sugestoes.push({
+      tipo: 'receita',
+      titulo: 'Receita sugerida',
+      conteudo: 'Apoquel 16 mg — 1 comprimido ao dia por 30 dias',
+    })
+  } else if (mensagem.includes('coceira') || mensagem.includes('coçando')) {
     resposta =
       'Prurido em domicílio pede olhar pele, orelha e pulgas. Registre o exame e, se não houver ferida grave, uma receita de suporte já ajuda.'
     sugestoes.push({
@@ -26,6 +41,18 @@ export function responderIa(texto: string) {
       conteudo:
         'Shampoo hipoalergênico 1 vez por semana. Antipulgas conforme peso. Se a coceira continuar, retornar antes de usar corticoide.',
     })
+  } else if (mensagem.includes('histórico') || mensagem.includes('resum')) {
+    resposta =
+      'Histórico recente: dermatite atópica em acompanhamento, V10 em dia, Apoquel em uso contínuo e melhora parcial do prurido nas patas. Próximo passo: manter anti-pruriginoso e reavaliar pele em 30 dias.'
+  } else if (mensagem.includes('orientação') || mensagem.includes('tutor')) {
+    resposta =
+      'Oriente a tutora a manter o Apoquel no horário fixo, evitar banho diário, usar shampoo indicado 1×/semana e retornar se houver feridas, vômito ou piora da coceira em 48 h.'
+  } else if (
+    mensagem.includes('interação') ||
+    mensagem.includes('medicament')
+  ) {
+    resposta =
+      'Oclacitinib (Apoquel) tem baixo risco de interação com a pomada tópica atual. Evite corticoides sistêmicos em dose alta sem indicação e monitore infecções cutâneas secundárias.'
   } else if (mensagem.includes('vômito') || mensagem.includes('vomito')) {
     resposta =
       'Vômito isolado pode ser dieta. Se houver sangue, apatia ou repetição, o atendimento deixa de ser só orientativo.'
@@ -55,5 +82,5 @@ export function responderIa(texto: string) {
     })
   }
 
-  return { resposta, sugestoes }
+  return { resposta, sugestoes, alerta }
 }

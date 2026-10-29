@@ -2,13 +2,14 @@
 
 import { memo } from 'react'
 
-import { PlanManager } from '@/app/plans/components'
 import { useUsuario } from '@/core/hooks/use-session'
+
+import { VetPlans } from './components'
 
 const VetPlansPage = () => {
   const { usuario } = useUsuario()
   if (!usuario?.veterinarioId) return null
-  return <PlanManager fixedVetId={usuario.veterinarioId} />
+  return <VetPlans />
 }
 
 export default memo(VetPlansPage)

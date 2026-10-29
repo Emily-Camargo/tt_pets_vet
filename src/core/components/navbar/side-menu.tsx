@@ -2,7 +2,6 @@
 
 import {
   CalendarMonth,
-  Dashboard,
   Event,
   History,
   Home,
@@ -10,13 +9,25 @@ import {
   MedicalServices,
   People,
   Pets,
+  Payments,
   Vaccines,
   WorkspacePremium,
 } from '@mui/icons-material'
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, type ComponentType, type Dispatch, type SetStateAction } from 'react'
+import {
+  useEffect,
+  type ComponentType,
+  type Dispatch,
+  type SetStateAction,
+} from 'react'
 
 import { menuFor } from '@/core/functions/navigation'
 import { useUsuario } from '@/core/hooks/use-session'
@@ -25,7 +36,7 @@ const ICONS: Record<string, ComponentType<{ sx?: { fontSize: number } }>> = {
   home: Home,
   cities: LocationOn,
   plans: WorkspacePremium,
-  dashboard: Dashboard,
+  dashboard: Payments,
   vets: MedicalServices,
   schedule: CalendarMonth,
   care: MedicalServices,
@@ -68,7 +79,8 @@ export function SideMenu({
       <List>
         {menu.map((item) => {
           const Icon = ICONS[item.icon] ?? Pets
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
+          const active =
+            pathname === item.href || pathname.startsWith(`${item.href}/`)
           return (
             <ListItemButton
               key={item.href}

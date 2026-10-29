@@ -147,7 +147,7 @@ export function VeterinarianHome({
           <PanelHead
             title="Atendimentos na semana"
             href="/veterinarian/dashboard"
-            action="Meus resultados"
+            action="Ver financeiro"
           />
           <Bars items={week} />
         </Panel>
@@ -175,7 +175,7 @@ export function VeterinarianHome({
           href="/veterinarian/dashboard"
           icon={<span className="text-base">📈</span>}
           tone="bg-emerald-50 text-emerald-600"
-          label="Meus resultados"
+          label="Financeiro"
         />
       </div>
     </HomeFrame>

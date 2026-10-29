@@ -79,7 +79,16 @@ export interface Assinatura {
   cidadeId: string
   tutorId: string
   status: 'ativa' | 'cancelada'
+  pagamento?: 'em_dia' | 'atrasado'
   inicio: string
+}
+
+export interface ServicoAvulso {
+  id: string
+  veterinarioId: string
+  nome: string
+  duracaoMin: number
+  preco: string
 }
 
 export interface Bloqueio {
@@ -185,4 +194,5 @@ export interface Banco {
   exames: Exame[]
   vacinas: Vacina[]
   notificacoes: Notificacao[]
+  servicosAvulsos: ServicoAvulso[]
 }

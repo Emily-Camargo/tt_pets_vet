@@ -1,5 +1,5 @@
 export const SENHA_DEMO = 'Pet@1234'
-export const VERSAO_BANCO = 4
+export const VERSAO_BANCO = 6
 
 export const CATALOGO_SERVICOS = [
   'Consulta veterinária em domicílio',
