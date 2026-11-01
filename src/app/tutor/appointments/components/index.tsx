@@ -105,9 +105,13 @@ export function Bookings() {
       />
 
       <div
-        className={`grid w-full gap-4 lg:gap-6 ${isDesktop && open ? 'lg:grid-cols-[minmax(0,1fr)_400px]' : ''}`}
+        className={`grid w-full gap-4 ${
+          isDesktop && open
+            ? 'grid-cols-[minmax(0,1fr)_400px] gap-6'
+            : 'grid-cols-1'
+        }`}
       >
-        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
           <Group gap="xs" wrap="wrap" mb="md">
             {tabs.map((item) => (
               <Button

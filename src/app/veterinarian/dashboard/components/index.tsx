@@ -70,7 +70,7 @@ export function Dashboard() {
           label="Receita do mês"
           value={moeda(finance.receitaMes)}
           detail={
-            <Text size="xs" c="teal">
+            <Text span size="xs" c="teal">
               +{finance.crescimento}% sobre o mês anterior
             </Text>
           }
@@ -89,16 +89,16 @@ export function Dashboard() {
           label="Inadimplência"
           value={moeda(finance.inadimplencia)}
           detail={
-            <Text size="xs" c="red">
+            <Text span size="xs" c="red">
               {finance.clientesAtrasados} clientes
             </Text>
           }
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <Group justify="space-between" align="center">
+      <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-4 max-xl:grid-cols-1">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
+          <Group justify="space-between" align="center" wrap="wrap">
             <Title order={4}>Recebimentos</Title>
             <Button
               variant="subtle"
@@ -109,7 +109,7 @@ export function Dashboard() {
               {showAll ? 'Ver menos' : 'Ver todos'}
             </Button>
           </Group>
-          <div className="mt-4 overflow-x-auto">
+          <div className="mt-4 -mx-1 overflow-x-auto px-1">
             <Table
               horizontalSpacing="sm"
               verticalSpacing="md"
@@ -166,15 +166,15 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid gap-4">
-          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="grid min-w-0 gap-4">
+          <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
             <Title order={4}>Receita por mês</Title>
-            <div className="mt-2 h-56">
+            <div className="mt-2 h-56 max-sm:h-48">
               <ResponsiveBar
                 data={finance.monthly}
                 keys={['Planos', 'Avulsos']}
                 indexBy="mes"
-                margin={{ top: 16, right: 16, bottom: 40, left: 48 }}
+                margin={{ top: 16, right: 12, bottom: 40, left: 40 }}
                 padding={0.45}
                 groupMode="stacked"
                 colors={[BRAND, BRAND_SOFT]}
@@ -206,7 +206,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
             <Title order={4}>Por cidade</Title>
             <div className="mt-3 divide-y divide-slate-100">
               {finance.byCity.map((city) => (
@@ -227,13 +227,13 @@ export function Dashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
+      <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-1">
+        <div className="col-span-2 min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-lg:col-span-1 max-sm:p-4">
           <Title order={4}>Evolução da receita</Title>
-          <div className="mt-2 h-64">
+          <div className="mt-2 h-64 max-sm:h-52">
             <ResponsiveLine
               data={lineData}
-              margin={{ top: 20, right: 24, bottom: 40, left: 52 }}
+              margin={{ top: 20, right: 16, bottom: 40, left: 44 }}
               xScale={{ type: 'point' }}
               yScale={{ type: 'linear', min: 0, max: 'auto' }}
               curve="monotoneX"
@@ -261,12 +261,12 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
           <Title order={4}>Status dos recebimentos</Title>
-          <div className="mt-2 h-64">
+          <div className="mt-2 h-64 max-sm:h-52">
             <ResponsivePie
               data={finance.statusMix}
-              margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
+              margin={{ top: 20, right: 12, bottom: 40, left: 12 }}
               innerRadius={0.62}
               padAngle={2}
               cornerRadius={4}
@@ -279,7 +279,7 @@ export function Dashboard() {
                   anchor: 'bottom',
                   direction: 'row',
                   translateY: 28,
-                  itemWidth: 80,
+                  itemWidth: 72,
                   itemHeight: 14,
                   symbolSize: 10,
                   symbolShape: 'circle',
@@ -291,14 +291,14 @@ export function Dashboard() {
       </div>
 
       {finance.byPlan.length > 0 && (
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm max-sm:p-4">
           <Title order={4}>MRR por plano</Title>
-          <div className="mt-2 h-56">
+          <div className="mt-2 h-56 max-sm:h-48">
             <ResponsiveBar
               data={finance.byPlan}
               keys={['value']}
               indexBy="label"
-              margin={{ top: 16, right: 16, bottom: 48, left: 56 }}
+              margin={{ top: 16, right: 12, bottom: 48, left: 48 }}
               padding={0.4}
               colors={[BRAND]}
               borderRadius={8}

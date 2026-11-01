@@ -96,7 +96,7 @@ export function BookingForm({
       className={
         embedded
           ? 'w-full'
-          : 'h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm xl:sticky xl:top-20'
+          : 'sticky top-20 h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm'
       }
     >
       {!embedded && (

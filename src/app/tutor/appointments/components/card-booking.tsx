@@ -38,8 +38,8 @@ export function CardBooking({
 
   return (
     <div className="rounded-2xl border border-slate-100 bg-[#fcfbfe] px-4 py-4 transition hover:border-[#e4d4f7] hover:bg-white">
-      <div className="flex flex-row items-center gap-4 max-sm:flex-col max-sm:items-stretch">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="flex flex-row items-center gap-4 max-md:flex-col max-md:items-stretch">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
           <div className="grid h-14 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
             <Text size="xs" fw={600} c="#7434d6" tt="uppercase">
               {stamp.month}
@@ -49,84 +49,87 @@ export function CardBooking({
             </Text>
           </div>
 
-          <div
-            className={cx(
-              'grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-semibold',
-              petTone(petIndex),
-            )}
-          >
-            {initials(petName)}
+          <div className="shrink-0 max-sm:hidden">
+            <div
+              className={cx(
+                'grid h-10 w-10 place-items-center rounded-full text-xs font-semibold',
+                petTone(petIndex),
+              )}
+            >
+              {initials(petName)}
+            </div>
           </div>
 
-          <div className="min-w-0">
-            <Text size="sm" fw={600} c="#475569" truncate>
+          <div className="min-w-0 flex-1">
+            <Text size="sm" fw={600} c="#475569" className="break-words">
               {appointment.tipo ?? appointment.motivo}
             </Text>
-            <Text size="xs" c="#94a3b8" mt={2} truncate>
+            <Text size="xs" c="#94a3b8" mt={2} className="break-words">
               {petName} · {vetName}
             </Text>
-            <Group gap="md" mt={8} wrap="nowrap" className="max-sm:flex-col max-sm:items-start">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 max-sm:flex-col max-sm:items-start">
               <Text
                 size="xs"
                 c="#64748b"
                 className="inline-flex items-center gap-1.5"
               >
-                <FiClock size={12} className="text-[#a78bfa]" />
+                <FiClock size={12} className="shrink-0 text-[#a78bfa]" />
                 {whenLabel(appointment.dataHora)}
               </Text>
               <Text
                 size="xs"
                 c="#64748b"
-                className="inline-flex min-w-0 items-center gap-1.5"
-                truncate
+                className="inline-flex min-w-0 items-start gap-1.5"
               >
-                <FiMapPin size={12} className="shrink-0 text-[#f472b6]" />
-                <span className="truncate">
+                <FiMapPin size={12} className="mt-0.5 shrink-0 text-[#f472b6]" />
+                <span className="break-words">
                   {appointment.endereco ?? 'Endereço não informado'}
                 </span>
               </Text>
-            </Group>
+            </div>
           </div>
         </div>
 
-        <Group gap="xs" className="shrink-0 max-sm:w-full max-sm:justify-between">
+        <div className="flex shrink-0 flex-wrap items-center gap-2 max-md:w-full max-md:justify-between">
           <Badge color={status.color} variant="light" radius="xl" size="sm">
             {status.label}
           </Badge>
-          {mode === 'upcoming' && (
-            <>
+          <Group gap="xs" wrap="wrap" className="max-md:ml-auto">
+            {mode === 'upcoming' && (
+              <>
+                <Button
+                  radius="xl"
+                  variant="light"
+                  color="violet"
+                  size="compact-sm"
+                  onClick={onReschedule}
+                >
+                  Reagendar
+                </Button>
+                <Button
+                  radius="xl"
+                  variant="light"
+                  color="red"
+                  size="compact-sm"
+                  onClick={onCancel}
+                >
+                  Cancelar
+                </Button>
+              </>
+            )}
+            {mode === 'done' && (
               <Button
                 radius="xl"
                 variant="light"
-                color="violet"
+                color="gray"
                 size="compact-sm"
-                onClick={onReschedule}
+                onClick={onReceipt}
               >
-                Reagendar
+                Ver receita
               </Button>
-              <Button
-                radius="xl"
-                variant="light"
-                color="red"
-                size="compact-sm"
-                onClick={onCancel}
-              >
-                Cancelar
-              </Button>
-            </>
-          )}
-          {mode === 'done' && (
-            <Button
-              radius="xl"
-              variant="light"
-              color="gray"
-              size="compact-sm"
-              onClick={onReceipt}
-            >
-              Ver receita
-            </Button>
-          )}
-        </Group>
+            )}
+          </Group>
+        </div>
       </div>
     </div>
   )
