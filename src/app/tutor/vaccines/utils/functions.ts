@@ -21,11 +21,18 @@ export function statusLabel(status: VaccineStatus) {
   return 'Recomendada'
 }
 
+export function statusColor(status: VaccineStatus) {
+  if (status === 'em_dia') return 'teal' as const
+  if (status === 'concluida') return 'gray' as const
+  if (status === 'atrasada') return 'red' as const
+  return 'violet' as const
+}
+
 export function statusTone(status: VaccineStatus) {
   if (status === 'em_dia') return 'bg-emerald-50 text-emerald-700'
-  if (status === 'concluida') return 'bg-[#efe4ff] text-[#7434d6]'
-  if (status === 'atrasada') return 'bg-amber-50 text-amber-700'
-  return 'bg-slate-100 text-slate-500'
+  if (status === 'concluida') return 'bg-slate-100 text-slate-500'
+  if (status === 'atrasada') return 'bg-rose-50 text-rose-600'
+  return 'bg-[#efe4ff] text-[#7434d6]'
 }
 
 export function upcomingDoses(vaccines: Vacina[]) {

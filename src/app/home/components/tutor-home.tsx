@@ -1,25 +1,18 @@
 'use client'
 
-import {
-  CalendarMonth,
-  EventAvailable,
-  NotificationsNone,
-  Shield,
-  Vaccines,
-} from '@mui/icons-material'
+import { Text } from '@mantine/core'
 import Link from 'next/link'
 
 import { cx, dataHora, hora, rotuloStatus } from '@/core/functions/format'
 import type { Banco, Usuario, Vacina } from '@/core/interfaces/types'
 import { consultaAtiva } from '@/service/mock/rules'
 
-import { Hero, HomeFrame, Metric, Panel, PanelHead, Shortcut } from './frame'
+import { Hero, HomeFrame, Panel, PanelHead } from './frame'
 import {
   ageLabel,
   daysUntil,
   firstName,
   inDays,
-  whenLabel,
 } from '../utils/functions'
 
 export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
@@ -40,10 +33,6 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
   const subscriptions = bank.assinaturas.filter(
     (item) => item.tutorId === tutorId && item.status === 'ativa',
   )
-  const plans = subscriptions
-    .map((item) => bank.planos.find((plan) => plan.id === item.planoId))
-    .filter((item) => item !== undefined)
-  const plan = plans[0]
   const cities = [
     ...new Set(
       subscriptions
@@ -54,29 +43,6 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
         .filter((name): name is string => Boolean(name)),
     ),
   ]
-  const alerts = bank.notificacoes
-    .filter((item) => item.tutorId === tutorId && !item.lida)
-    .sort((a, b) => b.criadaEm.localeCompare(a.criadaEm))
-  const usedVisits = plan
-    ? bank.consultas.filter((item) => {
-        const subscription = subscriptions.find(
-          (current) => current.planoId === plan.id,
-        )
-        if (
-          !subscription ||
-          item.petId !== subscription.petId ||
-          item.status === 'cancelada'
-        ) {
-          return false
-        }
-        const date = new Date(item.dataHora)
-        const now = new Date()
-        return (
-          date.getMonth() === now.getMonth() &&
-          date.getFullYear() === now.getFullYear()
-        )
-      }).length
-    : 0
   const care = [
     ...appointments.map((item) => ({
       id: item.id,
@@ -115,54 +81,7 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
           label: 'Ver carteira de vacinação',
         }}
       />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric
-          icon={<CalendarMonth sx={{ fontSize: 18 }} />}
-          tone="bg-marca-anel text-marca"
-          label="Próxima consulta"
-          value={next ? whenLabel(next.dataHora) : 'Nenhuma'}
-          detail={
-            next && nextPet
-              ? `${nextPet.nome} · ${bank.veterinarios.find((item) => item.id === next.veterinarioId)?.nome ?? ''}`
-              : 'Agende quando quiser'
-          }
-        />
-        <Metric
-          icon={<Vaccines sx={{ fontSize: 18 }} />}
-          tone="bg-rose-50 text-rose-500"
-          label="Vacinas a vencer"
-          value={
-            vaccines[0]
-              ? `${vaccines.length} ${inDays(vaccines[0].proximaDose!)}`
-              : 'Em dia'
-          }
-          detail={
-            vaccines[0]
-              ? `${bank.pets.find((item) => item.id === vaccines[0].petId)?.nome ?? 'Pet'} · ${vaccines[0].nome}`
-              : 'Nenhuma dose próxima'
-          }
-        />
-        <Metric
-          icon={<Shield sx={{ fontSize: 18 }} />}
-          tone="bg-emerald-50 text-emerald-600"
-          label="Plano ativo"
-          value={
-            plans.length > 1
-              ? `${plans.length} planos`
-              : (plan?.nome ?? 'Nenhum')
-          }
-          detail={planDetail(plan, usedVisits)}
-        />
-        <Metric
-          icon={<NotificationsNone sx={{ fontSize: 18 }} />}
-          tone="bg-amber-50 text-amber-600"
-          label="Notificações"
-          value={alerts.length === 1 ? '1 nova' : `${alerts.length} novas`}
-          detail={
-            alerts[0] ? `Última ${timeAgo(alerts[0].criadaEm)}` : 'Tudo lido'
-          }
-        />
-      </div>
+
       <div className="grid gap-3 lg:grid-cols-2">
         <Panel>
           <PanelHead title="Meus pets" href="/tutor/pets" action="Ver todos" />
@@ -188,25 +107,30 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
                   >
                     {pet.especie === 'Gato' ? '🐱' : '🐶'}
                   </span>
-                  <p className="mt-3 font-semibold text-slate-800">
+                  <Text size="sm" fw={600} c="#475569" mt="sm">
                     {pet.nome}
-                  </p>
-                  <p className="text-xs text-slate-400">
+                  </Text>
+                  <Text size="xs" c="#94a3b8">
                     {pet.raca} · {ageLabel(pet.nascimento)} · {pet.peso} kg
-                  </p>
+                  </Text>
                   <PetBadge vaccine={vaccine} days={days} />
                 </Link>
               )
             })}
             <Link
               href="/tutor/pets"
-              className="grid place-items-center rounded-2xl border border-dashed border-marca-borda px-3 py-6 text-center text-sm font-medium text-marca"
+              className="grid place-items-center rounded-2xl border border-dashed border-marca-borda bg-[#faf7ff] px-3 py-6 text-center transition hover:bg-marca-clara"
             >
-              <span className="text-2xl leading-none">+</span>
-              <span>Adicionar pet</span>
+              <Text size="xl" c="#7434d6" lh={1}>
+                +
+              </Text>
+              <Text size="sm" fw={500} c="#7434d6" mt={6}>
+                Adicionar pet
+              </Text>
             </Link>
           </div>
         </Panel>
+
         <Panel>
           <PanelHead
             title="Próximos cuidados"
@@ -214,75 +138,40 @@ export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
             action="Agenda"
           />
           {care.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-400">
+            <Text size="sm" c="#94a3b8" mt="md">
               Nada marcado por enquanto.
-            </p>
+            </Text>
           ) : (
-            <ul className="mt-2 divide-y divide-slate-100">
+            <div className="mt-3 divide-y divide-slate-100">
               {care.map((item) => {
                 const stamp = dateStamp(item.when)
                 return (
-                  <li key={item.id} className="flex items-center gap-3 py-3">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
-                      <span className="text-[10px] font-semibold tracking-wide text-marca">
+                  <div key={item.id} className="flex items-center gap-3 py-3">
+                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
+                      <Text size="xs" fw={600} c="#7434d6" tt="uppercase">
                         {stamp.month}
-                      </span>
-                      <span className="text-sm font-semibold text-slate-800">
+                      </Text>
+                      <Text size="sm" fw={600} c="#475569">
                         {stamp.day}
-                      </span>
-                    </span>
-                    <span>
-                      <span className="block text-sm font-semibold text-slate-800">
+                      </Text>
+                    </div>
+                    <div className="min-w-0">
+                      <Text size="sm" fw={600} c="#475569">
                         {item.title}
-                      </span>
-                      <span className="block text-xs text-slate-400">
+                      </Text>
+                      <Text size="xs" c="#94a3b8">
                         {item.detail}
-                      </span>
-                    </span>
-                  </li>
+                      </Text>
+                    </div>
+                  </div>
                 )
               })}
-            </ul>
+            </div>
           )}
         </Panel>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Shortcut
-          href="/tutor/appointments"
-          icon={<CalendarMonth sx={{ fontSize: 18 }} />}
-          tone="bg-marca-anel text-marca"
-          label="Agendar consulta"
-        />
-        <Shortcut
-          href="/tutor/vaccines"
-          icon={<Vaccines sx={{ fontSize: 18 }} />}
-          tone="bg-rose-50 text-rose-500"
-          label="Carteira de vacinação"
-        />
-        <Shortcut
-          href="/tutor/history"
-          icon={<EventAvailable sx={{ fontSize: 18 }} />}
-          tone="bg-sky-50 text-sky-600"
-          label="Histórico e receitas"
-        />
-        <Shortcut
-          href="/tutor/plans"
-          icon={<Shield sx={{ fontSize: 18 }} />}
-          tone="bg-emerald-50 text-emerald-600"
-          label="Meu plano"
-        />
-      </div>
     </HomeFrame>
   )
-}
-
-function planDetail(
-  plan: { visitasMes: number | null } | undefined,
-  usedVisits: number,
-) {
-  if (!plan) return 'Contrate para agendar'
-  if (plan.visitasMes === null) return 'Visitas ilimitadas'
-  return `${usedVisits} de ${plan.visitasMes} visitas no mês`
 }
 
 function PetBadge({
@@ -294,29 +183,31 @@ function PetBadge({
 }) {
   if (vaccine?.proximaDose && days !== null && days <= 20) {
     return (
-      <span className="mt-3 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+      <Text
+        component="span"
+        size="xs"
+        fw={500}
+        c="#b45309"
+        mt="sm"
+        className="inline-block rounded-full bg-amber-50 px-2 py-0.5"
+      >
         {vaccine.nome} vence {inDays(vaccine.proximaDose)}
-      </span>
+      </Text>
     )
   }
   if (!vaccine) return null
   return (
-    <span className="mt-3 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+    <Text
+      component="span"
+      size="xs"
+      fw={500}
+      c="#047857"
+      mt="sm"
+      className="inline-block rounded-full bg-emerald-50 px-2 py-0.5"
+    >
       Vacinas em dia
-    </span>
+    </Text>
   )
-}
-
-function timeAgo(iso: string) {
-  const minutes = Math.max(
-    1,
-    Math.round((Date.now() - new Date(iso).getTime()) / 60000),
-  )
-  if (minutes < 60) return `há ${minutes} min`
-  const hours = Math.round(minutes / 60)
-  if (hours < 24) return hours === 1 ? 'há 1 hora' : `há ${hours} h`
-  const days = Math.round(hours / 24)
-  return days === 1 ? 'há 1 dia' : `há ${days} dias`
 }
 
 function dateStamp(iso: string) {

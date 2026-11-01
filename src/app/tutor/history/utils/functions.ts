@@ -28,10 +28,17 @@ export function kindLabel(kind: HistoryKind) {
   return 'Consulta'
 }
 
+export function kindColor(kind: HistoryKind) {
+  if (kind === 'receita') return 'violet' as const
+  if (kind === 'vacina') return 'teal' as const
+  if (kind === 'exame') return 'blue' as const
+  return 'gray' as const
+}
+
 export function kindTone(kind: HistoryKind) {
   if (kind === 'receita') return 'bg-[#efe4ff] text-[#7434d6]'
   if (kind === 'vacina') return 'bg-emerald-50 text-emerald-700'
-  if (kind === 'exame') return 'bg-slate-100 text-slate-600'
+  if (kind === 'exame') return 'bg-sky-50 text-sky-700'
   return 'bg-slate-100 text-slate-600'
 }
 

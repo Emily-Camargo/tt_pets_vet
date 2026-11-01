@@ -43,29 +43,35 @@ export function CardPlan({
       >
         {art.emoji}
       </div>
-      <Text fw={600} size="xl" mt="md">
+      <Text fw={600} size="lg" c="#475569" mt="md">
         {plan.nome}
       </Text>
-      <Text size="sm" c="#7434d6" fw={600}>
+      <Text size="sm" c="#7434d6" fw={500}>
         {plan.subtitulo}
       </Text>
-      <Text size="xs" c="dimmed">
+      <Text size="xs" c="#94a3b8">
         {vetName}
       </Text>
-      <Text fw={600} size="xl" c="#7434d6" mt="md">
+      <Text fw={600} size="lg" c="#7434d6" mt="md">
         {price}
-        <Text span c="dimmed" size="sm">
+        <Text span c="#94a3b8" size="sm">
           /mês
         </Text>
       </Text>
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="#94a3b8">
         {visits}
       </Text>
-      <Button mt="md" color="#7434d6" onClick={onHire}>
+      <Button
+        mt="md"
+        radius="xl"
+        variant="gradient"
+        gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
+        onClick={onHire}
+      >
         Contratar
       </Button>
       <div className="mt-5 border-t border-slate-100 pt-4 text-left">
-        <Text size="sm" fw={700} c="#7434d6">
+        <Text size="sm" fw={600} c="#64748b">
           Serviços inclusos
         </Text>
         <ul className="mt-3 space-y-2">
@@ -74,7 +80,7 @@ export function CardPlan({
               key={service.nome}
               className={cn(
                 'flex gap-2 text-sm',
-                service.incluso ? 'text-slate-700' : 'text-slate-300',
+                service.incluso ? 'text-slate-500' : 'text-slate-300',
               )}
             >
               <span>{service.incluso ? '✓' : '×'}</span>

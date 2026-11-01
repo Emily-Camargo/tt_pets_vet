@@ -1,7 +1,9 @@
 'use client'
 
-import { Badge, Button, Group, Text, Title } from '@mantine/core'
+import { Badge, Button, Group, Progress, Text } from '@mantine/core'
 import { useMemo, useState } from 'react'
+import { FiDownload, FiFileText } from 'react-icons/fi'
+import { LuPill } from 'react-icons/lu'
 
 import { initials, petTone } from '@/app/tutor/appointments/utils/functions'
 import { PageHeader } from '@/core/components/page-header'
@@ -12,8 +14,8 @@ import { useUsuario } from '@/core/hooks/use-session'
 import {
   activePrescriptions,
   buildTimeline,
+  kindColor,
   kindLabel,
-  kindTone,
   progressDays,
   timelineDate,
   type HistoryKind,
@@ -57,20 +59,23 @@ export function History() {
         actions={
           <Button
             radius="xl"
-            variant="default"
+            variant="light"
+            color="gray"
+            leftSection={<FiDownload size={14} />}
             onClick={() =>
               feedback('', 'Exportação disponível no protótipo em breve.')
             }
           >
-            ↓ Exportar histórico
+            Exportar histórico
           </Button>
         }
       />
 
-      <Group gap="sm">
+      <Group gap="xs" wrap="wrap">
         <Button
           radius="xl"
-          variant={petId === 'all' ? 'gradient' : 'default'}
+          size="compact-sm"
+          variant={petId === 'all' ? 'gradient' : 'light'}
           gradient={
             petId === 'all'
               ? { from: '#7434d6', to: '#a855f7', deg: 135 }
@@ -85,13 +90,19 @@ export function History() {
           <Button
             key={pet.id}
             radius="xl"
-            color="#7434d6"
-            variant={petId === pet.id ? 'light' : 'default'}
+            size="compact-sm"
+            variant={petId === pet.id ? 'gradient' : 'light'}
+            gradient={
+              petId === pet.id
+                ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                : undefined
+            }
+            color={petId === pet.id ? undefined : 'gray'}
             onClick={() => setPetId(pet.id)}
             leftSection={
               <div
                 className={cx(
-                  'grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold',
+                  'grid h-5 w-5 place-items-center rounded-full text-[10px] font-semibold',
                   petTone(index),
                 )}
               >
@@ -104,15 +115,15 @@ export function History() {
         ))}
       </Group>
 
-      <div className="grid w-full gap-4 lg:gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <Group gap="sm" mb="md">
+      <div className="grid w-full gap-4 lg:gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
+          <Group gap="xs" mb="md" wrap="wrap">
             {FILTERS.map((item) => (
               <Button
                 key={item.id}
                 radius="xl"
                 size="compact-sm"
-                variant={filter === item.id ? 'gradient' : 'default'}
+                variant={filter === item.id ? 'gradient' : 'light'}
                 gradient={
                   filter === item.id
                     ? { from: '#7434d6', to: '#a855f7', deg: 135 }
@@ -127,11 +138,13 @@ export function History() {
           </Group>
 
           {visible.length === 0 ? (
-            <Text py={40} ta="center" size="sm" c="dimmed">
-              Nenhum registro neste filtro.
-            </Text>
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-[#faf7ff] px-6 py-14 text-center">
+              <Text size="sm" c="#94a3b8">
+                Nenhum registro neste filtro.
+              </Text>
+            </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="grid gap-3">
               {visible.map((entry) => {
                 const pet = pets.find((item) => item.id === entry.petId)
                 const petIndex = Math.max(
@@ -139,66 +152,97 @@ export function History() {
                   pets.findIndex((item) => item.id === entry.petId),
                 )
                 return (
-                  <div key={entry.id} className="flex gap-4 py-5">
-                    <Text
-                      size="sm"
-                      fw={500}
-                      c="dimmed"
-                      className="w-24 shrink-0"
-                    >
-                      {timelineDate(entry.when)}
-                    </Text>
-                    <div className="min-w-0 flex-1">
-                      <Group gap="sm" wrap="wrap">
-                        <div
-                          className={cx(
-                            'grid h-8 w-8 place-items-center rounded-lg text-[10px] font-bold',
-                            petTone(petIndex),
+                  <div
+                    key={entry.id}
+                    className="rounded-2xl border border-slate-100 bg-[#fcfbfe] px-4 py-4 transition hover:border-[#e4d4f7] hover:bg-white"
+                  >
+                    <div className="flex flex-row gap-3 max-sm:flex-col">
+                      <div className="w-24 shrink-0 max-sm:w-auto">
+                        <Text size="xs" fw={500} c="#94a3b8">
+                          {timelineDate(entry.when)}
+                        </Text>
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <Group gap="sm" wrap="wrap" align="center">
+                          <div
+                            className={cx(
+                              'grid h-8 w-8 place-items-center rounded-lg text-[10px] font-semibold',
+                              petTone(petIndex),
+                            )}
+                          >
+                            {initials(pet?.nome ?? 'P')}
+                          </div>
+                          <Text size="sm" fw={600} c="#475569">
+                            {entry.title}
+                          </Text>
+                          <Badge
+                            color={kindColor(entry.kind)}
+                            variant="light"
+                            radius="xl"
+                            size="sm"
+                          >
+                            {kindLabel(entry.kind)}
+                          </Badge>
+                        </Group>
+
+                        {(entry.vetName || pet) && (
+                          <Text size="xs" c="#94a3b8" mt={6}>
+                            {entry.vetName ?? 'Veterinário'} · em domicílio
+                            {pet ? ` · ${pet.nome}` : ''}
+                          </Text>
+                        )}
+
+                        {entry.summary && (
+                          <Text size="sm" c="#64748b" mt={10}>
+                            {entry.summary}
+                          </Text>
+                        )}
+
+                        {entry.prescriptions &&
+                          entry.prescriptions.length > 0 && (
+                            <div className="mt-3 space-y-2 rounded-xl border border-slate-100 bg-white px-3 py-3">
+                              {entry.prescriptions.map((item) => (
+                                <div
+                                  key={`${entry.id}-${item.nome}`}
+                                  className="flex items-start gap-2"
+                                >
+                                  <LuPill
+                                    size={14}
+                                    className="mt-0.5 shrink-0 text-[#a78bfa]"
+                                  />
+                                  <Text size="sm" c="#475569">
+                                    {item.nome}
+                                    {item.uso ? (
+                                      <Text span size="sm" c="#94a3b8">
+                                        {' '}
+                                        · {item.uso}
+                                      </Text>
+                                    ) : null}
+                                  </Text>
+                                </div>
+                              ))}
+                            </div>
                           )}
-                        >
-                          {initials(pet?.nome ?? 'P')}
-                        </div>
-                        <Title order={5}>{entry.title}</Title>
-                        <Badge
-                          className={kindTone(entry.kind)}
-                          variant="light"
-                          radius="xl"
-                        >
-                          {kindLabel(entry.kind)}
-                        </Badge>
-                      </Group>
-                      {(entry.vetName || pet) && (
-                        <Text size="sm" c="dimmed" mt={4}>
-                          {entry.vetName ?? 'Veterinário'} · em domicílio
-                        </Text>
-                      )}
-                      {entry.summary && (
-                        <Text size="sm" mt={8}>
-                          {entry.summary}
-                        </Text>
-                      )}
-                      {entry.prescriptions &&
-                        entry.prescriptions.length > 0 && (
-                          <div className="mt-3 space-y-2 rounded-2xl bg-slate-50 p-3">
-                            {entry.prescriptions.map((item) => (
-                              <Group key={`${entry.id}-${item.nome}`} gap="xs">
-                                <Text size="sm">💊</Text>
-                                <Text size="sm">
-                                  {item.nome}
-                                  {item.uso ? ` · ${item.uso}` : ''}
+
+                        {entry.examName && (
+                          <div className="mt-3 flex items-start gap-2 rounded-xl border border-slate-100 bg-white px-3 py-3">
+                            <FiFileText
+                              size={14}
+                              className="mt-0.5 shrink-0 text-[#38bdf8]"
+                            />
+                            <Text size="sm" c="#475569">
+                              {entry.examName}
+                              {entry.examResult ? (
+                                <Text span size="sm" c="#94a3b8">
+                                  {' '}
+                                  · {entry.examResult}
                                 </Text>
-                              </Group>
-                            ))}
+                              ) : null}
+                            </Text>
                           </div>
                         )}
-                      {entry.examName && (
-                        <div className="mt-3 rounded-2xl bg-slate-50 p-3">
-                          <Text size="sm">
-                            📄 {entry.examName}
-                            {entry.examResult ? ` · ${entry.examResult}` : ''}
-                          </Text>
-                        </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 )
@@ -207,12 +251,14 @@ export function History() {
           )}
         </div>
 
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="h-fit rounded-3xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5 xl:sticky xl:top-20">
           <Group justify="space-between" mb="md">
-            <Title order={4}>Receitas ativas</Title>
+            <Text size="sm" fw={600} c="#64748b">
+              Receitas ativas
+            </Text>
             <Button
               variant="subtle"
-              color="#7434d6"
+              color="violet"
               size="compact-sm"
               onClick={() => setFilter('receita')}
             >
@@ -221,11 +267,11 @@ export function History() {
           </Group>
 
           {actives.length === 0 ? (
-            <Text size="sm" c="dimmed">
+            <Text size="sm" c="#94a3b8">
               Nenhuma receita em uso.
             </Text>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {actives.flatMap((receita) => {
                 const pet = pets.find((item) => item.id === receita.petId)
                 const progress = progressDays(receita)
@@ -236,31 +282,34 @@ export function History() {
                 return items.map((item) => (
                   <div
                     key={`${receita.id}-${item.nome}`}
-                    className="rounded-2xl border border-slate-100 p-4"
+                    className="rounded-2xl border border-slate-100 bg-[#fcfbfe] p-4"
                   >
-                    <Group justify="space-between" align="flex-start">
-                      <Title order={5}>{item.nome}</Title>
-                      <Badge color="teal" variant="light" radius="xl">
+                    <Group justify="space-between" align="flex-start" gap="sm">
+                      <Text size="sm" fw={600} c="#475569" className="min-w-0">
+                        {item.nome}
+                      </Text>
+                      <Badge color="teal" variant="light" radius="xl" size="sm">
                         Em uso
                       </Badge>
                     </Group>
-                    <Text size="sm" c="dimmed" mt={4}>
+                    <Text size="xs" c="#94a3b8" mt={6}>
                       {pet?.nome}
                       {item.uso ? ` · ${item.uso}` : ''}
                     </Text>
                     {progress.total > 0 && (
                       <>
-                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-                          <div
-                            className="h-full rounded-full bg-marca"
-                            style={{ width: `${progress.percent}%` }}
-                          />
-                        </div>
+                        <Progress
+                          value={progress.percent}
+                          color="#7434d6"
+                          size="sm"
+                          radius="xl"
+                          mt="md"
+                        />
                         <Group justify="space-between" mt={8}>
-                          <Text size="xs" c="dimmed">
+                          <Text size="xs" c="#94a3b8">
                             Dia {progress.current} de {progress.total}
                           </Text>
-                          <Text size="xs" c="dimmed">
+                          <Text size="xs" c="#94a3b8">
                             {receita.fim
                               ? `até ${dataCurta(receita.fim).slice(0, 5)}`
                               : ''}
@@ -276,21 +325,19 @@ export function History() {
 
           <Button
             radius="xl"
-            variant="default"
+            variant="light"
+            color="violet"
             fullWidth
             mt="lg"
+            leftSection={<FiDownload size={14} />}
             onClick={() =>
               feedback('', 'PDF disponível no protótipo em breve.')
             }
           >
-            ↓ Baixar receita (PDF)
+            Baixar receita (PDF)
           </Button>
         </div>
       </div>
-
-      <Text size="xs" c="dimmed" ta="center" pt={8}>
-        Protótipo com dados de exemplo.
-      </Text>
     </div>
   )
 }

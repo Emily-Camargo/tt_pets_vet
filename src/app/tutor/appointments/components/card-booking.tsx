@@ -1,6 +1,7 @@
 'use client'
 
 import { Badge, Button, Group, Text } from '@mantine/core'
+import { FiClock, FiMapPin } from 'react-icons/fi'
 
 import { cx } from '@/core/functions/format'
 import type { Consulta } from '@/core/interfaces/types'
@@ -36,80 +37,97 @@ export function CardBooking({
   const status = statusUi(appointment.status)
 
   return (
-    <div className="flex flex-col gap-3 border-b border-slate-100 py-4 last:border-b-0 lg:flex-row lg:items-center lg:gap-4 xl:gap-6">
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-slate-100 bg-white text-center leading-tight">
-          <Text size="xs" fw={600} c="#7434d6">
-            {stamp.month}
-          </Text>
-          <Text size="lg" fw={600}>
-            {stamp.day}
-          </Text>
-        </div>
+    <div className="rounded-2xl border border-slate-100 bg-[#fcfbfe] px-4 py-4 transition hover:border-[#e4d4f7] hover:bg-white">
+      <div className="flex flex-row items-center gap-4 max-sm:flex-col max-sm:items-stretch">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="grid h-14 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
+            <Text size="xs" fw={600} c="#7434d6" tt="uppercase">
+              {stamp.month}
+            </Text>
+            <Text size="lg" fw={600} c="#475569">
+              {stamp.day}
+            </Text>
+          </div>
 
-        <div
-          className={cx(
-            'grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-bold',
-            petTone(petIndex),
-          )}
-        >
-          {initials(petName)}
-        </div>
-
-        <div className="min-w-0">
-          <Text fw={600}>{appointment.tipo ?? appointment.motivo}</Text>
-          <Text size="sm" c="dimmed" truncate>
-            {petName} · {vetName}
-          </Text>
-        </div>
-      </div>
-
-      <div className="grid min-w-0 flex-1 gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:max-w-xl">
-        <Text size="sm" truncate>
-          🕒 {whenLabel(appointment.dataHora)}
-        </Text>
-        <Text size="sm" truncate>
-          📍 {appointment.endereco ?? 'Endereço não informado'}
-        </Text>
-      </div>
-
-      <Group gap="xs" className="shrink-0 lg:justify-end">
-        <Badge className={status.tone} variant="light" radius="xl">
-          {status.label}
-        </Badge>
-        {mode === 'upcoming' && (
-          <>
-            <Button
-              radius="xl"
-              variant="default"
-              size="compact-sm"
-              onClick={onReschedule}
-            >
-              Reagendar
-            </Button>
-            <Button
-              radius="xl"
-              variant="default"
-              size="compact-sm"
-              aria-label="Mais opções"
-              onClick={onCancel}
-              px="xs"
-            >
-              ···
-            </Button>
-          </>
-        )}
-        {mode === 'done' && (
-          <Button
-            radius="xl"
-            variant="default"
-            size="compact-sm"
-            onClick={onReceipt}
+          <div
+            className={cx(
+              'grid h-10 w-10 shrink-0 place-items-center rounded-full text-xs font-semibold',
+              petTone(petIndex),
+            )}
           >
-            Ver receita
-          </Button>
-        )}
-      </Group>
+            {initials(petName)}
+          </div>
+
+          <div className="min-w-0">
+            <Text size="sm" fw={600} c="#475569" truncate>
+              {appointment.tipo ?? appointment.motivo}
+            </Text>
+            <Text size="xs" c="#94a3b8" mt={2} truncate>
+              {petName} · {vetName}
+            </Text>
+            <Group gap="md" mt={8} wrap="nowrap" className="max-sm:flex-col max-sm:items-start">
+              <Text
+                size="xs"
+                c="#64748b"
+                className="inline-flex items-center gap-1.5"
+              >
+                <FiClock size={12} className="text-[#a78bfa]" />
+                {whenLabel(appointment.dataHora)}
+              </Text>
+              <Text
+                size="xs"
+                c="#64748b"
+                className="inline-flex min-w-0 items-center gap-1.5"
+                truncate
+              >
+                <FiMapPin size={12} className="shrink-0 text-[#f472b6]" />
+                <span className="truncate">
+                  {appointment.endereco ?? 'Endereço não informado'}
+                </span>
+              </Text>
+            </Group>
+          </div>
+        </div>
+
+        <Group gap="xs" className="shrink-0 max-sm:w-full max-sm:justify-between">
+          <Badge color={status.color} variant="light" radius="xl" size="sm">
+            {status.label}
+          </Badge>
+          {mode === 'upcoming' && (
+            <>
+              <Button
+                radius="xl"
+                variant="light"
+                color="violet"
+                size="compact-sm"
+                onClick={onReschedule}
+              >
+                Reagendar
+              </Button>
+              <Button
+                radius="xl"
+                variant="light"
+                color="red"
+                size="compact-sm"
+                onClick={onCancel}
+              >
+                Cancelar
+              </Button>
+            </>
+          )}
+          {mode === 'done' && (
+            <Button
+              radius="xl"
+              variant="light"
+              color="gray"
+              size="compact-sm"
+              onClick={onReceipt}
+            >
+              Ver receita
+            </Button>
+          )}
+        </Group>
+      </div>
     </div>
   )
 }

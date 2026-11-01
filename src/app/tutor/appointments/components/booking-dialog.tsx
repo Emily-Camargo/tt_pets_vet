@@ -1,7 +1,16 @@
 'use client'
 
-import { Button, Group, Text, Title } from '@mantine/core'
+import {
+  Button,
+  Group,
+  NativeSelect,
+  Text,
+  Textarea,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { useMemo, useState, type FormEvent } from 'react'
+import { FiX } from 'react-icons/fi'
 
 import { cx } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
@@ -16,19 +25,25 @@ import {
 
 import { dayKey, dayLabel, visitsUsedThisMonth } from '../utils/functions'
 
-const fieldClass =
-  'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-marca focus:ring-2 focus:ring-marca-anel'
-
 const TYPES = ['Consulta em domicílio', 'Retorno', 'Vacinação']
+
+const softInput = {
+  input: {
+    borderColor: '#e2e8f0',
+    backgroundColor: '#f8fafc',
+  },
+}
 
 export function BookingForm({
   bank,
   tutorId,
   onClose,
+  embedded = false,
 }: {
   bank: Banco
   tutorId: string
   onClose: () => void
+  embedded?: boolean
 }) {
   const pets = bank.pets.filter((item) => item.tutorId === tutorId)
   const tutor = bank.tutores.find((item) => item.id === tutorId)
@@ -71,37 +86,66 @@ export function BookingForm({
     if (!error) onClose()
   }
 
-  return (
-    <div className="h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm xl:sticky xl:top-20">
-      <Group justify="space-between" align="flex-start" mb={4}>
-        <div>
-          <Title order={3}>Nova consulta</Title>
-          <Text size="sm" fw={500} c="#7434d6" mt={4}>
-            {limit == null
-              ? 'Visitas ilimitadas'
-              : `${used} de ${limit} visitas no mês`}
-          </Text>
-        </div>
-        <Button
-          variant="subtle"
-          color="gray"
-          aria-label="Fechar"
-          onClick={onClose}
-          px="xs"
-        >
-          ×
-        </Button>
-      </Group>
+  const visitsLabel =
+    limit == null
+      ? 'Visitas ilimitadas'
+      : `${used} de ${limit} visitas no mês`
 
-      <form className="mt-4 flex flex-col gap-4" onSubmit={save}>
+  return (
+    <div
+      className={
+        embedded
+          ? 'w-full'
+          : 'h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm xl:sticky xl:top-20'
+      }
+    >
+      {!embedded && (
+        <Group justify="space-between" align="flex-start" mb={4}>
+          <div>
+            <Title order={4} fw={600} c="#475569">
+              Nova consulta
+            </Title>
+            <Text size="xs" fw={500} c="#7434d6" mt={4}>
+              {visitsLabel}
+            </Text>
+          </div>
+          <Button
+            type="button"
+            variant="light"
+            color="gray"
+            aria-label="Fechar"
+            onClick={onClose}
+            radius="xl"
+            size="compact-sm"
+            leftSection={<FiX size={14} />}
+          >
+            Fechar
+          </Button>
+        </Group>
+      )}
+
+      {embedded && (
+        <Text size="xs" fw={500} c="#7434d6" mb="md">
+          {visitsLabel}
+        </Text>
+      )}
+
+      <form
+        className={`${embedded ? '' : 'mt-4 '}flex flex-col gap-4`}
+        onSubmit={save}
+      >
         {block && (
-          <Text size="sm" c="red" className="rounded-2xl bg-rose-50 px-3 py-2">
+          <Text
+            size="sm"
+            c="#be123c"
+            className="rounded-2xl border border-rose-100 bg-rose-50 px-3 py-2"
+          >
             {block}
           </Text>
         )}
 
         <div>
-          <Text size="sm" fw={500} mb={8}>
+          <Text size="xs" fw={500} c="#94a3b8" mb={8}>
             Pet
           </Text>
           <Group gap="xs">
@@ -111,8 +155,13 @@ export function BookingForm({
                 type="button"
                 radius="xl"
                 size="compact-sm"
-                variant={petId === pet.id ? 'light' : 'default'}
-                color={petId === pet.id ? '#7434d6' : 'gray'}
+                variant={petId === pet.id ? 'gradient' : 'light'}
+                gradient={
+                  petId === pet.id
+                    ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                    : undefined
+                }
+                color={petId === pet.id ? undefined : 'gray'}
                 onClick={() => {
                   setPetId(pet.id)
                   setVeterinarianId('')
@@ -125,49 +174,33 @@ export function BookingForm({
           </Group>
         </div>
 
-        <label className="text-sm font-medium text-slate-700">
-          <Text size="sm" fw={500} mb={6} component="span" display="block">
-            Tipo
-          </Text>
-          <select
-            value={type}
-            onChange={(event) => setType(event.target.value)}
-            className={fieldClass}
-          >
-            {TYPES.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          <Text size="xs" c="dimmed" mt={4}>
-            Incluso no plano
-          </Text>
-        </label>
+        <NativeSelect
+          label="Tipo"
+          description="Incluso no plano"
+          value={type}
+          onChange={(event) => setType(event.currentTarget.value)}
+          data={TYPES}
+          radius="xl"
+          styles={softInput}
+        />
 
-        <label className="text-sm font-medium text-slate-700">
-          <Text size="sm" fw={500} mb={6} component="span" display="block">
-            Veterinário
-          </Text>
-          <select
-            value={veterinarianId}
-            onChange={(event) => {
-              setVeterinarianId(event.target.value)
-              setSlot('')
-            }}
-            className={fieldClass}
-          >
-            <option value="">Qualquer disponível</option>
-            {vets.map((vet) => (
-              <option key={vet.id} value={vet.id}>
-                {vet.nome}
-              </option>
-            ))}
-          </select>
-        </label>
+        <NativeSelect
+          label="Veterinário"
+          value={veterinarianId}
+          onChange={(event) => {
+            setVeterinarianId(event.currentTarget.value)
+            setSlot('')
+          }}
+          data={[
+            { value: '', label: 'Qualquer disponível' },
+            ...vets.map((vet) => ({ value: vet.id, label: vet.nome })),
+          ]}
+          radius="xl"
+          styles={softInput}
+        />
 
         <div>
-          <Text size="sm" fw={500} mb={8}>
+          <Text size="xs" fw={500} c="#94a3b8" mb={8}>
             Dia
           </Text>
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -180,19 +213,24 @@ export function BookingForm({
                   key={key}
                   type="button"
                   className="min-w-14 shrink-0"
-                  radius="md"
-                  variant={active ? 'filled' : 'default'}
-                  color={active ? '#7434d6' : 'gray'}
+                  radius="lg"
+                  variant={active ? 'gradient' : 'light'}
+                  gradient={
+                    active
+                      ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                      : undefined
+                  }
+                  color={active ? undefined : 'gray'}
                   onClick={() => {
                     setDay(key)
                     setSlot('')
                   }}
                   styles={{ label: { flexDirection: 'column', gap: 0 } }}
                 >
-                  <Text size="xs" fw={600}>
+                  <Text size="xs" fw={600} c={active ? 'white' : '#94a3b8'}>
                     {label.weekday}
                   </Text>
-                  <Text size="sm" fw={600}>
+                  <Text size="sm" fw={600} c={active ? 'white' : '#475569'}>
                     {label.day}
                   </Text>
                 </Button>
@@ -202,7 +240,7 @@ export function BookingForm({
         </div>
 
         <div>
-          <Text size="sm" fw={500} mb={8}>
+          <Text size="xs" fw={500} c="#94a3b8" mb={8}>
             Horário
           </Text>
           <div className="grid grid-cols-3 gap-2">
@@ -210,10 +248,10 @@ export function BookingForm({
               <Button
                 key={item.iso}
                 type="button"
-                radius="md"
+                radius="lg"
                 disabled={!item.livre}
                 variant={slot === item.iso ? 'light' : 'default'}
-                color={slot === item.iso ? '#7434d6' : 'gray'}
+                color={slot === item.iso ? 'violet' : 'gray'}
                 className={cx(
                   !item.livre &&
                     'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300',
@@ -224,41 +262,37 @@ export function BookingForm({
               </Button>
             ))}
             {slots.length === 0 && (
-              <Text size="sm" c="dimmed" className="col-span-3">
+              <Text size="sm" c="#94a3b8" className="col-span-3">
                 Sem horários neste dia.
               </Text>
             )}
           </div>
         </div>
 
-        <label className="text-sm font-medium text-slate-700">
-          <Text size="sm" fw={500} mb={6} component="span" display="block">
-            Endereço da visita
-          </Text>
-          <input
-            value={address}
-            onChange={(event) => setAddress(event.target.value)}
-            className={fieldClass}
-            placeholder="Rua, número e cidade"
-          />
-        </label>
+        <TextInput
+          label="Endereço da visita"
+          value={address}
+          onChange={(event) => setAddress(event.currentTarget.value)}
+          placeholder="Rua, número e cidade"
+          radius="xl"
+          styles={softInput}
+        />
 
-        <label className="text-sm font-medium text-slate-700">
-          <Text size="sm" fw={500} mb={6} component="span" display="block">
-            Motivo
-          </Text>
-          <textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            className={`${fieldClass} min-h-24 resize-y`}
-            placeholder="Conte o que o pet está sentindo."
-          />
-        </label>
+        <Textarea
+          label="Motivo"
+          value={reason}
+          onChange={(event) => setReason(event.currentTarget.value)}
+          placeholder="Conte o que o pet está sentindo."
+          minRows={3}
+          radius="lg"
+          styles={softInput}
+        />
 
         <Button
           type="submit"
           radius="xl"
-          color="#7434d6"
+          variant="gradient"
+          gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
           disabled={Boolean(block) || !slot}
         >
           Confirmar agendamento

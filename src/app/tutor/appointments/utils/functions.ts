@@ -45,15 +45,15 @@ export function whenLabel(iso: string) {
 
 export function statusUi(status: StatusConsulta) {
   if (status === 'confirmada') {
-    return { label: 'Confirmada', tone: 'bg-emerald-50 text-emerald-700' }
+    return { label: 'Confirmada', color: 'teal' as const }
   }
   if (status === 'realizada') {
-    return { label: 'Realizada', tone: 'bg-slate-100 text-slate-500' }
+    return { label: 'Realizada', color: 'gray' as const }
   }
   if (status === 'cancelada') {
-    return { label: 'Cancelada', tone: 'bg-rose-50 text-rose-600' }
+    return { label: 'Cancelada', color: 'red' as const }
   }
-  return { label: 'Aguardando', tone: 'bg-amber-50 text-amber-700' }
+  return { label: 'Aguardando', color: 'yellow' as const }
 }
 
 export function splitAppointments(items: Consulta[]) {

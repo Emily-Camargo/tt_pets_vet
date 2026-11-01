@@ -1,18 +1,27 @@
 'use client'
 
 import {
-  CheckCircleOutlined,
-  HourglassEmpty,
-  Vaccines as VaccineIcon,
-  WarningAmber,
-} from '@mui/icons-material'
-import { Badge, Button, Group, Text, Title } from '@mantine/core'
+  Badge,
+  Button,
+  Group,
+  NativeSelect,
+  Progress,
+  Text,
+  Title,
+} from '@mantine/core'
 import { useMemo, useState } from 'react'
+import {
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiClock,
+  FiDownload,
+} from 'react-icons/fi'
+import { LuSyringe } from 'react-icons/lu'
 
 import { Metric } from '@/app/home/components/frame'
 import { ageLabel, petEmoji } from '@/app/tutor/pets/utils/functions'
 import { PageHeader } from '@/core/components/page-header'
-import { cx, dataCurta } from '@/core/functions/format'
+import { dataCurta } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
 import { useUsuario } from '@/core/hooks/use-session'
 
@@ -26,11 +35,19 @@ import {
   overdueCount,
   protocolCoverage,
   remainingLabel,
+  statusColor,
   statusLabel,
-  statusTone,
   upcomingDoses,
   vaccineStatus,
 } from '../utils/functions'
+
+const FILTERS = [
+  'Todas',
+  'Em dia',
+  'Concluída',
+  'Recomendada',
+  'Atrasada',
+] as const
 
 export function Vaccines() {
   const { banco, usuario } = useUsuario()
@@ -39,7 +56,7 @@ export function Vaccines() {
   const pets = banco.pets.filter((item) => item.tutorId === tutorId)
   const [petId, setPetId] = useState(pets[0]?.id ?? '')
   const [open, setOpen] = useState(false)
-  const [filter, setFilter] = useState('Todas')
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('Todas')
 
   const pet = pets.find((item) => item.id === petId)
   const vaccines = banco.vacinas.filter((item) => item.petId === petId)
@@ -65,7 +82,7 @@ export function Vaccines() {
   if (!pet) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
-        <Text size="sm" c="dimmed">
+        <Text size="sm" c="#94a3b8">
           Cadastre um pet para ver a carteira de vacinação.
         </Text>
       </div>
@@ -85,21 +102,28 @@ export function Vaccines() {
           <>
             <Button
               radius="xl"
-              variant="default"
+              variant="light"
+              color="gray"
+              leftSection={<FiDownload size={14} />}
               onClick={() =>
                 feedback('', 'PDF disponível no protótipo em breve.')
               }
             >
-              ↓ Baixar PDF
+              Baixar PDF
             </Button>
-            <Button radius="xl" color="#7434d6" onClick={() => setOpen(true)}>
+            <Button
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
+              onClick={() => setOpen(true)}
+            >
               + Agendar vacina
             </Button>
           </>
         }
       />
 
-      <Group gap="sm">
+      <Group gap="xs" wrap="wrap">
         {pets.map((item) => {
           const alert = dueInDays(
             banco.vacinas.filter((vaccine) => vaccine.petId === item.id),
@@ -110,8 +134,14 @@ export function Vaccines() {
             <Button
               key={item.id}
               radius="xl"
-              color="#7434d6"
-              variant={active ? 'light' : 'default'}
+              size="compact-sm"
+              variant={active ? 'gradient' : 'light'}
+              gradient={
+                active
+                  ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                  : undefined
+              }
+              color={active ? undefined : 'gray'}
               onClick={() => setPetId(item.id)}
               leftSection={<Text size="sm">{petEmoji(item.especie)}</Text>}
               rightSection={
@@ -128,10 +158,10 @@ export function Vaccines() {
         })}
       </Group>
 
-      <div className="rounded-3xl bg-linear-to-r from-[#7434d6] to-[#8b5cf6] px-5 py-5 text-white sm:px-7">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-white/15 text-3xl">
+      <div className="rounded-3xl border border-[#e4d4f7] bg-linear-to-br from-white via-[#faf7ff] to-[#f3e8ff] px-5 py-5 sm:px-6">
+        <div className="flex flex-row items-center justify-between gap-4 max-md:flex-col max-md:items-start">
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-white text-3xl shadow-sm ring-1 ring-[#e4d4f7]">
               {pet.foto ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -143,58 +173,60 @@ export function Vaccines() {
                 petEmoji(pet.especie)
               )}
             </div>
-            <div>
+            <div className="min-w-0">
               <Text
                 size="xs"
-                fw={600}
+                fw={500}
                 tt="uppercase"
-                c="rgba(255,255,255,0.8)"
-                style={{ letterSpacing: '0.16em' }}
+                c="#7434d6"
+                style={{ letterSpacing: '0.14em' }}
               >
                 Carteira de vacinação
               </Text>
-              <Title order={3} c="white" mt={4}>
+              <Title order={4} fw={600} c="#475569" mt={4}>
                 {pet.nome}
               </Title>
-              <Text size="sm" c="rgba(255,255,255,0.85)" mt={4}>
+              <Text size="sm" c="#94a3b8" mt={4}>
                 {pet.raca} · {pet.sexo} · {ageLabel(pet.nascimento)} ·{' '}
                 {pet.peso} kg · {formatChip(pet.microchip)}
               </Text>
             </div>
           </div>
-          <div className="text-sm lg:text-right">
-            <Text c="rgba(255,255,255,0.9)">
+          <div className="text-left md:text-right">
+            <Text size="sm" c="#64748b">
               Tutora {tutor?.nome ?? usuario?.nome}
             </Text>
-            <Text c="rgba(255,255,255,0.75)">Clínica TT Pets · {cityName}</Text>
+            <Text size="xs" c="#94a3b8" mt={2}>
+              Clínica TT Pets · {cityName}
+            </Text>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <Metric
-          icon={<CheckCircleOutlined sx={{ fontSize: 18 }} />}
+          icon={<FiCheckCircle size={18} />}
           tone="bg-emerald-50 text-emerald-600"
           label="Doses aplicadas"
           value={String(appliedCount(vaccines))}
           detail="registradas na carteira"
         />
         <Metric
-          icon={<VaccineIcon sx={{ fontSize: 18 }} />}
+          icon={<LuSyringe size={18} />}
           tone="bg-sky-50 text-sky-600"
           label="Próxima dose"
           value={nextDose.value}
           detail={nextDose.detail}
         />
         <Metric
-          icon={<HourglassEmpty sx={{ fontSize: 18 }} />}
+          icon={<FiClock size={18} />}
           tone="bg-amber-50 text-amber-600"
           label="A vencer em 30 dias"
           value={String(dueInDays(vaccines, 30))}
           detail="reforços próximos"
         />
         <Metric
-          icon={<WarningAmber sx={{ fontSize: 18 }} />}
+          icon={<FiAlertTriangle size={18} />}
           tone="bg-rose-50 text-rose-500"
           label="Atrasadas"
           value={String(overdueCount(vaccines))}
@@ -202,32 +234,54 @@ export function Vaccines() {
         />
       </div>
 
-      <div className="grid w-full gap-4 lg:gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <Group justify="space-between" mb="md" wrap="wrap">
-            <Title order={4}>Histórico de vacinas</Title>
-            <select
+      <div className="grid w-full gap-4 lg:gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
+          <Group justify="space-between" mb="md" wrap="wrap" gap="sm">
+            <Text size="sm" fw={600} c="#64748b">
+              Histórico de vacinas
+            </Text>
+            <NativeSelect
               value={filter}
-              onChange={(event) => setFilter(event.target.value)}
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-sm outline-none"
-            >
-              <option>Todas</option>
-              <option>Em dia</option>
-              <option>Concluída</option>
-              <option>Recomendada</option>
-              <option>Atrasada</option>
-            </select>
+              onChange={(event) =>
+                setFilter(event.currentTarget.value as (typeof FILTERS)[number])
+              }
+              data={[...FILTERS]}
+              radius="xl"
+              size="xs"
+              className="w-40"
+              styles={{
+                input: {
+                  borderColor: '#e2e8f0',
+                  backgroundColor: '#f8fafc',
+                },
+              }}
+            />
           </Group>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
+
+          <div className="-mx-1 overflow-x-auto px-1">
+            <table className="min-w-[640px] w-full text-left">
               <thead>
-                <tr className="border-b border-slate-100 text-xs tracking-wide text-slate-400 uppercase">
-                  <th className="py-3 pr-3 font-semibold">Vacina</th>
-                  <th className="py-3 pr-3 font-semibold">Dose</th>
-                  <th className="py-3 pr-3 font-semibold">Aplicada em</th>
-                  <th className="py-3 pr-3 font-semibold">Próxima</th>
-                  <th className="py-3 pr-3 font-semibold">Veterinário</th>
-                  <th className="py-3 font-semibold">Status</th>
+                <tr className="border-b border-slate-100">
+                  {[
+                    'Vacina',
+                    'Dose',
+                    'Aplicada em',
+                    'Próxima',
+                    'Veterinário',
+                    'Status',
+                  ].map((label) => (
+                    <th key={label} className="py-3 pr-3">
+                      <Text
+                        size="xs"
+                        fw={500}
+                        c="#94a3b8"
+                        tt="uppercase"
+                        style={{ letterSpacing: '0.06em' }}
+                      >
+                        {label}
+                      </Text>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -237,32 +291,44 @@ export function Vaccines() {
                     (current) => current.id === item.veterinarioId,
                   )
                   return (
-                    <tr key={item.id} className="border-b border-slate-50">
-                      <td className="py-3 pr-3">
-                        <Text fw={600} size="sm">
+                    <tr
+                      key={item.id}
+                      className="border-b border-slate-50 last:border-b-0"
+                    >
+                      <td className="py-3.5 pr-3">
+                        <Text size="sm" fw={600} c="#475569">
                           {item.nome}
                         </Text>
-                        <Text size="xs" c="dimmed">
+                        <Text size="xs" c="#94a3b8">
                           {item.lote ? `Lote ${item.lote}` : 'Sem lote'}
                         </Text>
                       </td>
-                      <td className="py-3 pr-3 text-slate-600">
-                        {item.dose ?? '—'}
+                      <td className="py-3.5 pr-3">
+                        <Text size="sm" c="#64748b">
+                          {item.dose ?? '—'}
+                        </Text>
                       </td>
-                      <td className="py-3 pr-3 text-slate-600">
-                        {item.aplicadaEm ? dataCurta(item.aplicadaEm) : '—'}
+                      <td className="py-3.5 pr-3">
+                        <Text size="sm" c="#64748b">
+                          {item.aplicadaEm ? dataCurta(item.aplicadaEm) : '—'}
+                        </Text>
                       </td>
-                      <td className="py-3 pr-3 text-slate-600">
-                        {item.proximaDose ? dataCurta(item.proximaDose) : '—'}
+                      <td className="py-3.5 pr-3">
+                        <Text size="sm" c="#64748b">
+                          {item.proximaDose ? dataCurta(item.proximaDose) : '—'}
+                        </Text>
                       </td>
-                      <td className="py-3 pr-3 text-slate-600">
-                        {vet?.nome ?? '—'}
+                      <td className="py-3.5 pr-3">
+                        <Text size="sm" c="#64748b">
+                          {vet?.nome ?? '—'}
+                        </Text>
                       </td>
-                      <td className="py-3">
+                      <td className="py-3.5">
                         <Badge
-                          className={cx(statusTone(status))}
+                          color={statusColor(status)}
                           variant="light"
                           radius="xl"
+                          size="sm"
                         >
                           {statusLabel(status)}
                         </Badge>
@@ -272,8 +338,10 @@ export function Vaccines() {
                 })}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center">
-                      <Text c="dimmed">Nenhuma vacina neste filtro.</Text>
+                    <td colSpan={6} className="py-10 text-center">
+                      <Text size="sm" c="#94a3b8">
+                        Nenhuma vacina neste filtro.
+                      </Text>
                     </td>
                   </tr>
                 )}
@@ -285,13 +353,15 @@ export function Vaccines() {
         <div className="grid gap-4">
           <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
             <Group justify="space-between" mb="sm">
-              <Title order={4}>Próximas doses</Title>
-              <Text size="sm" fw={500} c="#7434d6">
+              <Text size="sm" fw={600} c="#64748b">
+                Próximas doses
+              </Text>
+              <Text size="xs" fw={500} c="#7434d6">
                 Lembretes
               </Text>
             </Group>
             {upcoming.length === 0 ? (
-              <Text size="sm" c="dimmed">
+              <Text size="sm" c="#94a3b8">
                 Nenhuma dose marcada.
               </Text>
             ) : (
@@ -299,24 +369,24 @@ export function Vaccines() {
                 {upcoming.map((item) => {
                   const stamp = dateStamp(item.proximaDose!)
                   return (
-                    <Group key={item.id} gap="md" py="sm">
+                    <div key={item.id} className="flex items-center gap-3 py-3">
                       <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
-                        <Text size="xs" fw={600} c="#7434d6">
+                        <Text size="xs" fw={600} c="#7434d6" tt="uppercase">
                           {stamp.month}
                         </Text>
-                        <Text size="sm" fw={600}>
+                        <Text size="sm" fw={600} c="#475569">
                           {stamp.day}
                         </Text>
                       </div>
-                      <div>
-                        <Text size="sm" fw={600}>
+                      <div className="min-w-0">
+                        <Text size="sm" fw={600} c="#475569">
                           {item.nome}
                         </Text>
-                        <Text size="xs" c="dimmed">
+                        <Text size="xs" c="#94a3b8">
                           {remainingLabel(item.days)}
                         </Text>
                       </div>
-                    </Group>
+                    </div>
                   )
                 })}
               </div>
@@ -324,22 +394,26 @@ export function Vaccines() {
           </div>
 
           <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <Title order={4}>Cobertura do protocolo</Title>
-            <Text size="sm" c="dimmed" mt={8}>
+            <Text size="sm" fw={600} c="#64748b">
+              Cobertura do protocolo
+            </Text>
+            <Text size="sm" c="#94a3b8" mt={8}>
               {coverage.covered} de {coverage.recommended} vacinas recomendadas
             </Text>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-              <div
-                className="h-full rounded-full bg-marca"
-                style={{ width: `${coverage.percent}%` }}
-              />
-            </div>
-            <Text size="xs" c="dimmed" mt={12}>
+            <Progress
+              value={coverage.percent}
+              color="#7434d6"
+              size="sm"
+              radius="xl"
+              mt="md"
+            />
+            <Text size="xs" c="#94a3b8" mt={12}>
               Complete as doses recomendadas para manter a proteção em dia.
             </Text>
             <Button
               radius="xl"
-              variant="default"
+              variant="light"
+              color="violet"
               fullWidth
               mt="md"
               onClick={() => setOpen(true)}
@@ -349,10 +423,6 @@ export function Vaccines() {
           </div>
         </div>
       </div>
-
-      <Text size="xs" c="dimmed" ta="center" pt={8}>
-        Protótipo com dados de exemplo.
-      </Text>
 
       <VaccineForm
         open={open}

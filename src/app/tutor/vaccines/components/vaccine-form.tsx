@@ -1,13 +1,18 @@
 'use client'
 
-import { Button, Group, Title } from '@mantine/core'
-import { useState, type FormEvent } from 'react'
+import { Dialog } from '@grazziotin/react-components-next/ui'
+import { Button, Group, TextInput } from '@mantine/core'
+import { useEffect, useState, type FormEvent } from 'react'
 
 import { feedback } from '@/core/functions/feedback'
 import { salvarVacina } from '@/service/mock/actions'
 
-const fieldClass =
-  'w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-marca focus:ring-2 focus:ring-marca-anel'
+const softInput = {
+  input: {
+    borderColor: '#e2e8f0',
+    backgroundColor: '#f8fafc',
+  },
+}
 
 export function VaccineForm({
   open,
@@ -25,7 +30,13 @@ export function VaccineForm({
   const [appliedOn, setAppliedOn] = useState('')
   const [nextDose, setNextDose] = useState('')
 
-  if (!open) return null
+  useEffect(() => {
+    if (!open) return
+    setName('')
+    setDose('')
+    setAppliedOn('')
+    setNextDose('')
+  }, [open, petId])
 
   function save(event: FormEvent) {
     event.preventDefault()
@@ -42,68 +53,66 @@ export function VaccineForm({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4">
-      <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
-        <Group justify="space-between" mb="md">
-          <Title order={3}>Agendar vacina</Title>
+    <Dialog
+      open={open}
+      title="Agendar vacina"
+      onClose={onClose}
+      maxWidth="sm"
+    >
+      <form className="flex flex-col gap-3" onSubmit={save}>
+        <TextInput
+          label="Vacina"
+          required
+          value={name}
+          onChange={(event) => setName(event.currentTarget.value)}
+          placeholder="Ex.: V10"
+          radius="xl"
+          styles={softInput}
+        />
+        <TextInput
+          label="Dose"
+          value={dose}
+          onChange={(event) => setDose(event.currentTarget.value)}
+          placeholder="Ex.: Anual"
+          radius="xl"
+          styles={softInput}
+        />
+        <TextInput
+          type="date"
+          label="Aplicada em"
+          value={appliedOn}
+          onChange={(event) => setAppliedOn(event.currentTarget.value)}
+          radius="xl"
+          styles={softInput}
+        />
+        <TextInput
+          type="date"
+          label="Próxima dose"
+          value={nextDose}
+          onChange={(event) => setNextDose(event.currentTarget.value)}
+          radius="xl"
+          styles={softInput}
+        />
+        <Group grow mt="sm" gap="sm">
           <Button
-            variant="subtle"
+            type="button"
+            radius="xl"
+            variant="light"
             color="gray"
-            aria-label="Fechar"
             onClick={onClose}
-            px="xs"
           >
-            ×
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            radius="xl"
+            variant="gradient"
+            gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
+          >
+            Salvar
           </Button>
         </Group>
-        <form className="flex flex-col gap-3" onSubmit={save}>
-          <label className="text-sm font-medium text-slate-700">
-            <span className="mb-1.5 block">Vacina</span>
-            <input
-              required
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              className={fieldClass}
-              placeholder="Ex.: V10"
-            />
-          </label>
-          <label className="text-sm font-medium text-slate-700">
-            <span className="mb-1.5 block">Dose</span>
-            <input
-              value={dose}
-              onChange={(event) => setDose(event.target.value)}
-              className={fieldClass}
-              placeholder="Ex.: Anual"
-            />
-          </label>
-          <label className="text-sm font-medium text-slate-700">
-            <span className="mb-1.5 block">Aplicada em</span>
-            <input
-              type="date"
-              value={appliedOn}
-              onChange={(event) => setAppliedOn(event.target.value)}
-              className={fieldClass}
-            />
-          </label>
-          <label className="text-sm font-medium text-slate-700">
-            <span className="mb-1.5 block">Próxima dose</span>
-            <input
-              type="date"
-              value={nextDose}
-              onChange={(event) => setNextDose(event.target.value)}
-              className={fieldClass}
-            />
-          </label>
-          <Group grow mt="sm">
-            <Button radius="xl" variant="default" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" radius="xl" color="#7434d6">
-              Salvar
-            </Button>
-          </Group>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Dialog>
   )
 }

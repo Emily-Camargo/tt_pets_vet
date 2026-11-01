@@ -1,10 +1,11 @@
 'use client'
 
 import { Dialog, InputSelect } from '@grazziotin/react-components-next/ui'
-import { Button, Text, Title } from '@mantine/core'
+import { Button, Text } from '@mantine/core'
 import Grid from '@mui/material/Grid'
 import { useState } from 'react'
 
+import { PageHeader } from '@/core/components/page-header'
 import { feedback } from '@/core/functions/feedback'
 import { moeda, visitas } from '@/core/functions/format'
 import { useUsuario } from '@/core/hooks/use-session'
@@ -26,12 +27,13 @@ export function PlanShowcase() {
   const pet = pets.find((item) => item.id === petId) ?? null
 
   return (
-    <div className="flex w-full flex-col">
-      <Title order={2}>Planos de atendimento domiciliar</Title>
-      <Text c="dimmed" mt={8}>
-        Escolha a cidade para ver os planos disponíveis
-      </Text>
-      <div className="mt-6 w-full max-w-xs">
+    <div className="flex w-full flex-col gap-6">
+      <PageHeader
+        eyebrow="Tutor"
+        title="Planos de atendimento domiciliar"
+        description="Escolha a cidade para ver os planos disponíveis."
+      />
+      <div className="w-full max-w-xs">
         <InputSelect
           options={banco.cidades}
           value={city}

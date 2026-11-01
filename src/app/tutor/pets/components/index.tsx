@@ -1,15 +1,9 @@
 'use client'
 
-import {
-  CalendarMonth,
-  Pets as PetsIcon,
-  Shield,
-  Vaccines,
-} from '@mui/icons-material'
-import { Button, Text } from '@mantine/core'
+import { Button, NativeSelect, Text, TextInput } from '@mantine/core'
 import { useMemo, useState } from 'react'
+import { FiSearch } from 'react-icons/fi'
 
-import { Metric } from '@/app/home/components/frame'
 import { PageHeader } from '@/core/components/page-header'
 import { useUsuario } from '@/core/hooks/use-session'
 import type { Pet } from '@/core/interfaces/types'
@@ -17,12 +11,6 @@ import type { Pet } from '@/core/interfaces/types'
 import { CardPet } from './card-pet'
 import { PetForm } from './pet-form'
 import { SORT_OPTIONS, SPECIES } from '../utils/constants'
-import {
-  nextVisitSummary,
-  planSummary,
-  speciesCount,
-  vaccinesOkSummary,
-} from '../utils/functions'
 
 export function Pets() {
   const { banco, usuario } = useUsuario()
@@ -33,13 +21,6 @@ export function Pets() {
   const [search, setSearch] = useState('')
   const [species, setSpecies] = useState('Todas')
   const [sort, setSort] = useState<(typeof SORT_OPTIONS)[number]['id']>('nome')
-
-  const vaccinesOk = vaccinesOkSummary(pets, banco.vacinas)
-  const nextVisit = nextVisitSummary(
-    banco,
-    pets.map((item) => item.id),
-  )
-  const plan = planSummary(banco, tutorId, pets.length)
 
   const filtered = useMemo(() => {
     const list = pets.filter((pet) => {
@@ -76,97 +57,85 @@ export function Pets() {
         eyebrow="Tutor"
         title="Meus pets"
         description="Cadastre seus pets e acompanhe a saúde de cada um."
-        actions={
-          <Button radius="xl" color="#7434d6" onClick={() => openForm()}>
-            + Adicionar pet
-          </Button>
-        }
       />
-
-      <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
-        <Metric
-          icon={<PetsIcon sx={{ fontSize: 18 }} />}
-          tone="bg-sky-50 text-sky-600"
-          label="Pets cadastrados"
-          value={String(pets.length)}
-          detail={speciesCount(pets)}
-        />
-        <Metric
-          icon={<Vaccines sx={{ fontSize: 18 }} />}
-          tone="bg-emerald-50 text-emerald-600"
-          label="Vacinas em dia"
-          value={vaccinesOk.value}
-          detail={vaccinesOk.detail}
-        />
-        <Metric
-          icon={<CalendarMonth sx={{ fontSize: 18 }} />}
-          tone="bg-rose-50 text-rose-500"
-          label="Próxima consulta"
-          value={nextVisit.value}
-          detail={nextVisit.detail}
-        />
-        <Metric
-          icon={<Shield sx={{ fontSize: 18 }} />}
-          tone="bg-amber-50 text-amber-600"
-          label="Plano"
-          value={plan.value}
-          detail={plan.detail}
-        />
-      </div>
 
       <div
         className={`grid w-full gap-4 lg:gap-6 ${open ? 'xl:grid-cols-[minmax(0,1fr)_420px]' : ''}`}
       >
         <div className="grid gap-4">
-          <div className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm lg:flex-row">
-            <label className="relative flex-1">
-              <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
-                🔍
-              </div>
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
+          <div className="rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+            <div className="flex flex-row items-center gap-3 max-md:flex-col max-md:items-stretch">
+              <TextInput
+                className="min-w-0 flex-1"
                 placeholder="Buscar pet pelo nome"
-                className="w-full rounded-xl border border-slate-200 py-2.5 pr-3 pl-10 text-sm outline-none focus:border-marca focus:ring-2 focus:ring-marca-anel"
+                value={search}
+                onChange={(event) => setSearch(event.currentTarget.value)}
+                leftSection={<FiSearch size={15} />}
+                radius="xl"
+                styles={{
+                  input: {
+                    borderColor: '#e2e8f0',
+                    backgroundColor: '#f8fafc',
+                  },
+                }}
               />
-            </label>
-            <select
-              value={species}
-              onChange={(event) => setSpecies(event.target.value)}
-              className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-marca"
-            >
-              <option value="Todas">Todas as espécies</option>
-              {SPECIES.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <select
-              value={sort}
-              onChange={(event) =>
-                setSort(
-                  event.target.value as (typeof SORT_OPTIONS)[number]['id'],
-                )
-              }
-              className="rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-marca"
-            >
-              {SORT_OPTIONS.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
+              <NativeSelect
+                className="w-44 max-md:w-full"
+                value={species}
+                onChange={(event) => setSpecies(event.currentTarget.value)}
+                data={[
+                  { value: 'Todas', label: 'Todas as espécies' },
+                  ...SPECIES.map((item) => ({ value: item, label: item })),
+                ]}
+                radius="xl"
+                styles={{
+                  input: {
+                    borderColor: '#e2e8f0',
+                    backgroundColor: '#f8fafc',
+                  },
+                }}
+              />
+              <NativeSelect
+                className="w-44 max-md:w-full"
+                value={sort}
+                onChange={(event) =>
+                  setSort(
+                    event.currentTarget
+                      .value as (typeof SORT_OPTIONS)[number]['id'],
+                  )
+                }
+                data={SORT_OPTIONS.map((item) => ({
+                  value: item.id,
+                  label: item.label,
+                }))}
+                radius="xl"
+                styles={{
+                  input: {
+                    borderColor: '#e2e8f0',
+                    backgroundColor: '#f8fafc',
+                  },
+                }}
+              />
+              <Button
+                radius="xl"
+                variant="gradient"
+                gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
+                className="shrink-0 max-md:w-full"
+                onClick={() => openForm()}
+              >
+                + Adicionar pet
+              </Button>
+            </div>
           </div>
 
           {filtered.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
-              <Text size="sm" c="dimmed">
+              <Text size="sm" c="#94a3b8">
                 Nenhum pet encontrado.
               </Text>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid grid-cols-3 gap-4 max-lg:grid-cols-2 max-md:grid-cols-1">
               {filtered.map((pet) => (
                 <CardPet
                   key={pet.id}
@@ -193,10 +162,6 @@ export function Pets() {
           />
         )}
       </div>
-
-      <Text size="xs" c="dimmed" ta="center" pt={8}>
-        Protótipo com dados de exemplo.
-      </Text>
     </div>
   )
 }
