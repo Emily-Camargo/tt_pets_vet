@@ -1,5 +1,6 @@
 'use client'
 
+import { Button, Group, Text, Title } from '@mantine/core'
 import { useState, type FormEvent, type ReactNode } from 'react'
 
 import { cx } from '@/core/functions/format'
@@ -55,23 +56,22 @@ export function PetForm({
   }
 
   return (
-    <aside className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-slate-900">
-          {pet ? 'Editar pet' : 'Novo pet'}
-        </h2>
-        <button
-          type="button"
+    <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+      <Group justify="space-between" mb="md">
+        <Title order={3}>{pet ? 'Editar pet' : 'Novo pet'}</Title>
+        <Button
+          variant="subtle"
+          color="gray"
           aria-label="Fechar"
-          className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-50"
           onClick={onClose}
+          px="xs"
         >
           ×
-        </button>
-      </div>
+        </Button>
+      </Group>
       <form className="flex flex-col gap-3" onSubmit={save}>
         <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-marca-borda bg-[#fbf8ff] px-4 py-8 text-sm font-medium text-marca">
-          <span className="text-2xl">📷</span>
+          <Text size="xl">📷</Text>
           Adicionar foto do pet
           <input
             type="file"
@@ -110,7 +110,9 @@ export function PetForm({
         </Field>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Espécie</p>
+          <Text size="sm" fw={500} mb={8}>
+            Espécie
+          </Text>
           <div className="grid grid-cols-3 gap-2">
             {SPECIES.map((item) => (
               <Choice
@@ -173,7 +175,9 @@ export function PetForm({
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Castrado</p>
+          <Text size="sm" fw={500} mb={8}>
+            Castrado
+          </Text>
           <div className="grid grid-cols-2 gap-2">
             <Choice active={neutered} onClick={() => setNeutered(true)}>
               Sim
@@ -202,30 +206,25 @@ export function PetForm({
           />
         </Field>
 
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
-          >
+        <Group grow mt="sm">
+          <Button radius="xl" variant="default" onClick={onClose}>
             Cancelar
-          </button>
-          <button
-            type="submit"
-            className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-          >
+          </Button>
+          <Button type="submit" radius="xl" color="#7434d6">
             Salvar pet
-          </button>
-        </div>
+          </Button>
+        </Group>
       </form>
-    </aside>
+    </div>
   )
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block text-sm font-medium text-slate-700">
-      <span className="mb-1.5 block">{label}</span>
+      <Text size="sm" fw={500} mb={6} component="span" display="block">
+        {label}
+      </Text>
       {children}
     </label>
   )
@@ -241,17 +240,19 @@ function Choice({
   children: ReactNode
 }) {
   return (
-    <button
+    <Button
       type="button"
-      onClick={onClick}
+      radius="md"
+      variant={active ? 'light' : 'default'}
+      color={active ? '#7434d6' : 'gray'}
       className={cx(
-        'rounded-xl border px-3 py-2 text-sm font-medium transition',
-        active
-          ? 'border-marca bg-[#f6f1fc] text-marca'
-          : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300',
+        active && 'border-marca bg-[#f6f1fc] text-marca',
+        !active && 'border-slate-200 text-slate-600',
       )}
+      onClick={onClick}
+      fullWidth
     >
       {children}
-    </button>
+    </Button>
   )
 }

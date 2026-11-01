@@ -83,7 +83,7 @@ export function LoginForm() {
           Criar conta
         </Link>
       </Text>
-      <ul className="mt-8 space-y-2">
+      <ul className="mt-8 space-y-2 text-center">
         {LOGIN_BENEFITS.map((item) => (
           <li key={item} className="text-sm text-slate-600">
             {item}

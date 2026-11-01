@@ -1,8 +1,17 @@
 'use client'
 
+import {
+  Badge,
+  Button,
+  Group,
+  Switch,
+  Text,
+  Title,
+} from '@mantine/core'
 import { useMemo, useState } from 'react'
 
 import { PlanForm } from '@/app/plans/components/plan-form'
+import { PageHeader } from '@/core/components/page-header'
 import { cx, moeda } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
 import { useUsuario } from '@/core/hooks/use-session'
@@ -42,37 +51,27 @@ export function VetPlans() {
 
   return (
     <div
-      className="space-y-5"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Veterinário
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Planos e cidades
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Defina onde você atende e os planos que o tutor vê em cada cidade.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => openForm()}
-          className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-        >
-          + Novo plano
-        </button>
-      </header>
+      <PageHeader
+        eyebrow="Veterinário"
+        title="Planos e cidades"
+        description="Defina onde você atende e os planos que o tutor vê em cada cidade."
+        actions={
+          <Button radius="xl" color="#7434d6" onClick={() => openForm()}>
+            + Novo plano
+          </Button>
+        }
+      />
 
-      <div className="flex flex-wrap gap-3">
+      <Group gap="sm" wrap="wrap">
         {tabs.map((tab) => {
           const active = activeCity?.id === tab.id
           return (
-            <button
+            <Button
               key={tab.id}
-              type="button"
+              unstyled
               onClick={() => setCityId(tab.id)}
               className={cx(
                 'min-w-[180px] rounded-2xl border px-4 py-3 text-left transition',
@@ -81,35 +80,39 @@ export function VetPlans() {
                   : 'border-slate-200 bg-white hover:border-slate-300',
               )}
             >
-              <p className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                <span className="text-marca">📍</span>
+              <Text size="sm" fw={600} c="#1e293b">
+                <Text span c="#7434d6">
+                  📍{' '}
+                </Text>
                 {tab.nome}
-              </p>
-              <p className="mt-1 text-xs text-slate-400">
+              </Text>
+              <Text size="xs" c="dimmed" mt={4}>
                 {tab.plans} {tab.plans === 1 ? 'plano' : 'planos'} ·{' '}
                 {tab.subscribers}{' '}
                 {tab.subscribers === 1 ? 'assinante' : 'assinantes'}
-              </p>
-            </button>
+              </Text>
+            </Button>
           )
         })}
-        <button
-          type="button"
+        <Button
+          unstyled
           onClick={() =>
             feedback('', 'Inclusão de cidade disponível em breve.')
           }
           className="min-w-[180px] rounded-2xl border border-dashed border-marca/40 px-4 py-3 text-sm font-medium text-marca hover:bg-[#faf7ff]"
         >
           + Adicionar cidade
-        </button>
-      </div>
+        </Button>
+      </Group>
 
       {plans.length === 0 ? (
-        <p className="rounded-3xl border border-dashed border-slate-200 bg-white py-12 text-center text-sm text-slate-400">
-          Nenhum plano nesta cidade.
-        </p>
+        <div className="rounded-3xl border border-dashed border-slate-200 bg-white py-12 text-center shadow-sm">
+          <Text size="sm" c="dimmed">
+            Nenhum plano nesta cidade.
+          </Text>
+        </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
           {plans.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -128,42 +131,50 @@ export function VetPlans() {
         </div>
       )}
 
-      <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-slate-900">
-            Serviços avulsos
-          </h2>
-          <button
-            type="button"
+      <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <Group justify="space-between" align="center">
+          <Title order={4}>Serviços avulsos</Title>
+          <Button
+            variant="subtle"
+            color="#7434d6"
+            size="compact-sm"
             onClick={() =>
               feedback('', 'Cadastro de serviço disponível em breve.')
             }
-            className="text-sm font-medium text-marca hover:underline"
           >
             + Novo serviço
-          </button>
-        </div>
+          </Button>
+        </Group>
         {services.length === 0 ? (
-          <p className="mt-4 text-sm text-slate-400">
+          <Text size="sm" c="dimmed" mt="md">
             Nenhum serviço avulso cadastrado.
-          </p>
+          </Text>
         ) : (
-          <ul className="mt-2 divide-y divide-slate-100">
+          <div className="mt-2 divide-y divide-slate-100">
             {services.map((item) => (
-              <li
+              <div
                 key={item.id}
-                className="grid grid-cols-[1fr_auto_auto] items-center gap-4 py-3.5 text-sm"
+                className="grid grid-cols-[1fr_auto_auto] items-center gap-4 py-3.5"
               >
-                <span className="font-medium text-slate-800">{item.nome}</span>
-                <span className="text-slate-400">{item.duracaoMin} min</span>
-                <span className="min-w-[110px] text-right font-semibold text-slate-800">
+                <Text size="sm" fw={500} c="#1e293b">
+                  {item.nome}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {item.duracaoMin} min
+                </Text>
+                <Text
+                  size="sm"
+                  fw={600}
+                  c="#1e293b"
+                  className="min-w-[110px] text-right"
+                >
                   {item.preco}
-                </span>
-              </li>
+                </Text>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
-      </section>
+      </div>
 
       {open && (
         <PlanForm
@@ -190,82 +201,75 @@ function PlanCard({
   onToggle: () => void
 }) {
   return (
-    <article
+    <div
       className={cx(
         'relative flex flex-col rounded-3xl border bg-white p-5 shadow-sm',
         plan.destaque ? 'border-marca ring-1 ring-marca' : 'border-slate-100',
       )}
     >
       {plan.destaque && (
-        <span className="absolute -top-2.5 left-4 rounded-full bg-marca px-2.5 py-0.5 text-[11px] font-semibold text-white">
+        <Badge
+          radius="xl"
+          color="#7434d6"
+          className="absolute -top-2.5 left-4"
+        >
           Mais vendido
-        </span>
+        </Badge>
       )}
-      <h3 className="text-lg font-semibold text-slate-900">{plan.nome}</h3>
-      <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+      <Title order={4}>{plan.nome}</Title>
+      <Text size="xl" fw={600} c="#0f172a" mt={4}>
         {moeda(plan.precoMensal)}
-        <span className="text-sm font-normal text-slate-400">/mês</span>
-      </p>
+        <Text span size="sm" fw={400} c="dimmed">
+          /mês
+        </Text>
+      </Text>
 
-      <ul className="mt-4 flex-1 space-y-2">
+      <div className="mt-4 flex-1 space-y-2">
         {plan.servicos.slice(0, 5).map((service) => (
-          <li
-            key={service.nome}
-            className={cx(
-              'flex items-start gap-2 text-sm',
-              service.incluso
-                ? 'text-slate-700'
-                : 'text-slate-300 line-through',
-            )}
-          >
-            <span
-              className={cx(
-                'mt-0.5',
-                service.incluso ? 'text-emerald-500' : 'text-slate-300',
-              )}
+          <Group key={service.nome} gap="xs" align="flex-start" wrap="nowrap">
+            <Text
+              size="sm"
+              c={service.incluso ? 'teal' : 'dimmed'}
+              className={!service.incluso ? 'line-through' : undefined}
             >
               {service.incluso ? '✓' : '–'}
-            </span>
-            <span>{service.nome}</span>
-          </li>
+            </Text>
+            <Text
+              size="sm"
+              c={service.incluso ? '#334155' : 'dimmed'}
+              className={!service.incluso ? 'line-through' : undefined}
+            >
+              {service.nome}
+            </Text>
+          </Group>
         ))}
-      </ul>
-
-      <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
-        <p className="text-xs text-slate-400">
-          {subscribers} {subscribers === 1 ? 'assinante' : 'assinantes'}
-        </p>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={plan.ativo}
-          onClick={onToggle}
-          className="flex items-center gap-2 text-xs font-medium text-slate-500"
-        >
-          {plan.ativo ? 'Ativo' : 'Inativo'}
-          <span
-            className={cx(
-              'relative h-5 w-9 rounded-full transition',
-              plan.ativo ? 'bg-marca' : 'bg-slate-200',
-            )}
-          >
-            <span
-              className={cx(
-                'absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition',
-                plan.ativo && 'translate-x-4',
-              )}
-            />
-          </span>
-        </button>
       </div>
 
-      <button
-        type="button"
-        onClick={onEdit}
-        className="mt-3 w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
+      <Group
+        justify="space-between"
+        align="center"
+        wrap="nowrap"
+        className="mt-5 border-t border-slate-100 pt-4"
       >
+        <Text size="xs" c="dimmed">
+          {subscribers} {subscribers === 1 ? 'assinante' : 'assinantes'}
+        </Text>
+        <Group gap="xs" wrap="nowrap">
+          <Text size="xs" c="dimmed">
+            {plan.ativo ? 'Ativo' : 'Inativo'}
+          </Text>
+          <Switch
+            checked={plan.ativo}
+            onChange={onToggle}
+            color="#7434d6"
+            aria-label={plan.ativo ? 'Desativar plano' : 'Ativar plano'}
+          />
+        </Group>
+      </Group>
+
+      <Button radius="xl" variant="default" fullWidth mt="sm" onClick={onEdit}>
         ✎ Editar plano
-      </button>
-    </article>
+      </Button>
+    </div>
   )
 }

@@ -9,7 +9,7 @@ export function AccessPanel({ mode }: { mode: 'login' | 'register' }) {
   const register = mode === 'register'
 
   return (
-    <aside className="relative flex min-h-[34rem] flex-1 flex-col items-center justify-center bg-[#7434d6] px-8 py-16 text-center text-white lg:min-h-screen">
+    <aside className="relative flex min-h-[34rem] w-full flex-1 flex-col items-center justify-center bg-[#7434d6] px-8 py-16 text-center text-white lg:min-h-screen lg:w-1/2">
       <Title order={2} c="white">
         {register
           ? 'Cadastre-se para cuidar do seu pet em casa'

@@ -8,11 +8,19 @@
   --color-marca-clara: #f6f1fc;
   --color-marca-anel: #efe4ff;
   --color-marca-borda: #e4d4f7;
+  --color-mint: #14b8a6;
+  --color-mint-clara: #f0fdfa;
+  --color-sky: #0ea5e9;
+  --color-sky-clara: #f0f9ff;
+  --color-coral: #f43f5e;
+  --color-coral-clara: #fff1f2;
+  --color-amber: #f59e0b;
+  --color-amber-clara: #fffbeb;
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f5f7fb;
+  --foreground: #334155;
   --primary-color: #7434d6;
   --input-accent: #7434d6;
   --font-family: "Segoe UI", "Trebuchet MS", sans-serif;

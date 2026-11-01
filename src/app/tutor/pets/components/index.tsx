@@ -6,9 +6,11 @@ import {
   Shield,
   Vaccines,
 } from '@mui/icons-material'
+import { Button, Text } from '@mantine/core'
 import { useMemo, useState } from 'react'
 
 import { Metric } from '@/app/home/components/frame'
+import { PageHeader } from '@/core/components/page-header'
 import { useUsuario } from '@/core/hooks/use-session'
 import type { Pet } from '@/core/interfaces/types'
 
@@ -67,31 +69,21 @@ export function Pets() {
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Tutor
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Meus pets
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Cadastre seus pets e acompanhe a saúde de cada um.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => openForm()}
-          className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-        >
-          + Adicionar pet
-        </button>
-      </header>
+      <PageHeader
+        eyebrow="Tutor"
+        title="Meus pets"
+        description="Cadastre seus pets e acompanhe a saúde de cada um."
+        actions={
+          <Button radius="xl" color="#7434d6" onClick={() => openForm()}>
+            + Adicionar pet
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <Metric
           icon={<PetsIcon sx={{ fontSize: 18 }} />}
           tone="bg-sky-50 text-sky-600"
@@ -125,12 +117,12 @@ export function Pets() {
       <div
         className={`grid w-full gap-4 lg:gap-6 ${open ? 'xl:grid-cols-[minmax(0,1fr)_420px]' : ''}`}
       >
-        <div className="space-y-4">
+        <div className="grid gap-4">
           <div className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm lg:flex-row">
             <label className="relative flex-1">
-              <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
+              <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-slate-400">
                 🔍
-              </span>
+              </div>
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -168,11 +160,13 @@ export function Pets() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500">
-              Nenhum pet encontrado.
+            <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
+              <Text size="sm" c="dimmed">
+                Nenhum pet encontrado.
+              </Text>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-4">
               {filtered.map((pet) => (
                 <CardPet
                   key={pet.id}
@@ -200,9 +194,9 @@ export function Pets() {
         )}
       </div>
 
-      <p className="pt-2 text-center text-xs text-slate-400">
+      <Text size="xs" c="dimmed" ta="center" pt={8}>
         Protótipo com dados de exemplo.
-      </p>
+      </Text>
     </div>
   )
 }

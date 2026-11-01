@@ -1,5 +1,7 @@
 'use client'
 
+import { Badge, Button, Group, Text } from '@mantine/core'
+
 import { cx } from '@/core/functions/format'
 import type { Consulta } from '@/core/interfaces/types'
 
@@ -34,15 +36,15 @@ export function CardBooking({
   const status = statusUi(appointment.status)
 
   return (
-    <article className="flex flex-col gap-3 border-b border-slate-100 py-4 last:border-b-0 lg:flex-row lg:items-center lg:gap-4 xl:gap-6">
+    <div className="flex flex-col gap-3 border-b border-slate-100 py-4 last:border-b-0 lg:flex-row lg:items-center lg:gap-4 xl:gap-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-slate-100 bg-white text-center leading-tight">
-          <span className="text-[10px] font-semibold tracking-wide text-marca">
+          <Text size="xs" fw={600} c="#7434d6">
             {stamp.month}
-          </span>
-          <span className="text-lg font-semibold text-slate-900">
+          </Text>
+          <Text size="lg" fw={600}>
             {stamp.day}
-          </span>
+          </Text>
         </div>
 
         <div
@@ -55,60 +57,59 @@ export function CardBooking({
         </div>
 
         <div className="min-w-0">
-          <p className="font-semibold text-slate-900">
-            {appointment.tipo ?? appointment.motivo}
-          </p>
-          <p className="truncate text-sm text-slate-500">
+          <Text fw={600}>{appointment.tipo ?? appointment.motivo}</Text>
+          <Text size="sm" c="dimmed" truncate>
             {petName} · {vetName}
-          </p>
+          </Text>
         </div>
       </div>
 
       <div className="grid min-w-0 flex-1 gap-2 text-sm text-slate-600 sm:grid-cols-2 lg:max-w-xl">
-        <p className="truncate">🕒 {whenLabel(appointment.dataHora)}</p>
-        <p className="truncate">
+        <Text size="sm" truncate>
+          🕒 {whenLabel(appointment.dataHora)}
+        </Text>
+        <Text size="sm" truncate>
           📍 {appointment.endereco ?? 'Endereço não informado'}
-        </p>
+        </Text>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 lg:justify-end">
-        <span
-          className={cx(
-            'rounded-full px-2.5 py-1 text-[11px] font-medium',
-            status.tone,
-          )}
-        >
+      <Group gap="xs" className="shrink-0 lg:justify-end">
+        <Badge className={status.tone} variant="light" radius="xl">
           {status.label}
-        </span>
+        </Badge>
         {mode === 'upcoming' && (
           <>
-            <button
-              type="button"
+            <Button
+              radius="xl"
+              variant="default"
+              size="compact-sm"
               onClick={onReschedule}
-              className="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
               Reagendar
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              radius="xl"
+              variant="default"
+              size="compact-sm"
               aria-label="Mais opções"
               onClick={onCancel}
-              className="grid h-8 w-8 place-items-center rounded-full border border-slate-200 text-slate-500 hover:bg-slate-50"
+              px="xs"
             >
               ···
-            </button>
+            </Button>
           </>
         )}
         {mode === 'done' && (
-          <button
-            type="button"
+          <Button
+            radius="xl"
+            variant="default"
+            size="compact-sm"
             onClick={onReceipt}
-            className="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Ver receita
-          </button>
+          </Button>
         )}
-      </div>
-    </article>
+      </Group>
+    </div>
   )
 }

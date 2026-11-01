@@ -1,15 +1,18 @@
 'use client'
 
+import { Badge, Button, Group, Table, Text, Title } from '@mantine/core'
+
+import { PageHeader } from '@/core/components/page-header'
 import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsivePie } from '@nivo/pie'
 import { useMemo, useState, type ReactNode } from 'react'
 
-import { cx, moeda } from '@/core/functions/format'
+import { moeda } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
 import { useUsuario } from '@/core/hooks/use-session'
 
-import { buildFinance, receiptLabel, receiptTone } from '../utils/functions'
+import { buildFinance, receiptLabel } from '../utils/functions'
 
 const BRAND = '#7434d6'
 const BRAND_SOFT = '#c4a6f2'
@@ -36,48 +39,40 @@ export function Dashboard() {
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Veterinário
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Financeiro
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Receitas de planos e atendimentos avulsos.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700"
-          >
-            {finance.monthLabel} ›
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              feedback('', 'Exportação disponível no protótipo em breve.')
-            }
-            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-300"
-          >
-            ↓ Exportar
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Veterinário"
+        title="Financeiro"
+        description="Receitas de planos e atendimentos avulsos."
+        actions={
+          <>
+            <Button radius="xl" variant="light" color="violet">
+              {finance.monthLabel} ›
+            </Button>
+            <Button
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: '#7434d6', to: '#0ea5e9', deg: 135 }}
+              onClick={() =>
+                feedback('', 'Exportação disponível no protótipo em breve.')
+              }
+            >
+              ↓ Exportar
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <Metric
           label="Receita do mês"
           value={moeda(finance.receitaMes)}
           detail={
-            <span className="text-emerald-600">
+            <Text size="xs" c="teal">
               +{finance.crescimento}% sobre o mês anterior
-            </span>
+            </Text>
           }
         />
         <Metric
@@ -94,74 +89,86 @@ export function Dashboard() {
           label="Inadimplência"
           value={moeda(finance.inadimplencia)}
           detail={
-            <span className="text-rose-600">
+            <Text size="xs" c="red">
               {finance.clientesAtrasados} clientes
-            </span>
+            </Text>
           }
         />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-        <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold text-slate-900">
-              Recebimentos
-            </h2>
-            <button
-              type="button"
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <Group justify="space-between" align="center">
+            <Title order={4}>Recebimentos</Title>
+            <Button
+              variant="subtle"
+              color="#7434d6"
+              size="compact-sm"
               onClick={() => setShowAll((value) => !value)}
-              className="text-sm font-medium text-marca hover:underline"
             >
               {showAll ? 'Ver menos' : 'Ver todos'}
-            </button>
-          </div>
+            </Button>
+          </Group>
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[520px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-100 text-xs tracking-wide text-slate-400 uppercase">
-                  <th className="pb-3 font-medium">Cliente</th>
-                  <th className="pb-3 font-medium">Vencimento</th>
-                  <th className="pb-3 font-medium">Valor</th>
-                  <th className="pb-3 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table
+              horizontalSpacing="sm"
+              verticalSpacing="md"
+              className="min-w-[520px]"
+            >
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Cliente</Table.Th>
+                  <Table.Th>Vencimento</Table.Th>
+                  <Table.Th>Valor</Table.Th>
+                  <Table.Th>Status</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
                 {receipts.map((row) => (
-                  <tr key={row.id} className="border-b border-slate-50">
-                    <td className="py-3.5 pr-3">
-                      <p className="font-semibold text-slate-800">
+                  <Table.Tr key={row.id}>
+                    <Table.Td>
+                      <Text size="sm" fw={600} c="#1e293b">
                         {row.cliente}
-                      </p>
-                      <p className="text-xs text-slate-400">{row.detalhe}</p>
-                    </td>
-                    <td className="py-3.5 pr-3 text-slate-600">
-                      {row.vencimento}
-                    </td>
-                    <td className="py-3.5 pr-3 font-medium text-slate-800">
-                      {moeda(row.valor)}
-                    </td>
-                    <td className="py-3.5">
-                      <span
-                        className={cx(
-                          'rounded-full px-2.5 py-1 text-xs font-medium',
-                          receiptTone(row.status),
-                        )}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {row.detalhe}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm" c="dimmed">
+                        {row.vencimento}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm" fw={500}>
+                        {moeda(row.valor)}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge
+                        radius="xl"
+                        variant="light"
+                        color={
+                          row.status === 'pago'
+                            ? 'teal'
+                            : row.status === 'atrasado'
+                              ? 'yellow'
+                              : 'gray'
+                        }
                       >
                         {receiptLabel(row.status)}
-                      </span>
-                    </td>
-                  </tr>
+                      </Badge>
+                    </Table.Td>
+                  </Table.Tr>
                 ))}
-              </tbody>
-            </table>
+              </Table.Tbody>
+            </Table>
           </div>
-        </section>
+        </div>
 
-        <div className="space-y-4">
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">
-              Receita por mês
-            </h2>
+        <div className="grid gap-4">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Title order={4}>Receita por mês</Title>
             <div className="mt-2 h-56">
               <ResponsiveBar
                 data={finance.monthly}
@@ -197,36 +204,32 @@ export function Dashboard() {
                 ]}
               />
             </div>
-          </section>
+          </div>
 
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">
-              Por cidade
-            </h2>
-            <ul className="mt-3 divide-y divide-slate-100">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Title order={4}>Por cidade</Title>
+            <div className="mt-3 divide-y divide-slate-100">
               {finance.byCity.map((city) => (
-                <li
+                <div
                   key={city.id}
-                  className="flex items-center justify-between py-3 text-sm"
+                  className="flex items-center justify-between py-3"
                 >
-                  <span className="font-medium text-slate-800">
+                  <Text size="sm" fw={500} c="#1e293b">
                     {city.label}
-                  </span>
-                  <span className="font-semibold text-slate-900">
+                  </Text>
+                  <Text size="sm" fw={600}>
                     {moeda(city.value)}
-                  </span>
-                </li>
+                  </Text>
+                </div>
               ))}
-            </ul>
-          </section>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
-          <h2 className="text-base font-semibold text-slate-900">
-            Evolução da receita
-          </h2>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
+          <Title order={4}>Evolução da receita</Title>
           <div className="mt-2 h-64">
             <ResponsiveLine
               data={lineData}
@@ -256,12 +259,10 @@ export function Dashboard() {
               useMesh
             />
           </div>
-        </section>
+        </div>
 
-        <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">
-            Status dos recebimentos
-          </h2>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <Title order={4}>Status dos recebimentos</Title>
           <div className="mt-2 h-64">
             <ResponsivePie
               data={finance.statusMix}
@@ -286,14 +287,12 @@ export function Dashboard() {
               ]}
             />
           </div>
-        </section>
+        </div>
       </div>
 
       {finance.byPlan.length > 0 && (
-        <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-semibold text-slate-900">
-            MRR por plano
-          </h2>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <Title order={4}>MRR por plano</Title>
           <div className="mt-2 h-56">
             <ResponsiveBar
               data={finance.byPlan}
@@ -316,7 +315,7 @@ export function Dashboard() {
               }}
             />
           </div>
-        </section>
+        </div>
       )}
     </div>
   )
@@ -332,12 +331,16 @@ function Metric({
   detail: ReactNode
 }) {
   return (
-    <article className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+    <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+      <Text size="sm" c="dimmed">
+        {label}
+      </Text>
+      <Text size="xl" fw={600} c="#475569" mt={8}>
         {value}
-      </p>
-      <p className="mt-1 text-xs text-slate-400">{detail}</p>
-    </article>
+      </Text>
+      <Text size="xs" c="dimmed" mt={4}>
+        {detail}
+      </Text>
+    </div>
   )
 }

@@ -1,7 +1,10 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { Button, Group, Switch, Text, Title } from '@mantine/core'
+
+import { PageHeader } from '@/core/components/page-header'
 import { useRouter } from 'next/navigation'
+import { useMemo, useState } from 'react'
 
 import { cx, hora } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
@@ -69,63 +72,69 @@ export function Schedule() {
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Veterinário
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Agenda
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {weekLabel(weekDays(anchor))} · {marked}{' '}
-            {marked === 1 ? 'visita marcada' : 'visitas marcadas'}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-full border border-slate-200 bg-white p-1">
-            <button
-              type="button"
-              onClick={goToday}
-              className={cx(
-                'rounded-full px-3 py-1.5 text-sm font-medium transition',
-                view === 'today'
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-500 hover:text-slate-800',
-              )}
+      <PageHeader
+        eyebrow="Veterinário"
+        title="Agenda"
+        description={`${weekLabel(weekDays(anchor))} · ${marked} ${
+          marked === 1 ? 'visita marcada' : 'visitas marcadas'
+        }`}
+        actions={
+          <>
+            <Group
+              gap={4}
+              className="rounded-full border border-slate-200 bg-white p-1"
             >
-              Hoje
-            </button>
-            <button
-              type="button"
-              onClick={goWeek}
-              className={cx(
-                'rounded-full px-3 py-1.5 text-sm font-medium transition',
-                view === 'week'
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-500 hover:text-slate-800',
-              )}
+              <Button
+                radius="xl"
+                size="compact-sm"
+                variant={view === 'today' ? 'gradient' : 'subtle'}
+                gradient={
+                  view === 'today'
+                    ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                    : undefined
+                }
+                color={view === 'today' ? undefined : 'gray'}
+                onClick={goToday}
+              >
+                Hoje
+              </Button>
+              <Button
+                radius="xl"
+                size="compact-sm"
+                variant={view === 'week' ? 'gradient' : 'subtle'}
+                gradient={
+                  view === 'week'
+                    ? { from: '#7434d6', to: '#a855f7', deg: 135 }
+                    : undefined
+                }
+                color={view === 'week' ? undefined : 'gray'}
+                onClick={goWeek}
+              >
+                Semana ›
+              </Button>
+            </Group>
+            <Button
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: '#7434d6', to: '#a855f7', deg: 135 }}
+              onClick={() =>
+                feedback(
+                  '',
+                  'Novo agendamento disponível no protótipo em breve.',
+                )
+              }
             >
-              Semana ›
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={() =>
-              feedback('', 'Novo agendamento disponível no protótipo em breve.')
-            }
-            className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-          >
-            + Novo agendamento
-          </button>
-        </div>
-      </header>
+              + Novo agendamento
+            </Button>
+          </>
+        }
+      />
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <section className="min-w-0 overflow-x-auto rounded-3xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
+        <div className="min-w-0 overflow-x-auto rounded-3xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
           <div
             className="min-w-[720px]"
             style={{
@@ -146,22 +155,21 @@ export function Schedule() {
                     isToday ? 'bg-[#f6f1fc]' : 'bg-slate-50',
                   )}
                 >
-                  <p
-                    className={cx(
-                      'text-[11px] font-semibold tracking-wide uppercase',
-                      isToday ? 'text-marca' : 'text-slate-400',
-                    )}
+                  <Text
+                    size="xs"
+                    fw={600}
+                    tt="uppercase"
+                    c={isToday ? '#7434d6' : 'dimmed'}
                   >
                     {header.weekday}
-                  </p>
-                  <p
-                    className={cx(
-                      'text-lg font-semibold',
-                      isToday ? 'text-marca' : 'text-slate-800',
-                    )}
+                  </Text>
+                  <Text
+                    size="lg"
+                    fw={600}
+                    c={isToday ? '#7434d6' : '#1e293b'}
                   >
                     {header.day}
-                  </p>
+                  </Text>
                 </div>
               )
             })}
@@ -171,13 +179,15 @@ export function Schedule() {
               style={{ height: (DAY_END - DAY_START) * HOUR_PX }}
             >
               {HOURS.map((hour) => (
-                <div
+                <Text
                   key={hour}
-                  className="absolute right-1 text-[11px] text-slate-400"
+                  size="xs"
+                  c="dimmed"
+                  className="absolute right-1"
                   style={{ top: (hour - DAY_START) * HOUR_PX - 6 }}
                 >
                   {String(hour).padStart(2, '0')}:00
-                </div>
+                </Text>
               ))}
             </div>
 
@@ -212,9 +222,9 @@ export function Schedule() {
                       }}
                       title={block.motivo}
                     >
-                      <span className="font-semibold">
+                      <Text span size="xs" fw={600}>
                         {hora(block.inicio)}
-                      </span>{' '}
+                      </Text>{' '}
                       {block.motivo}
                     </div>
                   ))}
@@ -226,12 +236,14 @@ export function Schedule() {
                     )
                     const tone = appointmentTone(item, city?.nome)
                     return (
-                      <button
+                      <Button
                         key={item.id}
-                        type="button"
+                        unstyled
                         onClick={() => {
                           if (consultaAtiva(item.status)) {
-                            router.push(`/veterinarian/appointments/${item.id}`)
+                            router.push(
+                              `/veterinarian/appointments/${item.id}`,
+                            )
                           }
                         }}
                         className={cx(
@@ -243,36 +255,35 @@ export function Schedule() {
                           height: heightPx(item.dataHora),
                         }}
                       >
-                        <span className="font-semibold">
+                        <Text span size="xs" fw={600}>
                           {hora(item.dataHora)} {pet?.nome}
-                        </span>
-                        <span className="mt-0.5 block truncate opacity-80">
+                        </Text>
+                        <Text size="xs" className="mt-0.5 truncate opacity-80">
                           {item.motivo}
-                        </span>
-                      </button>
+                        </Text>
+                      </Button>
                     )
                   })}
                 </div>
               )
             })}
           </div>
-        </section>
+        </div>
 
-        <aside className="space-y-4">
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">
-                Horários de atendimento
-              </h2>
-              <button
-                type="button"
+        <div className="grid gap-4">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Group justify="space-between" align="center">
+              <Title order={4}>Horários de atendimento</Title>
+              <Button
+                variant="subtle"
+                color="#7434d6"
+                size="compact-sm"
                 onClick={() => feedback('', 'Edição de horários em breve.')}
-                className="text-sm font-medium text-marca hover:underline"
               >
                 Editar
-              </button>
-            </div>
-            <ul className="mt-4 space-y-3">
+              </Button>
+            </Group>
+            <div className="mt-4 grid gap-3">
               <HourRow
                 label="Seg a sex"
                 value="08:00 às 17:00"
@@ -297,56 +308,59 @@ export function Schedule() {
                   setHours((prev) => ({ ...prev, sunday: !prev.sunday }))
                 }
               />
-            </ul>
-            <div className="mt-4 space-y-1 border-t border-slate-100 pt-3 text-sm text-slate-500">
-              <p>
-                Duração:{' '}
-                <span className="text-slate-700">60 min por visita</span>
-              </p>
-              <p>
-                Intervalo:{' '}
-                <span className="text-slate-700">30 min para deslocamento</span>
-              </p>
             </div>
-          </section>
+            <div className="mt-4 grid gap-1 border-t border-slate-100 pt-3">
+              <Text size="sm" c="dimmed">
+                Duração:{' '}
+                <Text span size="sm" c="#334155">
+                  60 min por visita
+                </Text>
+              </Text>
+              <Text size="sm" c="dimmed">
+                Intervalo:{' '}
+                <Text span size="sm" c="#334155">
+                  30 min para deslocamento
+                </Text>
+              </Text>
+            </div>
+          </div>
 
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">
-                Cidades por dia
-              </h2>
-              <button
-                type="button"
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Group justify="space-between" align="center">
+              <Title order={4}>Cidades por dia</Title>
+              <Button
+                variant="subtle"
+                color="#7434d6"
+                size="compact-sm"
                 onClick={() => feedback('', 'Edição de cidades em breve.')}
-                className="text-sm font-medium text-marca hover:underline"
               >
                 Editar
-              </button>
-            </div>
-            <ul className="mt-4 divide-y divide-slate-100">
+              </Button>
+            </Group>
+            <div className="mt-4 divide-y divide-slate-100">
               {cities.map((city) => (
-                <li
+                <div
                   key={city.id}
-                  className="flex items-start justify-between gap-3 py-3 text-sm"
+                  className="flex items-start justify-between gap-3 py-3"
                 >
-                  <span className="font-medium text-slate-800">
+                  <Text size="sm" fw={500} c="#1e293b">
                     {city.nome}
-                  </span>
-                  <span className="text-right text-slate-500">
+                  </Text>
+                  <Text size="sm" c="dimmed" ta="right">
                     {city.id === 'cidade-marau'
                       ? 'qua à tarde e sáb'
                       : 'seg, ter, qui, sex'}
-                  </span>
-                </li>
+                  </Text>
+                </div>
               ))}
               {cities.length === 0 && (
-                <li className="py-3 text-sm text-slate-400">
+                <Text size="sm" c="dimmed" py="sm">
                   Nenhuma cidade vinculada.
-                </li>
+                </Text>
               )}
-            </ul>
-          </section>
-        </aside>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -364,28 +378,21 @@ function HourRow({
   onToggle: () => void
 }) {
   return (
-    <li className="flex items-center justify-between gap-3">
+    <Group justify="space-between" wrap="nowrap">
       <div>
-        <p className="text-sm font-medium text-slate-800">{label}</p>
-        <p className="text-xs text-slate-400">{value}</p>
+        <Text size="sm" fw={500} c="#1e293b">
+          {label}
+        </Text>
+        <Text size="xs" c="dimmed">
+          {value}
+        </Text>
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={on}
-        onClick={onToggle}
-        className={cx(
-          'relative h-6 w-11 shrink-0 rounded-full transition',
-          on ? 'bg-marca' : 'bg-slate-200',
-        )}
-      >
-        <span
-          className={cx(
-            'absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition',
-            on && 'translate-x-5',
-          )}
-        />
-      </button>
-    </li>
+      <Switch
+        checked={on}
+        onChange={onToggle}
+        color="#7434d6"
+        aria-label={label}
+      />
+    </Group>
   )
 }

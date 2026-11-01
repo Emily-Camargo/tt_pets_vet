@@ -1,5 +1,6 @@
 'use client'
 
+import { Button, Group, Text, Title } from '@mantine/core'
 import { useMemo, useState, type FormEvent } from 'react'
 
 import { cx } from '@/core/functions/format'
@@ -71,62 +72,63 @@ export function BookingForm({
   }
 
   return (
-    <aside className="h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm xl:sticky xl:top-20">
-      <div className="mb-1 flex items-start justify-between gap-3">
+    <div className="h-fit w-full rounded-3xl border border-slate-100 bg-white p-5 shadow-sm xl:sticky xl:top-20">
+      <Group justify="space-between" align="flex-start" mb={4}>
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
-            Nova consulta
-          </h2>
-          <p className="mt-1 text-sm font-medium text-marca">
+          <Title order={3}>Nova consulta</Title>
+          <Text size="sm" fw={500} c="#7434d6" mt={4}>
             {limit == null
               ? 'Visitas ilimitadas'
               : `${used} de ${limit} visitas no mês`}
-          </p>
+          </Text>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="subtle"
+          color="gray"
           aria-label="Fechar"
           onClick={onClose}
-          className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-50"
+          px="xs"
         >
           ×
-        </button>
-      </div>
+        </Button>
+      </Group>
 
       <form className="mt-4 flex flex-col gap-4" onSubmit={save}>
         {block && (
-          <p className="rounded-2xl bg-rose-50 px-3 py-2 text-sm text-rose-600">
+          <Text size="sm" c="red" className="rounded-2xl bg-rose-50 px-3 py-2">
             {block}
-          </p>
+          </Text>
         )}
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Pet</p>
-          <div className="flex flex-wrap gap-2">
+          <Text size="sm" fw={500} mb={8}>
+            Pet
+          </Text>
+          <Group gap="xs">
             {pets.map((pet) => (
-              <button
+              <Button
                 key={pet.id}
                 type="button"
+                radius="xl"
+                size="compact-sm"
+                variant={petId === pet.id ? 'light' : 'default'}
+                color={petId === pet.id ? '#7434d6' : 'gray'}
                 onClick={() => {
                   setPetId(pet.id)
                   setVeterinarianId('')
                   setSlot('')
                 }}
-                className={cx(
-                  'rounded-full border px-3 py-1.5 text-sm font-medium transition',
-                  petId === pet.id
-                    ? 'border-marca bg-[#f6f1fc] text-marca'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300',
-                )}
               >
                 {pet.nome}
-              </button>
+              </Button>
             ))}
-          </div>
+          </Group>
         </div>
 
         <label className="text-sm font-medium text-slate-700">
-          <span className="mb-1.5 block">Tipo</span>
+          <Text size="sm" fw={500} mb={6} component="span" display="block">
+            Tipo
+          </Text>
           <select
             value={type}
             onChange={(event) => setType(event.target.value)}
@@ -138,13 +140,15 @@ export function BookingForm({
               </option>
             ))}
           </select>
-          <span className="mt-1 block text-xs text-slate-400">
+          <Text size="xs" c="dimmed" mt={4}>
             Incluso no plano
-          </span>
+          </Text>
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          <span className="mb-1.5 block">Veterinário</span>
+          <Text size="sm" fw={500} mb={6} component="span" display="block">
+            Veterinário
+          </Text>
           <select
             value={veterinarianId}
             onChange={(event) => {
@@ -163,73 +167,74 @@ export function BookingForm({
         </label>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Dia</p>
+          <Text size="sm" fw={500} mb={8}>
+            Dia
+          </Text>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {days.map((item) => {
               const key = dayKey(item)
               const label = dayLabel(item)
               const active = key === day
               return (
-                <button
+                <Button
                   key={key}
                   type="button"
+                  className="min-w-14 shrink-0"
+                  radius="md"
+                  variant={active ? 'filled' : 'default'}
+                  color={active ? '#7434d6' : 'gray'}
                   onClick={() => {
                     setDay(key)
                     setSlot('')
                   }}
-                  className={cx(
-                    'min-w-14 rounded-2xl border px-2 py-2 text-center transition',
-                    active
-                      ? 'border-marca bg-marca text-white'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300',
-                  )}
+                  styles={{ label: { flexDirection: 'column', gap: 0 } }}
                 >
-                  <span className="block text-[10px] font-semibold tracking-wide">
+                  <Text size="xs" fw={600}>
                     {label.weekday}
-                  </span>
-                  <span className="block text-sm font-semibold">
+                  </Text>
+                  <Text size="sm" fw={600}>
                     {label.day}
-                  </span>
-                </button>
+                  </Text>
+                </Button>
               )
             })}
           </div>
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium text-slate-700">Horário</p>
+          <Text size="sm" fw={500} mb={8}>
+            Horário
+          </Text>
           <div className="grid grid-cols-3 gap-2">
             {slots.map((item) => (
-              <button
+              <Button
                 key={item.iso}
                 type="button"
+                radius="md"
                 disabled={!item.livre}
-                onClick={() => setSlot(item.iso)}
+                variant={slot === item.iso ? 'light' : 'default'}
+                color={slot === item.iso ? '#7434d6' : 'gray'}
                 className={cx(
-                  'rounded-xl border px-2 py-2 text-sm font-medium transition',
                   !item.livre &&
                     'cursor-not-allowed border-slate-100 bg-slate-50 text-slate-300',
-                  item.livre &&
-                    slot === item.iso &&
-                    'border-marca bg-[#f6f1fc] text-marca',
-                  item.livre &&
-                    slot !== item.iso &&
-                    'border-slate-200 text-slate-700 hover:border-slate-300',
                 )}
+                onClick={() => setSlot(item.iso)}
               >
                 {item.label}
-              </button>
+              </Button>
             ))}
             {slots.length === 0 && (
-              <p className="col-span-3 text-sm text-slate-400">
+              <Text size="sm" c="dimmed" className="col-span-3">
                 Sem horários neste dia.
-              </p>
+              </Text>
             )}
           </div>
         </div>
 
         <label className="text-sm font-medium text-slate-700">
-          <span className="mb-1.5 block">Endereço da visita</span>
+          <Text size="sm" fw={500} mb={6} component="span" display="block">
+            Endereço da visita
+          </Text>
           <input
             value={address}
             onChange={(event) => setAddress(event.target.value)}
@@ -239,7 +244,9 @@ export function BookingForm({
         </label>
 
         <label className="text-sm font-medium text-slate-700">
-          <span className="mb-1.5 block">Motivo</span>
+          <Text size="sm" fw={500} mb={6} component="span" display="block">
+            Motivo
+          </Text>
           <textarea
             value={reason}
             onChange={(event) => setReason(event.target.value)}
@@ -248,14 +255,15 @@ export function BookingForm({
           />
         </label>
 
-        <button
+        <Button
           type="submit"
+          radius="xl"
+          color="#7434d6"
           disabled={Boolean(block) || !slot}
-          className="rounded-full bg-marca px-4 py-3 text-sm font-medium text-white hover:bg-marca-forte disabled:cursor-not-allowed disabled:opacity-50"
         >
           Confirmar agendamento
-        </button>
+        </Button>
       </form>
-    </aside>
+    </div>
   )
 }

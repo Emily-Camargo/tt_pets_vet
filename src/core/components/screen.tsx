@@ -1,7 +1,8 @@
 'use client'
 
-import { Text, Title } from '@mantine/core'
 import type { ReactNode } from 'react'
+
+import { PageHeader } from './page-header'
 
 export function Screen({
   title,
@@ -15,18 +16,8 @@ export function Screen({
   children: ReactNode
 }) {
   return (
-    <div className="flex w-full flex-col gap-6">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <Title order={2}>{title}</Title>
-          {description && (
-            <Text c="dimmed" size="sm" mt={4}>
-              {description}
-            </Text>
-          )}
-        </div>
-        {action}
-      </header>
+    <div className="grid w-full gap-6">
+      <PageHeader title={title} description={description} actions={action} />
       {children}
     </div>
   )

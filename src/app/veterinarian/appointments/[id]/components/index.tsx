@@ -1,10 +1,33 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import {
+  Badge,
+  Button,
+  Group,
+  Text,
+  Textarea,
+  TextInput,
+} from '@mantine/core'
 import { useRouter } from 'next/navigation'
+import { useMemo, useState, type ReactNode } from 'react'
+import {
+  FiActivity,
+  FiArrowRight,
+  FiCalendar,
+  FiCheck,
+  FiFileText,
+  FiPlus,
+  FiSave,
+  FiThermometer,
+  FiX,
+} from 'react-icons/fi'
+import { HiOutlineSparkles } from 'react-icons/hi2'
+import { LuWeight } from 'react-icons/lu'
+import { MdOutlineBloodtype } from 'react-icons/md'
 
 import { initials, petTone } from '@/app/tutor/appointments/utils/functions'
 import { ageLabel } from '@/app/tutor/pets/utils/functions'
+import { PageHeader } from '@/core/components/page-header'
 import { cx, hora } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
 import { useUsuario } from '@/core/hooks/use-session'
@@ -96,11 +119,17 @@ export function AppointmentDetail({
   const [nextDose, setNextDose] = useState('')
 
   if (!appointment || !usuario) {
-    return <p className="text-sm text-slate-500">Consulta não encontrada.</p>
+    return (
+      <Text size="sm" c="dimmed">
+        Consulta não encontrada.
+      </Text>
+    )
   }
   if (appointment.veterinarioId !== usuario.veterinarioId) {
     return (
-      <p className="text-sm text-slate-500">Consulta de outro veterinário.</p>
+      <Text size="sm" c="dimmed">
+        Consulta de outro veterinário.
+      </Text>
     )
   }
 
@@ -116,7 +145,7 @@ export function AppointmentDetail({
   )
   const closed =
     appointment.status === 'realizada' || appointment.status === 'cancelada'
-  const allergy = pet?.observacoes?.toLowerCase().includes('alergia')
+  const allergy = pet?.observacoes?.toLowerCase().includes('alerg')
     ? pet.observacoes
     : undefined
 
@@ -203,91 +232,100 @@ export function AppointmentDetail({
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Veterinário
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Atendimento
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {pet?.nome} ·{' '}
-            {(appointment.tipo ?? appointment.motivo).toLowerCase()} · iniciado
-            às {startedAt}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            disabled={closed}
-            onClick={saveDraft}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-300 disabled:opacity-50"
-          >
-            Salvar rascunho
-          </button>
-          <button
-            type="button"
-            disabled={closed}
-            onClick={finish}
-            className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte disabled:opacity-50"
-          >
-            ✓ Finalizar atendimento
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Veterinário"
+        title="Atendimento"
+        description={`${pet?.nome} · ${(appointment.tipo ?? appointment.motivo).toLowerCase()} · iniciado às ${startedAt}`}
+        actions={
+          <>
+            <Button
+              radius="xl"
+              size="sm"
+              variant="light"
+              color="violet"
+              leftSection={<FiSave size={14} />}
+              disabled={closed}
+              onClick={saveDraft}
+            >
+              Salvar rascunho
+            </Button>
+            <Button
+              radius="xl"
+              size="sm"
+              variant="gradient"
+              gradient={{ from: '#7434d6', to: '#a855f7', deg: 135 }}
+              leftSection={<FiCheck size={14} />}
+              disabled={closed}
+              onClick={finish}
+            >
+              Finalizar atendimento
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <div className="space-y-4">
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <span
-                  className={cx(
-                    'inline-flex h-14 w-14 items-center justify-center rounded-2xl text-base font-bold',
-                    petTone(0),
-                  )}
-                >
-                  {initials(pet?.nome ?? 'P')}
-                </span>
-                <div>
-                  <h2 className="text-xl font-semibold text-slate-900">
-                    {pet?.nome}
-                  </h2>
-                  <p className="text-sm text-slate-500">
-                    {pet?.raca} · {pet ? ageLabel(pet.nascimento) : '—'} ·
-                    Tutora {tutor?.nome}
-                  </p>
-                </div>
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.85fr)]">
+        <div className="grid gap-4">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <div className="flex items-start gap-3">
+              <div
+                className={cx(
+                  'grid h-12 w-12 shrink-0 place-items-center rounded-full text-sm font-semibold',
+                  petTone(0),
+                )}
+              >
+                {initials(pet?.nome ?? 'P')}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {allergy && (
-                  <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-                    ⚠️ {allergy}
-                  </span>
-                )}
-                {plan && (
-                  <span className="rounded-full bg-[#f6f1fc] px-3 py-1 text-xs font-semibold text-marca">
-                    {plan.nome}
-                  </span>
-                )}
+              <div className="min-w-0 flex-1">
+                <Text size="md" fw={600} c="#334155">
+                  {pet?.nome}
+                </Text>
+                <Text size="sm" c="dimmed" mt={2}>
+                  {pet?.raca} · {pet ? ageLabel(pet.nascimento) : '—'} ·{' '}
+                  {tutor?.nome}
+                </Text>
+                <Group gap={6} mt={8} wrap="wrap">
+                  {allergy && (
+                    <Badge
+                      radius="sm"
+                      variant="light"
+                      color="orange"
+                      tt="none"
+                      size="sm"
+                    >
+                      {allergy}
+                    </Badge>
+                  )}
+                  {plan && (
+                    <Badge
+                      radius="sm"
+                      variant="light"
+                      color="violet"
+                      tt="none"
+                      size="sm"
+                    >
+                      {plan.nome}
+                    </Badge>
+                  )}
+                </Group>
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <h3 className="text-base font-semibold text-slate-900">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Text size="sm" fw={600} c="#64748b" mb="md">
               Exame físico
-            </h3>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            </Text>
+            <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
               <Field
                 label="Peso"
                 value={peso}
                 onChange={setPeso}
                 suffix="kg"
+                icon={<LuWeight size={15} />}
                 disabled={closed}
               />
               <Field
@@ -295,6 +333,7 @@ export function AppointmentDetail({
                 value={temp}
                 onChange={setTemp}
                 suffix="°C"
+                icon={<FiThermometer size={15} />}
                 disabled={closed}
               />
               <Field
@@ -302,152 +341,181 @@ export function AppointmentDetail({
                 value={fc}
                 onChange={setFc}
                 suffix="bpm"
+                icon={<FiActivity size={15} />}
                 disabled={closed}
               />
               <Field
                 label="Mucosas"
                 value={mucosas}
                 onChange={setMucosas}
+                icon={<MdOutlineBloodtype size={16} />}
                 disabled={closed}
               />
             </div>
-            <label className="mt-4 block">
-              <span className="text-xs font-medium text-slate-500">
-                Queixa e anamnese
-              </span>
-              <textarea
-                value={queixa}
-                disabled={closed}
-                onChange={(event) => setQueixa(event.target.value)}
-                rows={3}
-                className="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-marca"
-              />
-            </label>
-            <label className="mt-3 block">
-              <span className="text-xs font-medium text-slate-500">
-                Diagnóstico
-              </span>
-              <textarea
-                value={diagnostico}
-                disabled={closed}
-                onChange={(event) => setDiagnostico(event.target.value)}
-                rows={2}
-                className="mt-1.5 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-marca"
-              />
-            </label>
-          </section>
 
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-base font-semibold text-slate-900">
+            <Textarea
+              label="Queixa e anamnese"
+              value={queixa}
+              disabled={closed}
+              onChange={(event) => setQueixa(event.target.value)}
+              minRows={3}
+              radius="md"
+              mt="lg"
+              styles={{
+                label: { color: '#64748b', fontWeight: 600, fontSize: 13 },
+              }}
+            />
+            <Textarea
+              label="Diagnóstico"
+              value={diagnostico}
+              disabled={closed}
+              onChange={(event) => setDiagnostico(event.target.value)}
+              minRows={2}
+              radius="md"
+              mt="md"
+              styles={{
+                label: { color: '#64748b', fontWeight: 600, fontSize: 13 },
+              }}
+            />
+          </div>
+
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Group justify="space-between" align="center" mb="md">
+              <Text size="sm" fw={600} c="#64748b">
                 Receita
-              </h3>
-              <button
-                type="button"
+              </Text>
+              <Button
+                variant="subtle"
+                color="#7434d6"
+                size="compact-sm"
+                leftSection={<FiPlus size={14} />}
                 disabled={closed}
                 onClick={() => setMeds((prev) => [...prev, newMed()])}
-                className="text-sm font-medium text-marca hover:underline disabled:opacity-50"
               >
-                + Adicionar medicamento
-              </button>
-            </div>
-            <div className="mt-4 space-y-2">
+                Adicionar medicamento
+              </Button>
+            </Group>
+
+            <div className="grid gap-2">
+              <div className="hidden grid-cols-[1.2fr_1fr_0.7fr_40px] gap-2 px-1 sm:grid">
+                <Text size="xs" c="dimmed">
+                  Medicamento
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Posologia
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Duração
+                </Text>
+                <span />
+              </div>
               {meds.map((med) => (
                 <div
                   key={med.id}
-                  className="grid gap-2 sm:grid-cols-[1.2fr_1fr_0.7fr_auto]"
+                  className="grid gap-2 sm:grid-cols-[1.2fr_1fr_0.7fr_40px]"
                 >
-                  <input
+                  <TextInput
                     value={med.nome}
                     disabled={closed}
                     placeholder="Medicamento"
+                    radius="md"
                     onChange={(event) =>
                       setMeds((prev) =>
                         prev.map((item) =>
                           item.id === med.id
-                            ? { ...item, nome: event.target.value }
+                            ? { ...item, nome: event.currentTarget.value }
                             : item,
                         ),
                       )
                     }
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-marca"
                   />
-                  <input
+                  <TextInput
                     value={med.uso}
                     disabled={closed}
                     placeholder="Posologia"
+                    radius="md"
                     onChange={(event) =>
                       setMeds((prev) =>
                         prev.map((item) =>
                           item.id === med.id
-                            ? { ...item, uso: event.target.value }
+                            ? { ...item, uso: event.currentTarget.value }
                             : item,
                         ),
                       )
                     }
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-marca"
                   />
-                  <input
+                  <TextInput
                     value={med.duracao}
                     disabled={closed}
                     placeholder="Duração"
+                    radius="md"
                     onChange={(event) =>
                       setMeds((prev) =>
                         prev.map((item) =>
                           item.id === med.id
-                            ? { ...item, duracao: event.target.value }
+                            ? { ...item, duracao: event.currentTarget.value }
                             : item,
                         ),
                       )
                     }
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-marca"
                   />
-                  <button
-                    type="button"
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    radius="md"
                     disabled={closed}
                     onClick={() =>
                       setMeds((prev) =>
                         prev.filter((item) => item.id !== med.id),
                       )
                     }
-                    className="rounded-xl px-3 text-slate-400 hover:bg-slate-100 hover:text-rose-500 disabled:opacity-50"
                     aria-label="Remover"
+                    className="px-0"
                   >
-                    ✕
-                  </button>
+                    <FiX size={16} />
+                  </Button>
                 </div>
               ))}
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button
-                type="button"
+            <Group gap="xs" wrap="wrap" mt="lg">
+              <Button
+                radius="xl"
+                size="compact-sm"
+                variant="light"
+                color="teal"
+                leftSection={<FiFileText size={13} />}
                 disabled={closed}
                 onClick={() => setVaccineOpen((open) => !open)}
-                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 disabled:opacity-50"
               >
-                💉 Registrar vacina
-              </button>
-              <button
-                type="button"
+                Registrar vacina
+              </Button>
+              <Button
+                radius="xl"
+                size="compact-sm"
+                variant="light"
+                color="cyan"
+                leftSection={<FiCalendar size={13} />}
                 disabled={closed}
                 onClick={() =>
                   feedback('', 'Agendamento de retorno disponível em breve.')
                 }
-                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300 disabled:opacity-50"
               >
-                📅 Agendar retorno
-              </button>
-              <button
-                type="button"
+                Agendar retorno
+              </Button>
+              <Button
+                radius="xl"
+                size="compact-sm"
+                variant="light"
+                color="grape"
+                leftSection={<FiFileText size={13} />}
                 onClick={() =>
                   feedback('', 'Pré-visualização de PDF disponível em breve.')
                 }
-                className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:border-slate-300"
               >
-                📄 Pré-visualizar PDF
-              </button>
-            </div>
+                Pré-visualizar PDF
+              </Button>
+            </Group>
 
             {vaccineOpen && (
               <form
@@ -468,127 +536,142 @@ export function AppointmentDetail({
                   setVaccineOpen(false)
                 }}
               >
-                <input
+                <TextInput
                   value={vaccine}
-                  onChange={(event) => setVaccine(event.target.value)}
+                  onChange={(event) => setVaccine(event.currentTarget.value)}
                   placeholder="Vacina"
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                  radius="md"
                 />
-                <input
+                <TextInput
                   type="date"
                   value={appliedOn}
-                  onChange={(event) => setAppliedOn(event.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                  onChange={(event) => setAppliedOn(event.currentTarget.value)}
+                  radius="md"
                 />
-                <input
+                <TextInput
                   type="date"
                   value={nextDose}
-                  onChange={(event) => setNextDose(event.target.value)}
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                  onChange={(event) => setNextDose(event.currentTarget.value)}
+                  radius="md"
                 />
-                <button
+                <Button
                   type="submit"
-                  className="rounded-full bg-marca px-4 py-2 text-sm font-medium text-white sm:col-span-3"
+                  radius="md"
+                  variant="gradient"
+                  gradient={{ from: '#7434d6', to: '#a855f7', deg: 135 }}
+                  className="sm:col-span-3"
                 >
                   Salvar vacina
-                </button>
+                </Button>
               </form>
             )}
-          </section>
+          </div>
         </div>
 
-        <aside className="flex h-fit flex-col rounded-3xl border border-slate-100 bg-white shadow-sm xl:sticky xl:top-4">
+        <div className="flex min-h-[560px] flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm xl:sticky xl:top-4">
           <div className="border-b border-slate-100 px-5 py-4">
-            <h3 className="text-base font-semibold text-slate-900">
-              ✨ Assistente IA
-            </h3>
-            <p className="text-xs text-slate-400">
+            <Group gap={8}>
+              <HiOutlineSparkles size={16} className="text-[#7434d6]" />
+              <Text size="sm" fw={600} c="#334155">
+                Assistente IA
+              </Text>
+            </Group>
+            <Text size="xs" c="dimmed" mt={4}>
               usa o histórico do {pet?.nome}
-            </p>
+            </Text>
           </div>
 
-          <div className="max-h-[420px] space-y-3 overflow-y-auto px-5 py-4">
-            {messages.length === 0 && (
-              <p className="rounded-2xl bg-slate-50 p-3 text-sm text-slate-500">
+          <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+            {messages.length === 0 && suggestions.length === 0 && (
+              <Text size="sm" c="dimmed" className="rounded-2xl bg-slate-50 p-3">
                 Pergunte sobre dose, histórico, interações ou peça um resumo do
                 caso.
-              </p>
+              </Text>
             )}
             {messages.map((message) => (
-              <div
+              <Text
                 key={message.id}
+                size="sm"
                 className={cx(
-                  'rounded-2xl px-3 py-2.5 text-sm whitespace-pre-wrap',
+                  'rounded-2xl px-3 py-2.5 whitespace-pre-wrap',
                   message.autor === 'vet'
-                    ? 'ml-6 bg-marca text-white'
+                    ? 'ml-6 bg-[#7434d6] text-white'
                     : 'mr-2 bg-slate-100 text-slate-700',
                 )}
               >
                 {message.texto}
-              </div>
+              </Text>
             ))}
             {suggestions.map((suggestion) => (
               <div
                 key={`${suggestion.tipo}-${suggestion.titulo}`}
                 className="rounded-2xl border border-[#e4d4f7] bg-[#faf7ff] p-3"
               >
-                <p className="text-sm font-semibold text-marca">
+                <Text size="sm" fw={600} c="#7434d6">
                   {suggestion.titulo}
-                </p>
-                <p className="mt-1 text-sm text-slate-600">
+                </Text>
+                <Text size="sm" c="dimmed" mt={4}>
                   {suggestion.conteudo}
-                </p>
-                <button
-                  type="button"
+                </Text>
+                <Button
+                  variant="subtle"
+                  color="#7434d6"
+                  size="compact-xs"
                   disabled={closed}
                   onClick={() => applySuggestion(suggestion)}
-                  className="mt-2 text-xs font-semibold text-marca hover:underline"
+                  mt={6}
                 >
                   Usar no formulário
-                </button>
+                </Button>
               </div>
             ))}
           </div>
 
-          <div className="mt-auto space-y-3 border-t border-slate-100 px-5 py-4">
-            <div className="flex flex-wrap gap-2">
+          <div className="grid gap-3 border-t border-slate-100 px-5 py-4">
+            <Group gap={6} wrap="wrap">
               {QUICK.map((label) => (
-                <button
+                <Button
                   key={label}
-                  type="button"
+                  radius="xl"
+                  size="compact-xs"
+                  variant="light"
+                  color="violet"
                   disabled={closed}
                   onClick={() => sendChat(label)}
-                  className="rounded-full border border-marca/30 px-2.5 py-1 text-[11px] font-medium text-marca hover:bg-[#f6f1fc] disabled:opacity-50"
                 >
                   {label}
-                </button>
+                </Button>
               ))}
-            </div>
+            </Group>
             <form
-              className="flex gap-2"
+              className="flex items-center gap-2"
               onSubmit={(event) => {
                 event.preventDefault()
                 sendChat()
               }}
             >
-              <input
+              <TextInput
                 value={chat}
                 disabled={closed}
-                onChange={(event) => setChat(event.target.value)}
+                onChange={(event) => setChat(event.currentTarget.value)}
                 placeholder="Pergunte sobre o caso"
-                className="min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-marca"
+                radius="xl"
+                className="min-w-0 flex-1"
               />
-              <button
+              <Button
                 type="submit"
+                radius="xl"
+                variant="gradient"
+                gradient={{ from: '#7434d6', to: '#a855f7', deg: 135 }}
                 disabled={closed}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-marca text-white hover:bg-marca-forte disabled:opacity-50"
                 aria-label="Enviar"
+                className="h-9 w-9 shrink-0 p-0"
               >
-                →
-              </button>
+                <FiArrowRight size={16} />
+              </Button>
             </form>
           </div>
-        </aside>
+        </div>
       </div>
     </div>
   )
@@ -599,30 +682,35 @@ function Field({
   value,
   onChange,
   suffix,
+  icon,
   disabled,
 }: {
   label: string
   value: string
   onChange: (value: string) => void
   suffix?: string
+  icon?: ReactNode
   disabled?: boolean
 }) {
   return (
-    <label className="block">
-      <span className="text-xs font-medium text-slate-500">{label}</span>
-      <div className="relative mt-1.5">
-        <input
-          value={value}
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-marca"
-        />
-        {suffix && (
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-slate-400">
+    <TextInput
+      label={label}
+      value={value}
+      disabled={disabled}
+      onChange={(event) => onChange(event.currentTarget.value)}
+      radius="md"
+      leftSection={icon}
+      rightSection={
+        suffix ? (
+          <Text size="xs" c="dimmed">
             {suffix}
-          </span>
-        )}
-      </div>
-    </label>
+          </Text>
+        ) : undefined
+      }
+      styles={{
+        label: { color: '#64748b', fontWeight: 500, fontSize: 12 },
+        input: { minHeight: 42 },
+      }}
+    />
   )
 }

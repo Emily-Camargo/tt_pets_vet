@@ -1,5 +1,6 @@
 'use client'
 
+import { Text } from '@mantine/core'
 import { CalendarMonth, Groups, MedicalServices } from '@mui/icons-material'
 
 import { hora, moeda, rotuloStatus } from '@/core/functions/format'
@@ -13,7 +14,6 @@ import {
   Metric,
   Panel,
   PanelHead,
-  Shortcut,
 } from './frame'
 import { firstName, sameDay, startOfDay } from '../utils/functions'
 
@@ -92,7 +92,7 @@ export function VeterinarianHome({
         }}
         secondary={{ href: careHref, label: 'Iniciar atendimento' }}
       />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <Metric
           icon={<CalendarMonth sx={{ fontSize: 18 }} />}
           tone="bg-marca-anel text-marca"
@@ -132,15 +132,15 @@ export function VeterinarianHome({
             action="Ver agenda completa"
           />
           {agenda.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-400">
+            <Text size="sm" c="dimmed" mt="md">
               Nenhuma visita por perto.
-            </p>
+            </Text>
           ) : (
-            <ul className="mt-3 divide-y divide-slate-100">
+            <div className="mt-3 divide-y divide-slate-100">
               {agenda.slice(0, 4).map((item) => (
                 <AppointmentRow key={item.id} bank={bank} appointment={item} />
               ))}
-            </ul>
+            </div>
           )}
         </Panel>
         <Panel>
@@ -151,32 +151,6 @@ export function VeterinarianHome({
           />
           <Bars items={week} />
         </Panel>
-      </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Shortcut
-          href="/veterinarian/schedule"
-          icon={<CalendarMonth sx={{ fontSize: 18 }} />}
-          tone="bg-marca-anel text-marca"
-          label="Minha agenda"
-        />
-        <Shortcut
-          href={careHref}
-          icon={<MedicalServices sx={{ fontSize: 18 }} />}
-          tone="bg-sky-50 text-sky-600"
-          label="Atendimento com IA"
-        />
-        <Shortcut
-          href="/veterinarian/clients"
-          icon={<Groups sx={{ fontSize: 18 }} />}
-          tone="bg-amber-50 text-amber-600"
-          label="Meus clientes"
-        />
-        <Shortcut
-          href="/veterinarian/dashboard"
-          icon={<span className="text-base">📈</span>}
-          tone="bg-emerald-50 text-emerald-600"
-          label="Financeiro"
-        />
       </div>
     </HomeFrame>
   )
@@ -194,20 +168,20 @@ function AppointmentRow({
   const city = bank.cidades.find((item) => item.id === appointment.cidadeId)
 
   return (
-    <li className="flex items-center gap-3 py-3">
-      <span className="w-12 shrink-0 text-sm font-semibold text-marca">
+    <div className="flex items-center gap-3 py-3">
+      <Text size="sm" fw={600} c="#7434d6" className="w-12 shrink-0">
         {hora(appointment.dataHora)}
-      </span>
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold text-slate-800">
+      </Text>
+      <div className="min-w-0">
+        <Text size="sm" fw={600} c="#1e293b">
           {pet?.nome} · {appointment.motivo}
-        </span>
-        <span className="block text-xs text-slate-400">
+        </Text>
+        <Text size="xs" c="dimmed">
           {tutor?.nome}
           {city ? ` · ${city.nome}` : ''} · {rotuloStatus(appointment.status)}
-        </span>
-      </span>
-    </li>
+        </Text>
+      </div>
+    </div>
   )
 }
 

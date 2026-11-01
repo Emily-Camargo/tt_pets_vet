@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Badge, Button, Group, Text, Title } from '@mantine/core'
 import Link from 'next/link'
 
 import { cx } from '@/core/functions/format'
@@ -6,13 +7,10 @@ import { cx } from '@/core/functions/format'
 export function HomeFrame({ children }: { children: ReactNode }) {
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
       {children}
-      <p className="pt-2 text-center text-xs text-slate-400">
-        Protótipo com dados de exemplo.
-      </p>
     </div>
   )
 }
@@ -35,36 +33,63 @@ export function Hero({
   mascot: 'dog' | 'paws'
 }) {
   return (
-    <section className="rounded-3xl border border-marca-borda bg-linear-to-br from-white via-white to-marca-clara px-5 py-6 sm:px-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-xl">
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
+    <div className="rounded-3xl border border-marca-borda bg-linear-to-br from-white via-white to-marca-clara px-5 py-6 sm:px-8">
+      <div className="flex flex-row items-center gap-10 max-lg:flex-col max-lg:text-center">
+        <div className="max-w-xl max-lg:mx-auto">
+          <Text
+            size="xs"
+            fw={600}
+            c="#7434d6"
+            tt="uppercase"
+            style={{ letterSpacing: '0.16em' }}
+          >
             {profile}
-          </p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">
+          </Text>
+          <Title order={3} mt={6} fw={600} c="#475569">
             Olá, {name}
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-500">{text}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          </Title>
+          <Text size="sm" c="#94a3b8" mt={6}>
+            {text}
+          </Text>
+          <Group gap="xs" mt="md" className="max-lg:justify-center">
             {chips.map((chip) => (
-              <span
+              <Badge
                 key={chip}
-                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500"
+                radius="xl"
+                variant="light"
+                color="violet"
+                size="sm"
+                tt="none"
+                className="normal-case font-normal"
               >
                 {chip}
-              </span>
+              </Badge>
             ))}
-          </div>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <PillLink href={primary.href}>{primary.label}</PillLink>
-            <PillLink href={secondary.href} light>
+          </Group>
+          <Group gap="sm" mt="md" className="max-lg:justify-center">
+            <Button
+              component={Link}
+              href={primary.href}
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: '#7434d6', to: '#ec4899', deg: 135 }}
+            >
+              {primary.label}
+            </Button>
+            <Button
+              component={Link}
+              href={secondary.href}
+              radius="xl"
+              variant="light"
+              color="violet"
+            >
               {secondary.label}
-            </PillLink>
-          </div>
+            </Button>
+          </Group>
         </div>
         {mascot === 'dog' ? <DogMascot /> : <PawMascot />}
       </div>
-    </section>
+    </div>
   )
 }
 
@@ -82,29 +107,35 @@ export function Metric({
   detail: string
 }) {
   return (
-    <article className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm">
-      <span
+    <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm">
+      <div
         className={cx(
           'grid h-11 w-11 shrink-0 place-items-center rounded-xl',
           tone,
         )}
       >
         {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs text-slate-400">{label}</p>
-        <p className="mt-0.5 text-xl font-semibold text-slate-900">{value}</p>
-        <p className="mt-0.5 text-xs text-slate-400">{detail}</p>
       </div>
-    </article>
+      <div className="min-w-0">
+        <Text size="xs" c="#94a3b8">
+          {label}
+        </Text>
+        <Text size="lg" fw={600} c="#475569" mt={2}>
+          {value}
+        </Text>
+        <Text size="xs" c="#94a3b8" mt={2}>
+          {detail}
+        </Text>
+      </div>
+    </div>
   )
 }
 
 export function Panel({ children }: { children: ReactNode }) {
   return (
-    <section className="rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm sm:px-5">
+    <div className="rounded-2xl border border-slate-100 bg-white px-4 py-4 shadow-sm sm:px-5">
       {children}
-    </section>
+    </div>
   )
 }
 
@@ -118,12 +149,21 @@ export function PanelHead({
   action: string
 }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <h2 className="font-semibold text-slate-900">{title}</h2>
-      <Link href={href} className="text-sm font-medium text-marca">
+    <Group justify="space-between" align="center" gap="sm">
+      <Text size="sm" fw={600} c="#64748b">
+        {title}
+      </Text>
+      <Button
+        component={Link}
+        href={href}
+        variant="light"
+        color="violet"
+        size="compact-sm"
+        radius="xl"
+      >
         {action}
-      </Link>
-    </div>
+      </Button>
+    </Group>
   )
 }
 
@@ -139,17 +179,19 @@ export function Shortcut({
   label: string
 }) {
   return (
-    <Link
+    <Button
+      component={Link}
       href={href}
+      unstyled
       className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-4 text-sm font-medium text-slate-700 shadow-sm transition hover:border-marca-borda"
     >
-      <span
+      <div
         className={cx('grid h-10 w-10 place-items-center rounded-xl', tone)}
       >
         {icon}
-      </span>
+      </div>
       {label}
-    </Link>
+    </Button>
   )
 }
 
@@ -174,59 +216,35 @@ export function Bars({ items }: { items: { label: string; value: number }[] }) {
               height: `${item.value > 0 ? Math.max((item.value / highest) * 100, 18) : 8}%`,
             }}
           />
-          <span className="text-xs text-slate-400 capitalize">
+          <Text size="xs" c="dimmed" tt="capitalize">
             {item.label}
-          </span>
+          </Text>
         </div>
       ))}
     </div>
   )
 }
 
-function PillLink({
-  href,
-  light,
-  children,
-}: {
-  href: string
-  light?: boolean
-  children: ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className={cx(
-        'inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition',
-        light
-          ? 'border border-marca bg-white text-marca hover:bg-marca-clara'
-          : 'bg-marca text-white hover:bg-marca-forte',
-      )}
-    >
-      {children}
-    </Link>
-  )
-}
-
 function DogMascot() {
   return (
-    <div className="relative mx-auto h-36 w-36 shrink-0" aria-hidden>
+    <div className="relative h-36 w-36 shrink-0 max-lg:mx-auto" aria-hidden>
       <div
         className="absolute inset-0 rounded-full border border-dashed border-marca/30"
         style={{ animation: 'tt-girar 28s linear infinite' }}
       />
       <div className="absolute inset-3 rounded-full bg-white shadow-sm" />
-      <span
+      <div
         className="absolute top-1 right-3 text-sm"
         style={{ animation: 'tt-pata 3.2s ease-in-out infinite' }}
       >
         🐾
-      </span>
-      <span
+      </div>
+      <div
         className="absolute bottom-4 left-1 text-sm"
         style={{ animation: 'tt-pata 3.2s ease-in-out 1s infinite' }}
       >
         🐾
-      </span>
+      </div>
       <div
         className="absolute inset-0 grid place-items-center"
         style={{ animation: 'tt-flutuar 3.6s ease-in-out infinite' }}
@@ -239,24 +257,24 @@ function DogMascot() {
 
 function PawMascot() {
   return (
-    <div className="relative mx-auto h-36 w-36 shrink-0" aria-hidden>
+    <div className="relative h-36 w-36 shrink-0 max-lg:mx-auto" aria-hidden>
       <div
         className="absolute inset-0 rounded-full border border-dashed border-marca/30"
         style={{ animation: 'tt-girar 28s linear infinite' }}
       />
       <div className="absolute inset-3 rounded-full bg-white shadow-sm" />
-      <span
+      <div
         className="absolute top-7 left-8 text-3xl text-[#5b4bdb]"
         style={{ animation: 'tt-pata 3.2s ease-in-out infinite' }}
       >
         🐾
-      </span>
-      <span
+      </div>
+      <div
         className="absolute right-7 bottom-7 text-3xl text-[#5b4bdb]"
         style={{ animation: 'tt-pata 3.2s ease-in-out 0.8s infinite' }}
       >
         🐾
-      </span>
+      </div>
     </div>
   )
 }

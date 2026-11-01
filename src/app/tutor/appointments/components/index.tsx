@@ -1,8 +1,10 @@
 'use client'
 
+import { Button, Group, Text, Title } from '@mantine/core'
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+import { PageHeader } from '@/core/components/page-header'
 import { TimeSlot } from '@/core/components/time-slot'
 import { cx } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
@@ -41,35 +43,25 @@ export function Bookings() {
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Tutor
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Consultas
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Visitas em domicílio do seu plano e consultas avulsas.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-        >
-          + Agendar consulta
-        </button>
-      </header>
+      <PageHeader
+        eyebrow="Tutor"
+        title="Consultas"
+        description="Visitas em domicílio do seu plano e consultas avulsas."
+        actions={
+          <Button radius="xl" color="#7434d6" onClick={() => setOpen(true)}>
+            + Agendar consulta
+          </Button>
+        }
+      />
 
       <div
         className={`grid w-full gap-4 lg:gap-6 ${open ? 'xl:grid-cols-[minmax(0,1fr)_420px]' : ''}`}
       >
-        <section className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:p-6">
-          <div className="flex gap-4 border-b border-slate-100">
+        <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:p-6">
+          <Group gap="lg" className="border-b border-slate-100">
             {(
               [
                 ['upcoming', `Próximas ${groups.upcoming.length}`],
@@ -77,26 +69,26 @@ export function Bookings() {
                 ['canceled', `Canceladas ${groups.canceled.length}`],
               ] as const
             ).map(([id, label]) => (
-              <button
+              <Button
                 key={id}
-                type="button"
-                onClick={() => setTab(id)}
+                variant="subtle"
+                color={tab === id ? '#7434d6' : 'gray'}
                 className={cx(
-                  'border-b-2 px-1 pb-3 text-sm font-medium transition',
-                  tab === id
-                    ? 'border-marca text-marca'
-                    : 'border-transparent text-slate-400 hover:text-slate-600',
+                  'rounded-none border-b-2 px-1 pb-3',
+                  tab === id ? 'border-[#7434d6]' : 'border-transparent',
                 )}
+                styles={{ root: { height: 'auto' } }}
+                onClick={() => setTab(id)}
               >
                 {label}
-              </button>
+              </Button>
             ))}
-          </div>
+          </Group>
 
           {list.length === 0 ? (
-            <p className="py-10 text-center text-sm text-slate-400">
+            <Text py={40} ta="center" size="sm" c="dimmed">
               Nenhuma consulta neste filtro.
-            </p>
+            </Text>
           ) : (
             <div>
               {list.map((item) => {
@@ -139,18 +131,17 @@ export function Bookings() {
 
           {tab === 'upcoming' && groups.done.length > 0 && (
             <div className="mt-6 border-t border-slate-100 pt-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900">
-                  Últimas realizadas
-                </h3>
-                <button
-                  type="button"
+              <Group justify="space-between" mb={8}>
+                <Title order={4}>Últimas realizadas</Title>
+                <Button
+                  variant="subtle"
+                  color="#7434d6"
+                  size="compact-sm"
                   onClick={() => setTab('done')}
-                  className="text-sm font-medium text-marca"
                 >
                   Ver todas
-                </button>
-              </div>
+                </Button>
+              </Group>
               {groups.done.slice(0, 2).map((item) => {
                 const pet = pets.find((current) => current.id === item.petId)
                 const petIndex = Math.max(
@@ -174,7 +165,7 @@ export function Bookings() {
               })}
             </div>
           )}
-        </section>
+        </div>
 
         {open && (
           <BookingForm
@@ -188,19 +179,18 @@ export function Bookings() {
       {current && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4">
           <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Remarcar consulta
-              </h2>
-              <button
-                type="button"
+            <Group justify="space-between" mb="md">
+              <Title order={3}>Remarcar consulta</Title>
+              <Button
+                variant="subtle"
+                color="gray"
                 aria-label="Fechar"
                 onClick={() => setRescheduleId(null)}
-                className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-50"
+                px="xs"
               >
                 ×
-              </button>
-            </div>
+              </Button>
+            </Group>
             <form
               className="flex flex-col gap-3"
               onSubmit={(event) => {
@@ -222,21 +212,22 @@ export function Bookings() {
                 onChange={setSlot}
                 label="Novo horário"
               />
-              <button
+              <Button
                 type="submit"
+                radius="xl"
+                color="#7434d6"
                 disabled={!slot}
-                className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
               >
                 Confirmar remarcação
-              </button>
+              </Button>
             </form>
           </div>
         </div>
       )}
 
-      <p className="pt-2 text-center text-xs text-slate-400">
+      <Text size="xs" c="dimmed" ta="center" pt={8}>
         Protótipo com dados de exemplo.
-      </p>
+      </Text>
     </div>
   )
 }

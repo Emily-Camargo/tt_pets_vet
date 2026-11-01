@@ -1,8 +1,8 @@
 'use client'
 
+import { Badge, Button, Group, Text, Title } from '@mantine/core'
 import Link from 'next/link'
 
-import { cx } from '@/core/functions/format'
 import type { Consulta, Pet, Vacina } from '@/core/interfaces/types'
 
 import {
@@ -29,7 +29,7 @@ export function CardPet({
   const visit = nextAppointmentBadge(appointments)
 
   return (
-    <article className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+    <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex gap-4">
           <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-[#f6f1fc] text-3xl">
@@ -45,28 +45,18 @@ export function CardPet({
             )}
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-slate-900">{pet.nome}</h3>
-            <p className="mt-1 text-sm text-slate-500">
+            <Title order={3}>{pet.nome}</Title>
+            <Text size="sm" c="dimmed" mt={4}>
               {pet.especie} · {pet.raca} · {pet.sexo} · {neuteredLabel(pet)}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <span
-                className={cx(
-                  'rounded-full px-2.5 py-1 text-[11px] font-medium',
-                  vaccine.tone,
-                )}
-              >
+            </Text>
+            <Group gap="xs" mt={12}>
+              <Badge className={vaccine.tone} variant="light" radius="xl">
                 {vaccine.label}
-              </span>
-              <span
-                className={cx(
-                  'rounded-full px-2.5 py-1 text-[11px] font-medium',
-                  visit.tone,
-                )}
-              >
+              </Badge>
+              <Badge className={visit.tone} variant="light" radius="xl">
                 {visit.label}
-              </span>
-            </div>
+              </Badge>
+            </Group>
           </div>
         </div>
       </div>
@@ -78,44 +68,54 @@ export function CardPet({
         <Stat label="Última consulta" value={lastVisitLabel(appointments)} />
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        <Link
+      <Group gap="sm" mt={20}>
+        <Button
+          component={Link}
           href="/tutor/appointments"
-          className="rounded-full bg-marca px-4 py-2 text-sm font-medium text-white hover:bg-marca-forte"
+          radius="xl"
+          color="#7434d6"
         >
           Agendar consulta
-        </Link>
-        <Link
+        </Button>
+        <Button
+          component={Link}
           href="/tutor/vaccines"
-          className="rounded-full border border-marca bg-white px-4 py-2 text-sm font-medium text-marca hover:bg-marca-clara"
+          radius="xl"
+          variant="default"
         >
           Carteira de vacinação
-        </Link>
-        <Link
+        </Button>
+        <Button
+          component={Link}
           href="/tutor/history"
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+          radius="xl"
+          variant="default"
         >
           Histórico e receitas
-        </Link>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-        >
+        </Button>
+        <Button radius="xl" variant="default" onClick={onEdit}>
           Editar
-        </button>
-      </div>
-    </article>
+        </Button>
+      </Group>
+    </div>
   )
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
+      <Text
+        size="xs"
+        fw={600}
+        tt="uppercase"
+        c="dimmed"
+        style={{ letterSpacing: '0.05em' }}
+      >
         {label}
-      </p>
-      <p className="mt-1 text-sm font-semibold text-slate-800">{value}</p>
+      </Text>
+      <Text size="sm" fw={600} mt={4}>
+        {value}
+      </Text>
     </div>
   )
 }

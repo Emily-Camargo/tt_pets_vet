@@ -31,9 +31,9 @@ export function Access({ mode }: { mode: 'login' | 'register' }) {
 
   return (
     <div
-      className={`flex min-h-screen flex-col bg-white lg:flex-row ${register ? 'lg:flex-row-reverse' : ''}`}
+      className={`flex min-h-screen bg-white max-lg:flex-col ${register ? 'flex-row-reverse' : 'flex-row'}`}
     >
-      <section className="flex min-h-screen flex-1 flex-col items-center justify-center px-6 py-10">
+      <section className="flex min-h-screen w-full flex-1 flex-col items-center justify-center px-6 py-10 lg:w-1/2">
         {register ? <RegisterForm /> : <LoginForm />}
       </section>
       <AccessPanel mode={mode} />

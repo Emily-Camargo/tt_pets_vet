@@ -6,10 +6,12 @@ import {
   Vaccines as VaccineIcon,
   WarningAmber,
 } from '@mui/icons-material'
+import { Badge, Button, Group, Text, Title } from '@mantine/core'
 import { useMemo, useState } from 'react'
 
 import { Metric } from '@/app/home/components/frame'
 import { ageLabel, petEmoji } from '@/app/tutor/pets/utils/functions'
+import { PageHeader } from '@/core/components/page-header'
 import { cx, dataCurta } from '@/core/functions/format'
 import { feedback } from '@/core/functions/feedback'
 import { useUsuario } from '@/core/hooks/use-session'
@@ -62,50 +64,42 @@ export function Vaccines() {
 
   if (!pet) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500">
-        Cadastre um pet para ver a carteira de vacinação.
+      <div className="rounded-3xl border border-dashed border-slate-200 bg-white px-6 py-12 text-center">
+        <Text size="sm" c="dimmed">
+          Cadastre um pet para ver a carteira de vacinação.
+        </Text>
       </div>
     )
   }
 
   return (
     <div
-      className="space-y-4"
+      className="grid gap-4"
       style={{ animation: 'tt-surgir 0.6s ease both' }}
     >
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-marca uppercase">
-            Tutor
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-900">
-            Carteira de vacinação
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Doses aplicadas, próximas doses e lembretes de cada pet.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() =>
-              feedback('', 'PDF disponível no protótipo em breve.')
-            }
-            className="rounded-full border border-marca bg-white px-4 py-2.5 text-sm font-medium text-marca hover:bg-marca-clara"
-          >
-            ↓ Baixar PDF
-          </button>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-          >
-            + Agendar vacina
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Tutor"
+        title="Carteira de vacinação"
+        description="Doses aplicadas, próximas doses e lembretes de cada pet."
+        actions={
+          <>
+            <Button
+              radius="xl"
+              variant="default"
+              onClick={() =>
+                feedback('', 'PDF disponível no protótipo em breve.')
+              }
+            >
+              ↓ Baixar PDF
+            </Button>
+            <Button radius="xl" color="#7434d6" onClick={() => setOpen(true)}>
+              + Agendar vacina
+            </Button>
+          </>
+        }
+      />
 
-      <div className="flex flex-wrap gap-2">
+      <Group gap="sm">
         {pets.map((item) => {
           const alert = dueInDays(
             banco.vacinas.filter((vaccine) => vaccine.petId === item.id),
@@ -113,30 +107,28 @@ export function Vaccines() {
           )
           const active = item.id === petId
           return (
-            <button
+            <Button
               key={item.id}
-              type="button"
+              radius="xl"
+              color="#7434d6"
+              variant={active ? 'light' : 'default'}
               onClick={() => setPetId(item.id)}
-              className={cx(
-                'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition',
-                active
-                  ? 'border-marca bg-[#f6f1fc] text-marca'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300',
-              )}
+              leftSection={<Text size="sm">{petEmoji(item.especie)}</Text>}
+              rightSection={
+                alert > 0 ? (
+                  <Badge color="orange" size="sm" circle>
+                    {alert}
+                  </Badge>
+                ) : undefined
+              }
             >
-              <span>{petEmoji(item.especie)}</span>
               {item.nome}
-              {alert > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
-                  {alert}
-                </span>
-              )}
-            </button>
+            </Button>
           )
         })}
-      </div>
+      </Group>
 
-      <section className="rounded-3xl bg-linear-to-r from-[#7434d6] to-[#8b5cf6] px-5 py-5 text-white sm:px-7">
+      <div className="rounded-3xl bg-linear-to-r from-[#7434d6] to-[#8b5cf6] px-5 py-5 text-white sm:px-7">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
             <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-white/15 text-3xl">
@@ -152,24 +144,34 @@ export function Vaccines() {
               )}
             </div>
             <div>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-white/80 uppercase">
+              <Text
+                size="xs"
+                fw={600}
+                tt="uppercase"
+                c="rgba(255,255,255,0.8)"
+                style={{ letterSpacing: '0.16em' }}
+              >
                 Carteira de vacinação
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold">{pet.nome}</h2>
-              <p className="mt-1 text-sm text-white/85">
+              </Text>
+              <Title order={3} c="white" mt={4}>
+                {pet.nome}
+              </Title>
+              <Text size="sm" c="rgba(255,255,255,0.85)" mt={4}>
                 {pet.raca} · {pet.sexo} · {ageLabel(pet.nascimento)} ·{' '}
                 {pet.peso} kg · {formatChip(pet.microchip)}
-              </p>
+              </Text>
             </div>
           </div>
-          <div className="text-sm text-white/90 lg:text-right">
-            <p>Tutora {tutor?.nome ?? usuario?.nome}</p>
-            <p className="text-white/75">Clínica TT Pets · {cityName}</p>
+          <div className="text-sm lg:text-right">
+            <Text c="rgba(255,255,255,0.9)">
+              Tutora {tutor?.nome ?? usuario?.nome}
+            </Text>
+            <Text c="rgba(255,255,255,0.75)">Clínica TT Pets · {cityName}</Text>
           </div>
         </div>
-      </section>
+      </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-4 gap-3 max-md:grid-cols-2 max-sm:grid-cols-1">
         <Metric
           icon={<CheckCircleOutlined sx={{ fontSize: 18 }} />}
           tone="bg-emerald-50 text-emerald-600"
@@ -201,11 +203,9 @@ export function Vaccines() {
       </div>
 
       <div className="grid w-full gap-4 lg:gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h3 className="font-semibold text-slate-900">
-              Histórico de vacinas
-            </h3>
+        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <Group justify="space-between" mb="md" wrap="wrap">
+            <Title order={4}>Histórico de vacinas</Title>
             <select
               value={filter}
               onChange={(event) => setFilter(event.target.value)}
@@ -217,7 +217,7 @@ export function Vaccines() {
               <option>Recomendada</option>
               <option>Atrasada</option>
             </select>
-          </div>
+          </Group>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
               <thead>
@@ -239,12 +239,12 @@ export function Vaccines() {
                   return (
                     <tr key={item.id} className="border-b border-slate-50">
                       <td className="py-3 pr-3">
-                        <p className="font-semibold text-slate-800">
+                        <Text fw={600} size="sm">
                           {item.nome}
-                        </p>
-                        <p className="text-xs text-slate-400">
+                        </Text>
+                        <Text size="xs" c="dimmed">
                           {item.lote ? `Lote ${item.lote}` : 'Sem lote'}
-                        </p>
+                        </Text>
                       </td>
                       <td className="py-3 pr-3 text-slate-600">
                         {item.dose ?? '—'}
@@ -259,97 +259,100 @@ export function Vaccines() {
                         {vet?.nome ?? '—'}
                       </td>
                       <td className="py-3">
-                        <span
-                          className={cx(
-                            'rounded-full px-2.5 py-1 text-[11px] font-medium',
-                            statusTone(status),
-                          )}
+                        <Badge
+                          className={cx(statusTone(status))}
+                          variant="light"
+                          radius="xl"
                         >
                           {statusLabel(status)}
-                        </span>
+                        </Badge>
                       </td>
                     </tr>
                   )
                 })}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-slate-400">
-                      Nenhuma vacina neste filtro.
+                    <td colSpan={6} className="py-8 text-center">
+                      <Text c="dimmed">Nenhuma vacina neste filtro.</Text>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-        </section>
+        </div>
 
-        <div className="space-y-4">
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900">Próximas doses</h3>
-              <span className="text-sm font-medium text-marca">Lembretes</span>
-            </div>
+        <div className="grid gap-4">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Group justify="space-between" mb="sm">
+              <Title order={4}>Próximas doses</Title>
+              <Text size="sm" fw={500} c="#7434d6">
+                Lembretes
+              </Text>
+            </Group>
             {upcoming.length === 0 ? (
-              <p className="text-sm text-slate-400">Nenhuma dose marcada.</p>
+              <Text size="sm" c="dimmed">
+                Nenhuma dose marcada.
+              </Text>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-100">
                 {upcoming.map((item) => {
                   const stamp = dateStamp(item.proximaDose!)
                   return (
-                    <li key={item.id} className="flex items-center gap-3 py-3">
-                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
-                        <span className="text-[10px] font-semibold tracking-wide text-marca">
+                    <Group key={item.id} gap="md" py="sm">
+                      <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-marca-clara text-center leading-tight">
+                        <Text size="xs" fw={600} c="#7434d6">
                           {stamp.month}
-                        </span>
-                        <span className="text-sm font-semibold text-slate-800">
+                        </Text>
+                        <Text size="sm" fw={600}>
                           {stamp.day}
-                        </span>
-                      </span>
-                      <span>
-                        <span className="block text-sm font-semibold text-slate-800">
+                        </Text>
+                      </div>
+                      <div>
+                        <Text size="sm" fw={600}>
                           {item.nome}
-                        </span>
-                        <span className="block text-xs text-slate-400">
+                        </Text>
+                        <Text size="xs" c="dimmed">
                           {remainingLabel(item.days)}
-                        </span>
-                      </span>
-                    </li>
+                        </Text>
+                      </div>
+                    </Group>
                   )
                 })}
-              </ul>
+              </div>
             )}
-          </section>
+          </div>
 
-          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900">
-              Cobertura do protocolo
-            </h3>
-            <p className="mt-2 text-sm text-slate-500">
+          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+            <Title order={4}>Cobertura do protocolo</Title>
+            <Text size="sm" c="dimmed" mt={8}>
               {coverage.covered} de {coverage.recommended} vacinas recomendadas
-            </p>
+            </Text>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
               <div
                 className="h-full rounded-full bg-marca"
                 style={{ width: `${coverage.percent}%` }}
               />
             </div>
-            <p className="mt-3 text-xs text-slate-400">
+            <Text size="xs" c="dimmed" mt={12}>
               Complete as doses recomendadas para manter a proteção em dia.
-            </p>
-            <button
-              type="button"
+            </Text>
+            <Button
+              radius="xl"
+              variant="default"
+              fullWidth
+              mt="md"
               onClick={() => setOpen(true)}
-              className="mt-4 w-full rounded-full border border-marca px-4 py-2.5 text-sm font-medium text-marca hover:bg-marca-clara"
             >
               Agendar visita para vacinar
-            </button>
-          </section>
+            </Button>
+          </div>
         </div>
       </div>
 
-      <p className="pt-2 text-center text-xs text-slate-400">
+      <Text size="xs" c="dimmed" ta="center" pt={8}>
         Protótipo com dados de exemplo.
-      </p>
+      </Text>
 
       <VaccineForm
         open={open}

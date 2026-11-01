@@ -1,5 +1,6 @@
 'use client'
 
+import { Button, Group, Title } from '@mantine/core'
 import { useState, type FormEvent } from 'react'
 
 import { feedback } from '@/core/functions/feedback'
@@ -43,19 +44,18 @@ export function VaccineForm({
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4">
       <div className="w-full max-w-md rounded-3xl bg-white p-5 shadow-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Agendar vacina
-          </h2>
-          <button
-            type="button"
+        <Group justify="space-between" mb="md">
+          <Title order={3}>Agendar vacina</Title>
+          <Button
+            variant="subtle"
+            color="gray"
             aria-label="Fechar"
-            className="grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-50"
             onClick={onClose}
+            px="xs"
           >
             ×
-          </button>
-        </div>
+          </Button>
+        </Group>
         <form className="flex flex-col gap-3" onSubmit={save}>
           <label className="text-sm font-medium text-slate-700">
             <span className="mb-1.5 block">Vacina</span>
@@ -94,21 +94,14 @@ export function VaccineForm({
               className={fieldClass}
             />
           </label>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600"
-            >
+          <Group grow mt="sm">
+            <Button radius="xl" variant="default" onClick={onClose}>
               Cancelar
-            </button>
-            <button
-              type="submit"
-              className="rounded-full bg-marca px-4 py-2.5 text-sm font-medium text-white hover:bg-marca-forte"
-            >
+            </Button>
+            <Button type="submit" radius="xl" color="#7434d6">
               Salvar
-            </button>
-          </div>
+            </Button>
+          </Group>
         </form>
       </div>
     </div>
