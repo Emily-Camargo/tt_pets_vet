@@ -1,24 +1,31 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
-import { Provedor } from '@/components/provedor'
+import Provider from '@/core/providers'
+import type { ChildrenProps } from '@/core/interfaces/interface-global'
 
-import './globals.css'
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  width: 'device-width',
+}
 
 export const metadata: Metadata = {
   title: 'TT Pets Vet',
-  description: 'Protótipo de atendimento veterinário domiciliar',
+  description: 'Atendimento veterinário domiciliar',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+const RootLayout = ({ children }: ChildrenProps) => {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body>
-        <Provedor>{children}</Provedor>
+        <NuqsAdapter>
+          <Provider>{children}</Provider>
+        </NuqsAdapter>
       </body>
     </html>
   )
 }
+
+export default RootLayout
