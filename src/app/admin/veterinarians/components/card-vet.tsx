@@ -22,7 +22,9 @@ export function CardVet({
     <Card title={name} titleColor="#7434d6" borderRadius="16px">
       <Group justify="space-between" align="center" p="md">
         <div>
-          <Badge color={active ? 'teal' : 'yellow'}>{active ? 'Ativo' : 'Inativo'}</Badge>
+          <Badge color={active ? 'teal' : 'yellow'}>
+            {active ? 'Ativo' : 'Inativo'}
+          </Badge>
           <Text size="sm" c="dimmed" mt={6}>
             {detail}
           </Text>

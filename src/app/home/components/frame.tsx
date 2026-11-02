@@ -185,9 +185,7 @@ export function Shortcut({
       unstyled
       className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-4 text-sm font-medium text-slate-700 shadow-sm transition hover:border-marca-borda"
     >
-      <div
-        className={cx('grid h-10 w-10 place-items-center rounded-xl', tone)}
-      >
+      <div className={cx('grid h-10 w-10 place-items-center rounded-xl', tone)}>
         {icon}
       </div>
       {label}

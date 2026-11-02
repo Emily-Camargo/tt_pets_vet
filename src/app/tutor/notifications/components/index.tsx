@@ -36,7 +36,11 @@ export function Notifications() {
       title="Notificações"
       description="Lembretes de vacina e mudanças nas consultas."
       action={
-        <Button variant="outline" color="#7434d6" onClick={() => marcarNotificacoes(tutorId)}>
+        <Button
+          variant="outline"
+          color="#7434d6"
+          onClick={() => marcarNotificacoes(tutorId)}
+        >
           Ler todas
         </Button>
       }
@@ -64,10 +68,18 @@ export function Notifications() {
         maxWidth="sm"
         actions={
           <>
-            <Button color="red" variant="light" onClick={() => opened && remove(opened.id)}>
+            <Button
+              color="red"
+              variant="light"
+              onClick={() => opened && remove(opened.id)}
+            >
               Excluir
             </Button>
-            <Button variant="subtle" color="gray" onClick={() => setOpened(null)}>
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => setOpened(null)}
+            >
               Fechar
             </Button>
           </>

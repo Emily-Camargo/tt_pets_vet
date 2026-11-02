@@ -25,7 +25,9 @@ export function VetForm({
   const [email, setEmail] = useState(access?.email ?? '')
   const [password, setPassword] = useState('')
   const [crmv, setCrmv] = useState(vet?.crmv ?? '')
-  const [specialty, setSpecialty] = useState(vet?.especialidade ?? 'Clínica geral')
+  const [specialty, setSpecialty] = useState(
+    vet?.especialidade ?? 'Clínica geral',
+  )
   const [cityIds, setCityIds] = useState<string[]>(vet?.cidadeIds ?? [])
   const [active, setActive] = useState(vet?.ativo ?? true)
 
@@ -54,7 +56,12 @@ export function VetForm({
           if (!error) onClose()
         }}
       >
-        <Input label="Nome" value={name} required onChange={(event) => setName(event.target.value)} />
+        <Input
+          label="Nome"
+          value={name}
+          required
+          onChange={(event) => setName(event.target.value)}
+        />
         <Input
           label="Email de acesso"
           type="email"
@@ -69,7 +76,12 @@ export function VetForm({
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
-        <Input label="CRMV" value={crmv} required onChange={(event) => setCrmv(event.target.value)} />
+        <Input
+          label="CRMV"
+          value={crmv}
+          required
+          onChange={(event) => setCrmv(event.target.value)}
+        />
         <Input
           label="Especialidade"
           value={specialty}

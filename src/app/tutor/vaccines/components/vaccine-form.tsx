@@ -53,12 +53,7 @@ export function VaccineForm({
   }
 
   return (
-    <Dialog
-      open={open}
-      title="Agendar vacina"
-      onClose={onClose}
-      maxWidth="sm"
-    >
+    <Dialog open={open} title="Agendar vacina" onClose={onClose} maxWidth="sm">
       <form className="flex flex-col gap-3" onSubmit={save}>
         <TextInput
           label="Vacina"

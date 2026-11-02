@@ -163,11 +163,7 @@ export function Schedule() {
                   >
                     {header.weekday}
                   </Text>
-                  <Text
-                    size="lg"
-                    fw={600}
-                    c={isToday ? '#7434d6' : '#1e293b'}
-                  >
+                  <Text size="lg" fw={600} c={isToday ? '#7434d6' : '#1e293b'}>
                     {header.day}
                   </Text>
                 </div>
@@ -241,9 +237,7 @@ export function Schedule() {
                         unstyled
                         onClick={() => {
                           if (consultaAtiva(item.status)) {
-                            router.push(
-                              `/veterinarian/appointments/${item.id}`,
-                            )
+                            router.push(`/veterinarian/appointments/${item.id}`)
                           }
                         }}
                         className={cx(

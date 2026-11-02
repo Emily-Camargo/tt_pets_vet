@@ -35,7 +35,10 @@ export function NotificationBell() {
 
   return (
     <>
-      <IconButton aria-label="Notificações" onClick={(event) => setAnchor(event.currentTarget)}>
+      <IconButton
+        aria-label="Notificações"
+        onClick={(event) => setAnchor(event.currentTarget)}
+      >
         <Badge badgeContent={unread} color="secondary" invisible={unread === 0}>
           <NotificationsNone />
         </Badge>
@@ -62,16 +65,34 @@ export function NotificationBell() {
         </div>
         <div className="max-h-80 overflow-y-auto">
           {items.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-slate-400">Nenhuma notificação.</p>
+            <p className="px-4 py-8 text-center text-sm text-slate-400">
+              Nenhuma notificação.
+            </p>
           ) : (
             items.map((item) => (
-              <div key={item.id} className={`flex items-start ${item.lida ? '' : 'bg-[#f6f1fc]'}`}>
-                <button type="button" className="min-w-0 flex-1 px-4 py-3 text-left" onClick={() => openItem(item)}>
-                  <span className="block truncate text-sm font-medium">{item.titulo}</span>
-                  <span className="block truncate text-xs text-slate-500">{item.texto}</span>
-                  <span className="mt-1 block text-[11px] text-slate-400">{dataHora(item.criadaEm)}</span>
+              <div
+                key={item.id}
+                className={`flex items-start ${item.lida ? '' : 'bg-[#f6f1fc]'}`}
+              >
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 px-4 py-3 text-left"
+                  onClick={() => openItem(item)}
+                >
+                  <span className="block truncate text-sm font-medium">
+                    {item.titulo}
+                  </span>
+                  <span className="block truncate text-xs text-slate-500">
+                    {item.texto}
+                  </span>
+                  <span className="mt-1 block text-[11px] text-slate-400">
+                    {dataHora(item.criadaEm)}
+                  </span>
                 </button>
-                <IconButton aria-label="Excluir notificação" onClick={() => remove(item.id)}>
+                <IconButton
+                  aria-label="Excluir notificação"
+                  onClick={() => remove(item.id)}
+                >
                   <DeleteOutlined sx={{ fontSize: 18 }} />
                 </IconButton>
               </div>
@@ -86,10 +107,18 @@ export function NotificationBell() {
         maxWidth="sm"
         actions={
           <>
-            <Button color="red" variant="light" onClick={() => opened && remove(opened.id)}>
+            <Button
+              color="red"
+              variant="light"
+              onClick={() => opened && remove(opened.id)}
+            >
               Excluir
             </Button>
-            <Button variant="subtle" color="gray" onClick={() => setOpened(null)}>
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => setOpened(null)}
+            >
               Fechar
             </Button>
           </>
@@ -98,7 +127,9 @@ export function NotificationBell() {
         {opened && (
           <div className="space-y-2">
             <p className="text-sm text-slate-600">{opened.texto}</p>
-            <p className="text-xs text-slate-400">{dataHora(opened.criadaEm)}</p>
+            <p className="text-xs text-slate-400">
+              {dataHora(opened.criadaEm)}
+            </p>
           </div>
         )}
       </Dialog>

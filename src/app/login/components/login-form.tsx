@@ -5,6 +5,7 @@ import { Button, Text, Title } from '@mantine/core'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { FiCheck } from 'react-icons/fi'
 
 import { feedback } from '@/core/functions/feedback'
 import { destino } from '@/core/functions/format'
@@ -32,10 +33,11 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-[390px]">
-      <Title order={3} ta="center" c="#7434d6">
+    <div className="flex w-full max-w-[390px] flex-col">
+      <Title order={3} ta="center" c="#7434d6" fw={700}>
         Faça seu login
       </Title>
+
       <form
         className="mt-8 flex flex-col gap-3"
         onSubmit={(event) => {
@@ -58,10 +60,11 @@ export function LoginForm() {
           required
           onChange={(event) => setPassword(event.target.value)}
         />
-        <Button type="submit" color="#7434d6" radius="xl">
+        <Button type="submit" color="#7434d6" radius="xl" fullWidth mt={4}>
           Entrar
         </Button>
       </form>
+
       <Button
         variant="subtle"
         color="#7434d6"
@@ -77,19 +80,36 @@ export function LoginForm() {
           a senha do cadastro.
         </Text>
       )}
-      <Text size="sm" ta="center" mt="md">
+
+      <Text size="sm" ta="center" mt="xs">
         Não tem conta?{' '}
         <Link href="/register" className="font-semibold text-[#7434d6]">
           Criar conta
         </Link>
       </Text>
-      <ul className="mt-8 space-y-2 text-center">
-        {LOGIN_BENEFITS.map((item) => (
-          <li key={item} className="text-sm text-slate-600">
-            {item}
-          </li>
-        ))}
-      </ul>
+
+      <div className="mt-10">
+        <Text size="sm" fw={600} c="#475569" mb="sm">
+          Cuidado completo do pet
+        </Text>
+        <ul className="space-y-2.5">
+          {LOGIN_BENEFITS.map((item) => (
+            <li key={item} className="flex items-start gap-2.5">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#7434d6] text-white">
+                <FiCheck size={11} strokeWidth={3} />
+              </span>
+              <Text size="sm" c="#64748b">
+                {item}
+              </Text>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <Text size="xs" c="dimmed" ta="center" mt="xl">
+        Acesso para tutores e veterinários. Consulta em domicílio, planos e
+        carteira de vacinas.
+      </Text>
     </div>
   )
 }

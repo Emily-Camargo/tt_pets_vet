@@ -8,7 +8,13 @@ import { formatPhoneBr } from '@/core/functions/format'
 import { useUsuario } from '@/core/hooks/use-session'
 import { salvarPerfil } from '@/service/mock/actions'
 
-export function ProfileDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ProfileDialog({
+  open,
+  onClose,
+}: {
+  open: boolean
+  onClose: () => void
+}) {
   const { usuario, banco } = useUsuario()
   const tutor = banco.tutores.find((item) => item.id === usuario?.tutorId)
   const [name, setName] = useState('')
@@ -63,7 +69,12 @@ export function ProfileDialog({ open, onClose }: { open: boolean; onClose: () =>
           }
         }}
       >
-        <Input label="Nome" value={name} required onChange={(event) => setName(event.target.value)} />
+        <Input
+          label="Nome"
+          value={name}
+          required
+          onChange={(event) => setName(event.target.value)}
+        />
         <Input
           label="E-mail"
           type="email"

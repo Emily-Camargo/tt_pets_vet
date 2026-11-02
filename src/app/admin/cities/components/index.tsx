@@ -45,12 +45,16 @@ export function Cities() {
               title={`${city.nome} - ${city.uf}`}
               detail={`${banco.veterinarios.filter((item) => item.cidadeIds.includes(city.id)).length} veterinários vinculados`}
               onEdit={() => openForm(city)}
-              onDelete={() => feedback(excluirCidade(city.id), 'Cidade removida.')}
+              onDelete={() =>
+                feedback(excluirCidade(city.id), 'Cidade removida.')
+              }
             />
           ))}
         </Stack>
       )}
-      {open && <CityDialog open={open} initial={form} onClose={() => setOpen(false)} />}
+      {open && (
+        <CityDialog open={open} initial={form} onClose={() => setOpen(false)} />
+      )}
     </Screen>
   )
 }

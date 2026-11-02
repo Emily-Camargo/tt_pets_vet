@@ -39,7 +39,10 @@ export function AppNavbar() {
         >
           <HiOutlineMenu size={24} />
         </IconButton>
-        <Link href={href} className="ml-1 flex items-center gap-2 text-lg font-semibold text-[#7434d6]">
+        <Link
+          href={href}
+          className="ml-1 flex items-center gap-2 text-lg font-semibold text-[#7434d6]"
+        >
           <span aria-hidden>🐾</span>
           TT Pets Vet
         </Link>
@@ -52,7 +55,9 @@ export function AppNavbar() {
           onClick={(event) => setAnchor(event.currentTarget)}
         >
           <span className="hidden text-right sm:block">
-            <span className="block text-sm font-medium text-slate-700">{usuario?.nome}</span>
+            <span className="block text-sm font-medium text-slate-700">
+              {usuario?.nome}
+            </span>
             <span className="block text-xs text-slate-400">
               {usuario ? rotuloPerfil(usuario.perfil) : ''}
             </span>

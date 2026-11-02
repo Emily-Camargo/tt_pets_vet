@@ -32,7 +32,11 @@ export function CardCare({
             {dataHora(when)} · {tutorName} · {reason}
           </Text>
         </div>
-        <Button component={Link} href={`/veterinarian/appointments/${id}`} color="#7434d6">
+        <Button
+          component={Link}
+          href={`/veterinarian/appointments/${id}`}
+          color="#7434d6"
+        >
           Abrir atendimento
         </Button>
       </Group>

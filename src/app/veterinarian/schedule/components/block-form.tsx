@@ -49,7 +49,11 @@ export function BlockForm({ veterinarianId }: { veterinarianId: string }) {
           />
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Input label="Motivo" value={reason} onChange={(event) => setReason(event.target.value)} />
+          <Input
+            label="Motivo"
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+          />
         </Grid>
         <Grid size={{ xs: 12, md: 2 }}>
           <Button type="submit" color="#7434d6" fullWidth>

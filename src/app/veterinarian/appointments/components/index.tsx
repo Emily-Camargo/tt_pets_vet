@@ -98,7 +98,9 @@ export function Appointments() {
         const date = new Date(item.dataHora)
         const active = consultaAtiva(item.status)
         const inProgress =
-          active && sameDay(item.dataHora, today) && date.getTime() <= now.getTime()
+          active &&
+          sameDay(item.dataHora, today) &&
+          date.getTime() <= now.getTime()
         const pendingRecord =
           item.status === 'realizada' &&
           sameDay(item.dataHora, today) &&
@@ -126,7 +128,8 @@ export function Appointments() {
   }, [banco, veterinarianId, now, today])
 
   const todayActive = rows.filter(
-    (row) => sameDay(row.item.dataHora, today) && consultaAtiva(row.item.status),
+    (row) =>
+      sameDay(row.item.dataHora, today) && consultaAtiva(row.item.status),
   )
   const inProgressRows = todayActive.filter((row) => row.inProgress)
   const todoToday = todayActive.filter((row) => !row.inProgress)
@@ -157,7 +160,9 @@ export function Appointments() {
       if (tab === 'hoje') return sameDay(row.item.dataHora, today)
       if (tab === 'amanha') return sameDay(row.item.dataHora, tomorrow)
       if (tab === 'semana')
-        return date >= today && date < weekEnd && row.item.status !== 'cancelada'
+        return (
+          date >= today && date < weekEnd && row.item.status !== 'cancelada'
+        )
       if (tab === 'atrasados')
         return (
           consultaAtiva(row.item.status) &&
@@ -403,9 +408,7 @@ export function Appointments() {
                           'relative z-10 mt-1 h-3.5 w-3.5 shrink-0 rounded-full border-2',
                           done && 'border-slate-300 bg-slate-300',
                           current && 'border-[#7434d6] bg-[#7434d6]',
-                          !done &&
-                            !current &&
-                            'border-slate-300 bg-white',
+                          !done && !current && 'border-slate-300 bg-white',
                         )}
                       />
                       <div className="min-w-0">
@@ -559,7 +562,13 @@ function AppointmentRow({
           </Text>
           <Group gap={6} mt={6} wrap="wrap">
             {row.allergy && (
-              <Badge radius="sm" variant="light" color="red" tt="none" size="xs">
+              <Badge
+                radius="sm"
+                variant="light"
+                color="red"
+                tt="none"
+                size="xs"
+              >
                 {row.allergy}
               </Badge>
             )}

@@ -7,14 +7,7 @@ import { hora, moeda, rotuloStatus } from '@/core/functions/format'
 import type { Banco, Consulta, Usuario } from '@/core/interfaces/types'
 import { consultaAtiva, resumo } from '@/service/mock/rules'
 
-import {
-  Bars,
-  Hero,
-  HomeFrame,
-  Metric,
-  Panel,
-  PanelHead,
-} from './frame'
+import { Bars, Hero, HomeFrame, Metric, Panel, PanelHead } from './frame'
 import { firstName, sameDay, startOfDay } from '../utils/functions'
 
 export function VeterinarianHome({

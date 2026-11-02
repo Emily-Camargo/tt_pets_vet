@@ -71,10 +71,7 @@ export function SideMenu({
     if (!plan) return null
 
     const usedVisits = banco.consultas.filter((item) => {
-      if (
-        item.petId !== subscription.petId ||
-        item.status === 'cancelada'
-      ) {
+      if (item.petId !== subscription.petId || item.status === 'cancelada') {
         return false
       }
       const date = new Date(item.dataHora)

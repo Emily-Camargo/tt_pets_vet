@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  Badge,
-  Button,
-  Group,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Badge, Button, Group, Text, TextInput, Title } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'

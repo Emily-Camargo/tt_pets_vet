@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  Badge,
-  Button,
-  Group,
-  Text,
-  Textarea,
-  TextInput,
-} from '@mantine/core'
+import { Badge, Button, Group, Text, Textarea, TextInput } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState, type ReactNode } from 'react'
 import {
@@ -583,7 +576,11 @@ export function AppointmentDetail({
 
           <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
             {messages.length === 0 && suggestions.length === 0 && (
-              <Text size="sm" c="dimmed" className="rounded-2xl bg-slate-50 p-3">
+              <Text
+                size="sm"
+                c="dimmed"
+                className="rounded-2xl bg-slate-50 p-3"
+              >
                 Pergunte sobre dose, histórico, interações ou peça um resumo do
                 caso.
               </Text>

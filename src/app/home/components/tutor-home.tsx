@@ -8,12 +8,7 @@ import type { Banco, Usuario, Vacina } from '@/core/interfaces/types'
 import { consultaAtiva } from '@/service/mock/rules'
 
 import { Hero, HomeFrame, Panel, PanelHead } from './frame'
-import {
-  ageLabel,
-  daysUntil,
-  firstName,
-  inDays,
-} from '../utils/functions'
+import { ageLabel, daysUntil, firstName, inDays } from '../utils/functions'
 
 export function TutorHome({ bank, user }: { bank: Banco; user: Usuario }) {
   const tutorId = user.tutorId ?? ''

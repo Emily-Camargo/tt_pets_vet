@@ -1,7 +1,7 @@
 'use client'
 
 import { Input } from '@grazziotin/react-components-next/ui'
-import { Button, Progress, Text, Title } from '@mantine/core'
+import { Button, Text, Title } from '@mantine/core'
 import { useRouter } from 'next/navigation'
 import { useState, type FormEvent } from 'react'
 
@@ -65,10 +65,17 @@ export function RegisterForm() {
 
   return (
     <div className="w-full max-w-[420px]">
-      <Title order={3} ta="center" c="#7434d6">
+      <Title order={3} ta="center" c="#7434d6" fw={700}>
         Criar conta
       </Title>
-      <Progress value={step === 1 ? 46 : 100} color="#7434d6" mt="md" />
+
+      <div className="mx-auto mt-4 flex h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-slate-200">
+        <div
+          className="h-full rounded-full bg-[#7434d6] transition-all"
+          style={{ width: step === 1 ? '48%' : '100%' }}
+        />
+      </div>
+
       {step === 1 ? (
         <form className="mt-8 flex flex-col gap-3" onSubmit={next}>
           <Input
@@ -105,13 +112,15 @@ export function RegisterForm() {
             required
             onChange={(event) => setPassword(event.target.value)}
           />
-          <Button type="submit" color="#7434d6" radius="xl">
-            Próximo
-          </Button>
+          <div className="mt-2 flex justify-end">
+            <Button type="submit" color="#7434d6" radius="xl" px="xl">
+              Próximo
+            </Button>
+          </div>
         </form>
       ) : (
         <form className="mt-8 flex flex-col gap-3" onSubmit={finish}>
-          <Text size="sm" c="dimmed">
+          <Text size="sm" c="dimmed" ta="center">
             Confirme a senha para criar a conta de tutor e cadastrar seus pets.
           </Text>
           <Input
@@ -122,11 +131,15 @@ export function RegisterForm() {
             required
             onChange={(event) => setConfirm(event.target.value)}
           />
-          <div className="flex items-center justify-between">
+          <Text size="xs" c="dimmed" ta="center" mt={4}>
+            Ao continuar, você cria seu acesso de tutor no TT Pets Vet para
+            planos, agenda e atendimento domiciliar.
+          </Text>
+          <div className="mt-4 flex items-center justify-between gap-3">
             <Button variant="subtle" color="#7434d6" onClick={() => setStep(1)}>
               Voltar
             </Button>
-            <Button type="submit" color="#7434d6" radius="xl">
+            <Button type="submit" color="#7434d6" radius="xl" px="xl">
               Criar conta
             </Button>
           </div>

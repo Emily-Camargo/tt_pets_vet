@@ -19,7 +19,11 @@ export function CardClient({
           {email}
         </Text>
         {pets.map((pet) => (
-          <Text key={pet} size="sm" className="rounded-xl bg-slate-50 px-3 py-2">
+          <Text
+            key={pet}
+            size="sm"
+            className="rounded-xl bg-slate-50 px-3 py-2"
+          >
             {pet}
           </Text>
         ))}

@@ -81,7 +81,10 @@ export function CardBooking({
                 c="#64748b"
                 className="inline-flex min-w-0 items-start gap-1.5"
               >
-                <FiMapPin size={12} className="mt-0.5 shrink-0 text-[#f472b6]" />
+                <FiMapPin
+                  size={12}
+                  className="mt-0.5 shrink-0 text-[#f472b6]"
+                />
                 <span className="break-words">
                   {appointment.endereco ?? 'Endereço não informado'}
                 </span>

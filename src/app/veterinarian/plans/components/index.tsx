@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  Badge,
-  Button,
-  Group,
-  Switch,
-  Text,
-  Title,
-} from '@mantine/core'
+import { Badge, Button, Group, Switch, Text, Title } from '@mantine/core'
 import { useMemo, useState } from 'react'
 
 import { PlanForm } from '@/app/plans/components/plan-form'
@@ -208,11 +201,7 @@ function PlanCard({
       )}
     >
       {plan.destaque && (
-        <Badge
-          radius="xl"
-          color="#7434d6"
-          className="absolute -top-2.5 left-4"
-        >
+        <Badge radius="xl" color="#7434d6" className="absolute -top-2.5 left-4">
           Mais vendido
         </Badge>
       )}

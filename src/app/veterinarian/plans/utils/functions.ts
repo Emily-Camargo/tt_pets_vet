@@ -39,8 +39,7 @@ export function plansForCity(
   cityId: string,
 ) {
   return bank.planos.filter(
-    (item) =>
-      item.veterinarioId === veterinarianId && item.cidadeId === cityId,
+    (item) => item.veterinarioId === veterinarianId && item.cidadeId === cityId,
   )
 }
 

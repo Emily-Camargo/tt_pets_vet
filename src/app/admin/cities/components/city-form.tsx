@@ -39,7 +39,12 @@ export function CityForm({
       >
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, sm: 8 }}>
-            <Input label="Nome" value={name} required onChange={(event) => setName(event.target.value)} />
+            <Input
+              label="Nome"
+              value={name}
+              required
+              onChange={(event) => setName(event.target.value)}
+            />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Input

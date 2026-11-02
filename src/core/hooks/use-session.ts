@@ -2,8 +2,19 @@
 
 import { useEffect, useSyncExternalStore } from 'react'
 
-import { marcarSessaoPronta, ouvirSessao, sessaoAtual, sessaoPronta } from '@/core/session'
-import { bancoAtual, bancoServidor, estaHidratado, marcarHidratado, ouvirBanco } from '@/service/mock/store'
+import {
+  marcarSessaoPronta,
+  ouvirSessao,
+  sessaoAtual,
+  sessaoPronta,
+} from '@/core/session'
+import {
+  bancoAtual,
+  bancoServidor,
+  estaHidratado,
+  marcarHidratado,
+  ouvirBanco,
+} from '@/service/mock/store'
 
 export function useBanco() {
   useEffect(() => {

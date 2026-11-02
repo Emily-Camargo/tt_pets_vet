@@ -21,7 +21,11 @@ export function menuFor(profile: Perfil): MenuItem[] {
   if (profile === 'veterinario') {
     return [
       HOME,
-      { href: '/veterinarian/dashboard', label: 'Financeiro', icon: 'dashboard' },
+      {
+        href: '/veterinarian/dashboard',
+        label: 'Financeiro',
+        icon: 'dashboard',
+      },
       { href: '/veterinarian/plans', label: 'Planos', icon: 'plans' },
       { href: '/veterinarian/schedule', label: 'Agenda', icon: 'schedule' },
       {

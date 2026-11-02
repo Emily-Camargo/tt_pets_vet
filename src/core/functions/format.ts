@@ -70,8 +70,14 @@ export function statusColor(status: StatusConsulta) {
   return 'violet'
 }
 
-export function destino(_perfil: Perfil) {
-  return '/home'
+const DESTINO: Record<Perfil, string> = {
+  admin: '/home',
+  veterinario: '/home',
+  tutor: '/home',
+}
+
+export function destino(perfil: Perfil) {
+  return DESTINO[perfil]
 }
 
 export function novoId() {

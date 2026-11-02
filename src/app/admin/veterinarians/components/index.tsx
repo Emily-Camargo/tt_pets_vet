@@ -37,7 +37,9 @@ export function Veterinarians() {
       ) : (
         <Stack gap="sm">
           {banco.veterinarios.map((vet) => {
-            const access = banco.usuarios.find((item) => item.id === vet.usuarioId)
+            const access = banco.usuarios.find(
+              (item) => item.id === vet.usuarioId,
+            )
             return (
               <CardVet
                 key={vet.id}
@@ -45,14 +47,23 @@ export function Veterinarians() {
                 active={vet.ativo}
                 detail={`${vet.crmv} · ${vet.especialidade}`}
                 email={access?.email}
-                cities={vet.cidadeIds.map((id) => nomeCidade(banco, id)).join(', ')}
+                cities={vet.cidadeIds
+                  .map((id) => nomeCidade(banco, id))
+                  .join(', ')}
                 onEdit={() => openForm(vet)}
               />
             )
           })}
         </Stack>
       )}
-      {open && <VetForm open={open} bank={banco} vet={current} onClose={() => setOpen(false)} />}
+      {open && (
+        <VetForm
+          open={open}
+          bank={banco}
+          vet={current}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </Screen>
   )
 }

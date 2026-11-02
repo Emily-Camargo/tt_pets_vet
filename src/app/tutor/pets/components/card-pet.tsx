@@ -34,11 +34,7 @@ export function CardPet({
         <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-[#f6f1fc] text-2xl">
           {pet.foto ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={pet.foto}
-              alt=""
-              className="h-full w-full object-cover"
-            />
+            <img src={pet.foto} alt="" className="h-full w-full object-cover" />
           ) : (
             petEmoji(pet.especie)
           )}
@@ -51,7 +47,12 @@ export function CardPet({
             {pet.especie} · {pet.raca} · {pet.sexo} · {neuteredLabel(pet)}
           </Text>
           <Group gap="xs" mt={10}>
-            <Badge className={vaccine.tone} variant="light" radius="xl" size="sm">
+            <Badge
+              className={vaccine.tone}
+              variant="light"
+              radius="xl"
+              size="sm"
+            >
               {vaccine.label}
             </Badge>
             <Badge className={visit.tone} variant="light" radius="xl" size="sm">

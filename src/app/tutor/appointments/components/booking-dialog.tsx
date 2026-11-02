@@ -87,9 +87,7 @@ export function BookingForm({
   }
 
   const visitsLabel =
-    limit == null
-      ? 'Visitas ilimitadas'
-      : `${used} de ${limit} visitas no mês`
+    limit == null ? 'Visitas ilimitadas' : `${used} de ${limit} visitas no mês`
 
   return (
     <div
